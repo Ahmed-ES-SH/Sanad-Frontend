@@ -7,15 +7,15 @@ import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 
 export async function generateMetadata({ params, searchParams }: any) {
-  const local = params.local || "en";
-  const projectId = searchParams.projectId;
+  const { local } = await params;
+  const { projectId } = await searchParams;
 
   const project: any = projectsData.find(
     (service) => service.id === Number(projectId)
   );
 
-  const translations = getTranslations(local);
-  const sharedMetadata = getSharedMetadata(local, translations);
+  const translations = getTranslations(local ?? "en");
+  const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   if (!project) {
     return {
@@ -26,8 +26,8 @@ export async function generateMetadata({ params, searchParams }: any) {
   }
 
   return {
-    title: `Madad Project - ${project.title[local]}`,
-    description: project.description[local],
+    title: `Madad Project - ${project.title[local ?? "en"]}`,
+    description: project.description[local ?? "en"],
     ...sharedMetadata,
   };
 }

@@ -6,14 +6,14 @@ import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 
 export async function generateMetadata({ params }: any) {
-  const local = (await params.local) || "en";
-  const translations = getTranslations(local);
+  const { local } = await params;
+  const translations = getTranslations(local ?? "en");
 
-  const sharedMetadata = getSharedMetadata(local, translations);
+  const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
-    title: translations.signInMeta.title,
-    description: translations.signInMeta.description,
+    title: translations.signUpMeta.title,
+    description: translations.signUpMeta.description,
     ...sharedMetadata,
   };
 }

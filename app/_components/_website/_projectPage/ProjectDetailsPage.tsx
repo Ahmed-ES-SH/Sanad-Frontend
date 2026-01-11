@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { easeInOut, easeOut, motion } from "framer-motion";
 import { FaGlobe, FaCode } from "react-icons/fa";
 import Img from "@/app/_components/_global/Img";
 import { projectsData } from "@/app/constants/projects";
@@ -63,7 +63,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
@@ -75,7 +75,7 @@ const imageVariants = {
     scale: 1,
     transition: {
       duration: 0.8,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
@@ -87,14 +87,14 @@ const skillVariants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
   hover: {
     scale: 1.05,
     transition: {
       duration: 0.2,
-      ease: "easeInOut",
+      ease: easeInOut,
     },
   },
 };
@@ -128,7 +128,7 @@ export default function ProjectDetailsPage() {
   return (
     <div
       dir={directionMap[local]}
-      className="min-h-screen pt-24 bg-gradient-to-br from-gray-50 to-blue-50"
+      className="min-h-screen pt-24 bg-linear-to-br from-gray-50 to-blue-50"
     >
       <div className="c-container py-8">
         <div className="flex flex-col xl:flex-row gap-8">
@@ -144,14 +144,14 @@ export default function ProjectDetailsPage() {
               className="relative mb-8 rounded-2xl overflow-hidden shadow-2xl"
               variants={imageVariants}
             >
-              <div className="aspect-video bg-gradient-to-r from-blue-500 to-blue-600">
+              <div className="aspect-video bg-linear-to-r from-blue-500 to-blue-600">
                 <Img
                   src={currentProject.imgSrc}
                   alt={currentProject.title[local]}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
               </div>
             </motion.div>
 

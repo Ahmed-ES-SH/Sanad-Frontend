@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { easeOut, motion } from "framer-motion";
 
 import { useVariables } from "@/app/context/VariablesContext";
 import { FaCode, FaEye } from "react-icons/fa";
@@ -27,7 +27,7 @@ const SidebarProject: React.FC<SidebarProjectProps> = ({
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: easeOut,
       },
     },
   };
@@ -49,7 +49,7 @@ const SidebarProject: React.FC<SidebarProjectProps> = ({
             alt={project.title[local]}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <FaEye className="text-white text-sm" />
           </div>
@@ -81,7 +81,7 @@ export default function SidebarOfProjects({ currentProjectId }: props) {
       x: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: easeOut,
         staggerChildren: 0.1,
       },
     },

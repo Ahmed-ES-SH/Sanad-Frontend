@@ -5,10 +5,10 @@ import { getTranslations } from "@/app/helpers/helpers";
 import React from "react";
 
 export async function generateMetadata({ params }: any) {
-  const local = (await params.local) || "en";
-  const translations = getTranslations(local);
+  const { local } = await params;
+  const translations = getTranslations(local ?? "en");
 
-  const sharedMetadata = getSharedMetadata(local, translations);
+  const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
     title: translations.blogMeta.title,

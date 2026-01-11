@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -60,7 +59,7 @@ const ProjectSliderItem: React.FC<ProjectSliderItemProps> = ({
             alt={project.title[language]}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-3 left-3 right-3">
             <span className="inline-block px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded-full">
               {project.category[language]}

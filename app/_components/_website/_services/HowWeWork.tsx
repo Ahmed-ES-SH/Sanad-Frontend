@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { easeOut, motion } from "framer-motion";
 import { FiTarget, FiSettings, FiTrendingUp } from "react-icons/fi";
 import Img from "../../_global/Img";
 import { useVariables } from "@/app/context/VariablesContext";
@@ -74,7 +74,7 @@ export default function HowWeWork() {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: easeOut,
       },
     },
   };
@@ -86,7 +86,7 @@ export default function HowWeWork() {
       x: 0,
       transition: {
         duration: 0.8,
-        ease: "easeOut",
+        ease: easeOut,
       },
     },
   };
@@ -98,7 +98,7 @@ export default function HowWeWork() {
       opacity: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut",
+        ease: easeOut,
       },
     },
   };
@@ -106,7 +106,7 @@ export default function HowWeWork() {
   return (
     <div
       dir={directionMap[local]}
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-white"
+      className="min-h-screen bg-linear-to-br from-gray-50 to-white"
     >
       <div className="c-container ">
         <motion.div
@@ -123,7 +123,7 @@ export default function HowWeWork() {
                 alt="Business professionals collaborating"
                 className="w-full h-full max-lg:h-[550px] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
 
               {/* How We Work badge */}
               <motion.div
@@ -159,15 +159,15 @@ export default function HowWeWork() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="bg-gradient-to-r from-sky-50 to-sky-100/50 p-8 rounded-2xl border border-sky-100 hover:shadow-xl transition-all duration-300">
+                <div className="bg-linear-to-r from-sky-50 to-sky-100/50 p-8 rounded-2xl border border-sky-100 hover:shadow-xl transition-all duration-300">
                   <div className="flex items-start max-lg:flex-col gap-6">
                     {/* Number */}
                     <motion.div
-                      className="flex-shrink-0"
+                      className="shrink-0"
                       variants={numberVariants}
                       whileHover={{ scale: 1.1 }}
                     >
-                      <div className="w-16 h-16 bg-gradient-to-br from-primary-blue to-sky-700 rounded-2xl flex items-center justify-center shadow-lg">
+                      <div className="w-16 h-16 bg-linear-to-br from-primary-blue to-sky-700 rounded-2xl flex items-center justify-center shadow-lg">
                         <span className="text-2xl font-bold text-white">
                           {step.number}
                         </span>

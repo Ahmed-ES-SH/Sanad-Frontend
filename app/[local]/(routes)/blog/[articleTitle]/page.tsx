@@ -7,13 +7,13 @@ import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 
 export async function generateMetadata({ params, searchParams }: any) {
-  const local = params.local || "en";
-  const articleId = searchParams.articleId;
+  const { local } = await params;
+  const { articleId } = await searchParams;
 
   const article = blogPosts.find((service) => service.id === Number(articleId));
 
-  const translations = getTranslations(local);
-  const sharedMetadata = getSharedMetadata(local, translations);
+  const translations = getTranslations(local ?? "en");
+  const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   if (!article) {
     return {
