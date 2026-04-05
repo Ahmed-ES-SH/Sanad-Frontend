@@ -13,7 +13,12 @@ interface Props {
   local: "en" | "ar";
 }
 
-export default function FilterBar({ categories, selected, onSelect, local }: Props) {
+export default function FilterBar({
+  categories,
+  selected,
+  onSelect,
+  local,
+}: Props) {
   const isRTL = local === "ar";
 
   return (
@@ -39,7 +44,7 @@ export default function FilterBar({ categories, selected, onSelect, local }: Pro
               <button
                 key={label}
                 onClick={() => onSelect(label)}
-                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+                className="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
                 style={{
                   minHeight: "44px",
                   backgroundColor: isActive ? "var(--primary)" : "transparent",
@@ -48,7 +53,8 @@ export default function FilterBar({ categories, selected, onSelect, local }: Pro
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.backgroundColor = "var(--surface-100)";
+                    e.currentTarget.style.backgroundColor =
+                      "var(--surface-100)";
                     e.currentTarget.style.borderColor = "var(--surface-300)";
                   }
                 }}

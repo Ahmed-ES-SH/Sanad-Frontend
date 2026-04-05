@@ -48,6 +48,11 @@
     "join": "ابدأ رحلتك الآن"
   },
 
+  "mobileSidebar": {
+    "closeMenu": "إغلاق القائمة",
+    "tagline": "رحلتك الرقمية تبدأ هنا"
+  },
+
   "aboutSection": {
     "sectionTitleSmall": "عن سند",
     "sectionTitleLarge": "شريكك الموثوق في رحلة الابتكار",
@@ -85,13 +90,70 @@
     "contactUs": "اتصل بنا",
     "description": "نحن هنا لمساعدتك والإجابة على أي استفسارات قد تكون لديك. تواصل معنا وسنرد عليك في أقرب وقت ممكن.",
     "messageLabel": "الرسالة",
-    "sendMessage": "إرسال الرسالة"
+    "sendMessage": "إرسال الرسالة",
+    "nameLabel": "الاسم",
+    "namePlaceholder": "أدخل اسمك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "أدخل رقم هاتفك",
+    "messagePlaceholder": "رسالتك",
+    "imageAlt": "خلفية الاتصال"
   },
 
   "footerLines": {
     "heading": "احصل على أحدث الأخبار!",
     "description": "تابع كل الأخبار والتحديثات الجديدة",
-    "subscribeButton": "اشترك"
+    "subscribeButton": "اشترك",
+    "emailPlaceholder": "example@email.com",
+    "sections": {
+      "services": {
+        "title": "الخدمات",
+        "links": {
+          "oneOnOneCoaching": "تدريب فردي",
+          "companyReview": "مراجعة الشركة",
+          "hrConsulting": "استشارات الموارد البشرية"
+        }
+      },
+      "company": {
+        "title": "الشركة",
+        "links": {
+          "about": "من نحن",
+          "meetTheTeam": "تعرف على الفريق",
+          "careers": "الوظائف"
+        }
+      },
+      "helpfulLinks": {
+        "title": "روابط مفيدة",
+        "links": {
+          "contact": "اتصل بنا",
+          "faqs": "الأسئلة الشائعة",
+          "liveChat": "الدردشة المباشرة"
+        }
+      },
+      "legal": {
+        "title": "القانونية",
+        "links": {
+          "accessibility": "سهولة الوصول",
+          "refundPolicy": "سياسة الاسترجاع",
+          "termsOfService": "شروط الخدمة"
+        }
+      },
+      "downloads": {
+        "title": "التحميلات",
+        "links": {
+          "marketingCalendar": "تقويم التسويق",
+          "seoInfographics": "مخططات تحسين محركات البحث",
+          "brochure": "كتيب تعريفي"
+        }
+      }
+    },
+    "socialMedia": {
+      "facebook": "فيسبوك",
+      "instagram": "انستغرام",
+      "twitter": "تويتر",
+      "linkedIn": "لينكد إن"
+    }
   },
 
   "aboutPage": {
@@ -101,7 +163,12 @@
     "about_us_title": "من نحن",
     "about_us_description": "شركة سند العربية للدعاية والإعلان هي شركة سعودية رائدة متخصصة في تقديم خدمات التسويق الرقمي والترويج التجاري على منصات التواصل الاجتماعي وتقديم الإعلانات الطرقية والتلفزيونية والإذاعية بالتعاون مع أكبر شركات الدعاية والإعلان في المملكة من خلال فريق متخصص لبناء استراتيجيات تسويقية متكاملة تضمن تطوير العلاقات التجارية والوصول إلى العميل المستهدف بجودة عالية ومتابعة وإعداد تقارير تسويقية بهدف التحسين والتطوير المستمر.",
     "creative_title": "نحن مبدعون في كل الأوقات",
-    "creative_description": "Pagedone ليست مجرد مجموعة من المكونات والإرشادات؛ إنها فلسفة. نحن نتجاوز الجماليات، ونعطي الأولوية لإمكانية الوصول، وقابلية التوسع، وسهولة الاستخدام. كل عنصر، من أدق التفاصيل إلى أضخم التصاميم، مصنوع بدقة لتعزيز الوظيفة ورفع مستوى رضا المستخدم."
+    "creative_description": "Pagedone ليست مجرد مجموعة من المكونات والإرشادات؛ إنها فلسفة. نحن نتجاوز الجماليات، ونعطي الأولوية لإمكانية الوصول، وقابلية التوسع، وسهولة الاستخدام. كل عنصر، من أدق التفاصيل إلى أضخم التصاميم، مصنوع بدقة لتعزيز الوظيفة ورفع مستوى رضا المستخدم.",
+    "aboutLabel": "من نحن — سند العربية",
+    "ourStory": "قصتنا",
+    "ourPhilosophy": "فلسفتنا",
+    "commitment": "التزام",
+    "support": "دعم"
   },
 
   "companyStats": {
@@ -271,7 +338,35 @@
     "SignIn": "تسجيل الدخول",
     "or": "أو",
     "title": "إنشاء حساب",
-    "subtitle": "انضم إلينا اليوم وابدأ الآن"
+    "subtitle": "انضم إلينا اليوم وابدأ الآن",
+    "formTitle": "أنشئ حسابك",
+    "formSubtitle": "ابدأ رحلتك مع سند",
+    "fullName": "الاسم الكامل",
+    "fullNamePlaceholder": "أحمد الراشد",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "ahmed@company.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "أنشئ كلمة مرور قوية",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+    "submit": "إنشاء حساب",
+    "orContinueWith": "أو تابع باستخدام",
+    "signIn": "تسجيل الدخول",
+    "passwordLength": "8 أحرف على الأقل",
+    "passwordLowercase": "حرف صغير",
+    "passwordUppercase": "حرف كبير",
+    "passwordNumber": "رقم",
+    "weak": "ضعيفة",
+    "fair": "مقبولة",
+    "good": "جيدة",
+    "strong": "قوية",
+    "passwordsMatch": "كلمات المرور متطابقة",
+    "google": "جوجل",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
+    "accountCreatedSuccess": "تم إنشاء الحساب بنجاح!",
+    "somethingWentWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "googleSignInComingSoon": "تسجيل الدخول بحساب جوجل قريبًا"
   },
 
   "signInPage": {

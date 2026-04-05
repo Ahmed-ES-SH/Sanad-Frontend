@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
-import LocalLink from "../../_global/LocalLink";
+import Link from "next/link";
 
 interface Props {
   local: "en" | "ar";
@@ -45,7 +45,7 @@ export default function PortfolioCTA({ local }: Props) {
               ? "دعنا نبني شيئًا رائعًا معًا. أخبرنا عن مشروعك وسنتواصل معك خلال 24 ساعة."
               : "Let us build something great together. Tell us about your project and we will get back to you within 24 hours."}
           </p>
-          <LocalLink
+          <Link
             href={`/${local}/contact`}
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-semibold transition-all duration-200"
             style={{
@@ -53,23 +53,23 @@ export default function PortfolioCTA({ local }: Props) {
               color: "white",
               boxShadow: "0 4px 16px rgba(249, 115, 22, 0.3)",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--gradient-primary-hover)";
-              e.currentTarget.style.boxShadow = "0 8px 24px rgba(249, 115, 22, 0.4)";
+            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+              e.currentTarget.style.background =
+                "var(--gradient-primary-hover)";
+              e.currentTarget.style.boxShadow =
+                "0 8px 24px rgba(249, 115, 22, 0.4)";
               e.currentTarget.style.transform = "translateY(-2px)";
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.background = "var(--gradient-primary)";
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(249, 115, 22, 0.3)";
+              e.currentTarget.style.boxShadow =
+                "0 4px 16px rgba(249, 115, 22, 0.3)";
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             {isRTL ? "ابدأ مشروعك" : "Start Your Project"}
-            <FiArrowRight
-              size={16}
-              className={isRTL ? "rotate-180" : ""}
-            />
-          </LocalLink>
+            <FiArrowRight size={16} className={isRTL ? "rotate-180" : ""} />
+          </Link>
         </div>
       </motion.div>
     </section>

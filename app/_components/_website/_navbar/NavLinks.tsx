@@ -14,21 +14,25 @@ export default function NavLinks() {
     <div className="links hidden lg:block">
       <ul className="flex items-center gap-8 text-white">
         {navLinks.map((link, index) => {
-          const isActive = pathname === `/${local}${link.link}` || (link.link === "/" && pathname === `/${local}`);
-          
+          const isActive =
+            pathname === `/${local}${link.link}` ||
+            (link.link === "/" && pathname === `/${local}`);
+
           return (
             <LocalLink
               href={link.link || "/#contactus"}
               key={index}
               className={`group text-[15px] xl:text-[16px] font-semibold transition-colors duration-200 relative py-1 ${
-                isActive ? "text-white" : "text-white/70 hover:text-white"
+                isActive ? "text-primary" : "text-black hover:text-primary"
               }`}
             >
               <p>{link.text[local]}</p>
-              
-              <div className={`absolute bottom-0 left-0 h-[2px] bg-primary-light transition-all duration-300 ${
-                isActive ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
+
+              <div
+                className={`absolute bottom-0 left-0 h-[2px] bg-primary-light transition-all duration-300 ${
+                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
             </LocalLink>
           );
         })}

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { redirect } from "next/navigation";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 import { getTranslations } from "@/app/helpers/helpers";
-import React from "react";
 import { portfolioData } from "@/app/constants/portfolioData";
+import ClientProject from "@/app/_components/_website/_portfolio/_projectPage/ClientProject";
 
 interface PageParams {
   params: Promise<{ local: string }>;
@@ -27,19 +25,12 @@ export async function generateMetadata({ params, searchParams }: PageParams) {
   }
 
   return {
-    title: `${project.title[local ?? "en"]} — Sanad`,
-    description: project.description[local ?? "en"],
+    title: `${project.title[local as "en" | "ar"]} — Sanad`,
+    description: project.description[local as "en" | "ar"],
     ...sharedMetadata,
   };
 }
 
-export default async function ProjectPage({ params, searchParams }: PageParams) {
-  const { local } = await params;
-  const { projectId } = await searchParams;
-
-  if (projectId) {
-    redirect(`/${local}/project?projectId=${projectId}`);
-  }
-
-  redirect(`/${local}/project`);
+export default function ProjectPage() {
+  return <ClientProject />;
 }

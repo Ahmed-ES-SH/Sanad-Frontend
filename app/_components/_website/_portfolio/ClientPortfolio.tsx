@@ -28,7 +28,7 @@ export default function ClientPortfolio() {
   return (
     <div
       dir={directionMap[local]}
-      className="min-h-dvh"
+      className="min-h-dvh mt-6"
       style={{ backgroundColor: "var(--surface-50)" }}
     >
       <PortfolioHero local={local} projectCount={portfolioData.length} />

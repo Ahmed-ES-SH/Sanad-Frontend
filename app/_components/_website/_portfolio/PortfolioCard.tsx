@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FiArrowUpRight } from "react-icons/fi";
 import Link from "next/link";
 import { useVariables } from "@/app/context/VariablesContext";
+import { formatTitle } from "@/app/helpers/helpers";
 
 interface Metric {
   value: string;
@@ -33,7 +34,11 @@ export default function PortfolioCard({ project, index, isHero }: Props) {
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5, delay: (index % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      transition={{
+        duration: 0.5,
+        delay: (index % 3) * 0.1,
+        ease: [0.16, 1, 0.3, 1],
+      }}
       className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${
         isHero ? "md:row-span-2" : ""
       }`}
@@ -43,7 +48,8 @@ export default function PortfolioCard({ project, index, isHero }: Props) {
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = "var(--surface-card-border-hover)";
-        e.currentTarget.style.boxShadow = "0 10px 15px rgba(15, 23, 42, 0.06), 0 4px 6px rgba(15, 23, 42, 0.04)";
+        e.currentTarget.style.boxShadow =
+          "0 10px 15px rgba(15, 23, 42, 0.06), 0 4px 6px rgba(15, 23, 42, 0.04)";
         e.currentTarget.style.transform = "translateY(-4px)";
       }}
       onMouseLeave={(e) => {
@@ -52,9 +58,14 @@ export default function PortfolioCard({ project, index, isHero }: Props) {
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      <Link href={`/${local}/project?projectId=${project.id}`} className="block">
+      <Link
+        href={`/${local}/portfolio/${formatTitle(project.title[local])}?projectId=${project.id}`}
+        className="block"
+      >
         {/* Image */}
-        <div className={`relative overflow-hidden ${isHero ? "aspect-[4/3] md:aspect-[4/5]" : "aspect-[16/10]"}`}>
+        <div
+          className={`relative overflow-hidden ${isHero ? "aspect-4/3 md:aspect-4/5" : "aspect-16/10"}`}
+        >
           <img
             src={project.imgSrc}
             alt={project.title[local]}

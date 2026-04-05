@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
 import { motion } from "framer-motion";
 import { PortfolioProject } from "@/app/constants/portfolioData";
+import Img from "../../_global/Img";
 
 interface Props {
   project: PortfolioProject;
@@ -10,7 +10,8 @@ interface Props {
 
 export default function ProjectHero({ project, local }: Props) {
   const isRTL = local === "ar";
-  const coverImage = project.spotlight?.coverImage || project.gallery?.[0] || project.imgSrc;
+  const coverImage =
+    project.spotlight?.coverImage || project.gallery?.[0] || project.imgSrc;
 
   return (
     <section className="pt-24 sm:pt-28">
@@ -22,9 +23,7 @@ export default function ProjectHero({ project, local }: Props) {
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="mb-5"
         >
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/8 text-primary"
-          >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/8 text-primary">
             <span
               className="w-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: "var(--primary)" }}
@@ -75,10 +74,10 @@ export default function ProjectHero({ project, local }: Props) {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="rounded-2xl overflow-hidden">
-            <img
+            <Img
               src={coverImage}
               alt={project.title[local]}
-              className="w-full aspect-[16/10] sm:aspect-[2/1] object-cover"
+              className="w-full aspect-16/10 sm:aspect-2/1 lg:aspect-[2.5/1] xl:aspect-3/1 object-cover"
             />
           </div>
         </motion.div>

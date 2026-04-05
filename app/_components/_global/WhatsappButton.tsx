@@ -12,9 +12,9 @@ export default function WhatsappButton() {
   return (
     <button
       onClick={handleWhatsAppClick}
-      className="z-[999999] flex group  w-12 h-12 hover items-center justify-center gap-2  fixed bottom-5 left-5 bg-green-500 text-white  rounded-full shadow-lg hover:bg-green-600 transition-all duration-300"
+      className="z-999999 flex group  size-10 lg:size-12 hover items-center justify-center gap-2  bg-green-500 text-white  rounded-full shadow-lg hover:bg-green-600 transition-all duration-300"
     >
-      <FaWhatsapp size={24} />
+      <FaWhatsapp className="size-6 " />
     </button>
   );
 }

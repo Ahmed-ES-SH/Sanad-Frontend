@@ -40,7 +40,12 @@ export default function ProjectCard({ project, local, index }: props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      transition={{ 
+        opacity: { duration: 0.3, delay: index * 0.05 },
+        y: { duration: 0.3, delay: index * 0.05 },
+        scale: { duration: 0.3 },
+        layout: { type: "spring", stiffness: 350, damping: 30 }
+      }}
       role="button"
       tabIndex={0}
       aria-label={`View project: ${project.title[local]}`}
@@ -99,7 +104,7 @@ export default function ProjectCard({ project, local, index }: props) {
       </div>
 
       {/* Project Content */}
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-5 flex flex-col grow">
         <div className="flex items-center mb-3">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider" style={{ backgroundColor: "var(--primary-100)", color: "var(--primary)" }}>
             {project.category[local]}
@@ -110,7 +115,7 @@ export default function ProjectCard({ project, local, index }: props) {
           {project.title[local]}
         </h3>
 
-        <p className="text-sm mb-4 line-clamp-2 leading-relaxed flex-grow" style={{ color: "var(--surface-500)" }}>
+        <p className="text-sm mb-4 line-clamp-2 leading-relaxed grow" style={{ color: "var(--surface-500)" }}>
           {project.description[local]}
         </p>
 

@@ -2,16 +2,18 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { FaQuoteLeft, FaQuoteRight, FaStar } from "react-icons/fa";
+import { directionMap } from "@/app/constants/constants";
+import { getTranslations } from "@/app/helpers/helpers";
+import { useVariables } from "@/app/context/VariablesContext";
+import { getTestimonials } from "./testimonials";
 
 // Swiper components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { directionMap } from "@/app/constants/constants";
-import { getTranslations } from "@/app/helpers/helpers";
-import { useVariables } from "@/app/context/VariablesContext";
 
 type Testimonial = {
   id: number;
@@ -25,13 +27,13 @@ type Testimonial = {
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <div className="flex justify-center mb-4">
+    <div className="flex items-center gap-1">
       {[...Array(5)].map((_, i) => (
         <FaStar
           key={i}
-          className="text-lg"
+          className="text-base drop-shadow-sm"
           style={{
-            color: i < rating ? "var(--accent-amber)" : "var(--surface-300)",
+            color: i < rating ? "var(--accent-amber)" : "var(--surface-200)",
           }}
         />
       ))}
@@ -48,69 +50,7 @@ export default function TestimonialsSection() {
     threshold: 0.1,
   });
 
-  const testimonials: Testimonial[] = [
-    {
-      id: 1,
-      name: local === "ar" ? "أحمد محمد" : "Ahmed Mohamed",
-      position: local === "ar" ? "مدير تقني" : "CTO",
-      company: local === "ar" ? "شركة التقنية المتقدمة" : "Advanced Tech Co.",
-      content:
-        local === "ar"
-          ? "تجربة رائعة مع فريق سند. لقد قاموا بتطوير موقعنا بمهنية عالية وفي الوقت المحدد. النتائج فاقت توقعاتنا."
-          : "An amazing experience with the Sanad team. They developed our website with high professionalism and on time. The results exceeded our expectations.",
-      rating: 5,
-      avatar: "AM",
-    },
-    {
-      id: 2,
-      name: local === "ar" ? "فاطمة علي" : "Fatima Ali",
-      position: local === "ar" ? "مديرة مشروع" : "Project Manager",
-      company: local === "ar" ? "مؤسسة الابتكار" : "Innovation Foundation",
-      content:
-        local === "ar"
-          ? "خدمة عملاء ممتازة ودعم فني متواصل. التطبيق الذي طوروه لنا ساعد في زيادة كفاءة العمل بشكل كبير."
-          : "Excellent customer service and continuous technical support. The application they developed for us helped significantly increase work efficiency.",
-      rating: 5,
-      avatar: "FA",
-    },
-    {
-      id: 3,
-      name: local === "ar" ? "محمد حسن" : "Mohammed Hassan",
-      position: local === "ar" ? "رئيس قسم التسويق" : "Head of Marketing",
-      company:
-        local === "ar" ? "شركة النهضة الرقمية" : "Digital Renaissance Co.",
-      content:
-        local === "ar"
-          ? "فريق محترف ومتخصص. ساعدونا في تحويل أفكارنا إلى واقع رقمي متميز. أنصح بهم بشدة."
-          : "A professional and specialized team. They helped us turn our ideas into an outstanding digital reality. I highly recommend them.",
-      rating: 5,
-      avatar: "MH",
-    },
-    {
-      id: 4,
-      name: local === "ar" ? "سارة أحمد" : "Sara Ahmed",
-      position: local === "ar" ? "مديرة عامة" : "General Manager",
-      company: local === "ar" ? "مجموعة الإبداع" : "Al-Ibdaa Group",
-      content:
-        local === "ar"
-          ? "تعاون مثمر وحلول مبتكرة. لقد حققنا نموًا ملحوظًا في أعمالنا بفضل الحلول التقنية التي قدموها."
-          : "Fruitful collaboration and innovative solutions. We achieved remarkable growth in our business thanks to the technical solutions they provided.",
-      rating: 4,
-      avatar: "SA",
-    },
-    {
-      id: 5,
-      name: local === "ar" ? "عمر خالد" : "Omar Khaled",
-      position: local === "ar" ? "مؤسس الشركة" : "Company Founder",
-      company: local === "ar" ? "ستارت أب تك" : "Startup Tech",
-      content:
-        local === "ar"
-          ? "شراكة ناجحة من البداية. فهموا احتياجاتنا بسرعة وقدموا حلولاً عملية وفعالة."
-          : "A successful partnership from the start. They quickly understood our needs and delivered practical, effective solutions.",
-      rating: 5,
-      avatar: "OK",
-    },
-  ];
+  const testimonials: Testimonial[] = getTestimonials(local);
 
   return (
     <>
@@ -175,57 +115,49 @@ export default function TestimonialsSection() {
               className="testimonials-swiper"
             >
               {testimonials.map((testimonial) => (
-                <SwiperSlide key={testimonial.id}>
-                  <div className="surface-card p-8 h-full flex flex-col">
-                    <div className="flex-1">
-                      <FaQuoteLeft
-                        className="text-2xl mb-4"
-                        style={{ color: "var(--primary-light)" }}
-                      />
+                <SwiperSlide key={testimonial.id} className="h-auto!">
+                  <div className="group relative surface-card h-full flex flex-col p-8 lg:p-10 z-10 hover:-translate-y-2 hover:shadow-surface-xl transition-all duration-300 overflow-hidden">
+                    {/* Big background quote */}
+                    <FaQuoteLeft className="absolute -top-6 -right-6 lg:-top-8 lg:-right-8 text-primary/5 text-8xl lg:text-[160px] transform rotate-[-10deg] pointer-events-none z-0 transition-transform duration-500 group-hover:scale-110" />
 
-                      <StarRating rating={testimonial.rating} />
-
-                      <p
-                        className="leading-relaxed mb-6 text-center"
-                        style={{ color: "var(--surface-700)" }}
-                      >
-                        {testimonial.content}
-                      </p>
-
-                      <FaQuoteRight
-                        className="text-2xl mb-6 ml-auto"
-                        style={{ color: "var(--primary-light)" }}
-                      />
-                    </div>
-
-                    <div
-                      className="pt-6 border-t"
-                      style={{ borderColor: "var(--surface-200)" }}
-                    >
-                      <div
-                        className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center font-bold text-lg text-white"
-                        style={{ background: "var(--gradient-primary)" }}
-                      >
-                        {testimonial.avatar}
+                    <div className="relative z-10 flex-1 flex flex-col">
+                      <div className="flex justify-between items-start mb-8 gap-4">
+                        <div className="flex gap-4 items-center">
+                          <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-primary/20 border-2 border-white bg-linear-to-br from-primary to-amber-500">
+                            {testimonial.avatar}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-lg leading-tight text-surface-900 group-hover:text-primary transition-colors">
+                              {testimonial.name}
+                            </h4>
+                            <p className="text-sm text-surface-500 line-clamp-1">
+                              {testimonial.position}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="hidden sm:block shrink-0">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-full inline-block">
+                            {testimonial.company}
+                          </span>
+                        </div>
                       </div>
-                      <h4
-                        className="font-bold text-lg text-center mb-1"
-                        style={{ color: "var(--surface-900)" }}
-                      >
-                        {testimonial.name}
-                      </h4>
-                      <p
-                        className="text-sm text-center mb-1"
-                        style={{ color: "var(--surface-500)" }}
-                      >
-                        {testimonial.position}
-                      </p>
-                      <p
-                        className="text-sm font-medium text-center"
-                        style={{ color: "var(--primary)" }}
-                      >
-                        {testimonial.company}
-                      </p>
+
+                      <div className="mb-8 flex-1 relative">
+                        <p className="text-lg lg:text-xl font-display font-medium text-surface-800 leading-snug italic line-clamp-5 relative z-10">
+                          "{testimonial.content}"
+                        </p>
+                      </div>
+
+                      <div className="mt-auto pt-6 border-t border-surface-100 flex items-center justify-between">
+                        <div className="sm:hidden block">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-full inline-block">
+                            {testimonial.company}
+                          </span>
+                        </div>
+                        <div className="ml-auto">
+                          <StarRating rating={testimonial.rating} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>

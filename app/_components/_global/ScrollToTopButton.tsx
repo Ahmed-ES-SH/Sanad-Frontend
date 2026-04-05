@@ -30,13 +30,13 @@ export default function ScrollToTopButton() {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-5 right-5 flex items-center justify-center w-12 h-12 hover:bg-primary-blue  hover:scale-110  bg-blue-500 text-white  rounded-full shadow-lg duration-300 ${
+      className={`flex items-center justify-center size-10 lg:size-12 hover:bg-primary-blue  hover:scale-110  bg-primary text-white  rounded-full shadow-lg duration-300 ${
         isVisible
           ? "opacity-100 flex"
           : "opacity-0 pointer-events-none invisible"
       }`}
     >
-      <FaChevronUp className="size-7 font-thin" />
+      <FaChevronUp className="size-6 font-thin" />
     </button>
   );
 }

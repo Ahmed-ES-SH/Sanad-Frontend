@@ -7,8 +7,7 @@ import { getTranslations } from "./helpers/helpers";
 import { getSharedMetadata } from "./helpers/getSharedMetadata";
 import Navbar from "./_components/_global/Navbar";
 import Footer from "./_components/_global/Footer";
-import WhatsappButton from "./_components/_global/WhatsappButton";
-import ScrollToTopButton from "./_components/_global/ScrollToTopButton";
+import FixedButtons from "./_components/_global/FixedButtons";
 import "./globals.css";
 
 const inter = Inter({
@@ -44,7 +43,7 @@ export default async function RootLayout({ params, children }: any) {
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1000] focus:px-6 focus:py-3 focus:bg-primary focus:text-white focus:rounded-xl focus:shadow-2xl"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-1000 focus:px-6 focus:py-3 focus:bg-primary focus:text-white focus:rounded-xl focus:shadow-2xl"
         >
           Skip to main content
         </a>
@@ -53,8 +52,7 @@ export default async function RootLayout({ params, children }: any) {
           <Toaster richColors position="top-center" />
           <div className="min-h-screen">
             {children}
-            <WhatsappButton />
-            <ScrollToTopButton />
+            <FixedButtons />
           </div>
           <Footer />
         </ClientLayout>

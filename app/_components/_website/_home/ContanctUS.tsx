@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, Variants } from "framer-motion";
 import {
   FaUserAlt,
   FaEnvelope,
@@ -12,46 +12,47 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 
+//////////////////////////////////////////////////////
+///////  Form field configuration with icon components.
+///////  Labels and placeholders come from translations.
+//////////////////////////////////////////////////////
+const fieldIcons = [
+  { id: "name", type: "text" as const, icon: <FaUserAlt /> },
+  { id: "email", type: "email" as const, icon: <FaEnvelope /> },
+  { id: "phone", type: "tel" as const, icon: <FaPhone /> },
+];
+
 export default function ContactUS() {
   const { local } = useVariables();
   const { contactusSection } = getTranslations(local);
   const shouldReduceMotion = useReducedMotion();
   const isRTL = local === "ar";
 
-  const inputVariants = {
+  const inputVariants: Variants = {
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.08, duration: 0.5, ease: "easeOut" },
+      transition: { delay: i * 0.08, duration: 0.5, ease: "easeOut" as const },
     }),
   };
 
-  const fields = [
-    { id: "name", type: "text", placeholder: "Name", icon: <FaUserAlt /> },
-    {
-      id: "email",
-      type: "email",
-      placeholder: "Email address",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: "phone",
-      type: "tel",
-      placeholder: "Phone Number",
-      icon: <FaPhone />,
-    },
-  ];
-
   return (
-    <section id="contactus" dir={directionMap[local]} className="page-bg relative py-16 lg:py-24">
+    <section
+      id="contactus"
+      dir={directionMap[local]}
+      className="page-bg relative py-16 lg:py-24"
+    >
       {/* Decorative Orbs */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
-      
+
       <div className="c-container">
         <div className="max-w-2xl mb-12">
           <motion.h2
-            initial={{ opacity: 0, x: shouldReduceMotion ? 0 : (isRTL ? 30 : -30) }}
+            initial={{
+              opacity: 0,
+              x: shouldReduceMotion ? 0 : isRTL ? 30 : -30,
+            }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -76,11 +77,11 @@ export default function ContactUS() {
           <div className="lg:col-span-2 relative overflow-hidden h-[300px] lg:h-auto">
             <Img
               src="/contact-bg.jpg"
-              alt="Contact Background"
-              className="w-full h-full object-cover grayscale-[20%] brightness-90 group-hover:scale-105 transition-transform duration-700"
+              alt={contactusSection.imageAlt}
+              className="w-full h-full object-cover grayscale-20 brightness-90 group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-900/60 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-surface-900/60 to-transparent" />
           </div>
 
           {/* Form Section */}
@@ -95,15 +96,18 @@ export default function ContactUS() {
                 viewport={{ once: true }}
                 className="space-y-2"
               >
-                <label className="text-sm font-semibold text-surface-700 ms-1" htmlFor="name">
-                  {local === "ar" ? "الاسم" : "Name"}
+                <label
+                  className="text-sm font-semibold text-surface-700 ms-1"
+                  htmlFor="name"
+                >
+                  {contactusSection.nameLabel}
                 </label>
                 <div className="flex items-center surface-input group focus-within:ring-2 focus-within:ring-primary/20">
                   <FaUserAlt className="text-surface-400 me-3 text-lg transition-colors group-focus-within:text-primary" />
                   <input
                     id="name"
                     type="text"
-                    placeholder={local === "ar" ? "أدخل اسمك" : "Enter your name"}
+                    placeholder={contactusSection.namePlaceholder}
                     className="w-full bg-transparent text-sm outline-none text-surface-900 placeholder:text-surface-400 h-10"
                     required
                   />
@@ -112,35 +116,48 @@ export default function ContactUS() {
 
               {/* Email & Phone Fields Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {fields
+                {fieldIcons
                   .filter((f) => f.id !== "name")
-                  .map(({ id, type, placeholder, icon }, i) => (
-                    <motion.div
-                      key={id}
-                      custom={i + 1}
-                      variants={inputVariants}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      className="space-y-2"
-                    >
-                      <label className="text-sm font-semibold text-surface-700 ms-1" htmlFor={id}>
-                        {placeholder}
-                      </label>
-                      <div className="flex items-center surface-input group focus-within:ring-2 focus-within:ring-primary/20">
-                        {React.cloneElement(icon as React.ReactElement, {
-                          className: "text-surface-400 me-3 text-lg transition-colors group-focus-within:text-primary",
-                        })}
-                        <input
-                          id={id}
-                          type={type}
-                          placeholder={placeholder}
-                          className="w-full bg-transparent text-sm outline-none text-surface-900 placeholder:text-surface-400 h-10"
-                          required
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
+                  .map(({ id, type, icon }, i) => {
+                    const labelKey =
+                      `${id}Label` as keyof typeof contactusSection;
+                    const placeholderKey =
+                      `${id}Placeholder` as keyof typeof contactusSection;
+
+                    return (
+                      <motion.div
+                        key={id}
+                        custom={i + 1}
+                        variants={inputVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="space-y-2"
+                      >
+                        <label
+                          className="text-sm font-semibold text-surface-700 ms-1"
+                          htmlFor={id}
+                        >
+                          {contactusSection[labelKey] as string}
+                        </label>
+                        <div className="flex items-center surface-input group focus-within:ring-2 focus-within:ring-primary/20">
+                          {React.cloneElement(icon, {
+                            className:
+                              "text-surface-400 me-3 text-lg transition-colors group-focus-within:text-primary",
+                          } as React.ComponentProps<typeof FaEnvelope>)}
+                          <input
+                            id={id}
+                            type={type}
+                            placeholder={
+                              contactusSection[placeholderKey] as string
+                            }
+                            className="w-full bg-transparent text-sm outline-none text-surface-900 placeholder:text-surface-400 h-10"
+                            required
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
               </div>
 
               {/* Message Field */}
@@ -152,14 +169,17 @@ export default function ContactUS() {
                 viewport={{ once: true }}
                 className="space-y-2"
               >
-                <label className="text-sm font-semibold text-surface-700 ms-1" htmlFor="message">
+                <label
+                  className="text-sm font-semibold text-surface-700 ms-1"
+                  htmlFor="message"
+                >
                   {contactusSection.messageLabel}
                 </label>
                 <div className="flex items-start surface-input group focus-within:ring-2 focus-within:ring-primary/20 pt-4">
                   <FaRegCommentDots className="text-surface-400 me-3 mt-1 text-lg transition-colors group-focus-within:text-primary" />
                   <textarea
                     id="message"
-                    placeholder={local === "ar" ? "رسالتك" : "Your message"}
+                    placeholder={contactusSection.messagePlaceholder}
                     className="w-full h-32 bg-transparent text-sm resize-none outline-none text-surface-900 placeholder:text-surface-400"
                     required
                   ></textarea>

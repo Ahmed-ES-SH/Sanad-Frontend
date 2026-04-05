@@ -18,13 +18,13 @@ export default function AboutComponent() {
     >
       <div className="c-container">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="surface-card-elevated p-4 relative">
+          <div className="bg-white/70 backdrop-blur-md p-4 relative">
             <Img
-              src="/Sanad-hero-2.png"
-              className="w-full rounded-xl object-cover shadow-lg"
+              src="/about-1.png"
+              className="w-full rounded-xl object-cover"
             />
             {/* Subtle glow behind image */}
-            <div className="absolute -inset-2 bg-primary/5 blur-xl -z-10 rounded-2xl" />
+            <div className="absolute -inset-2 bg-primary/25 blur-xl -z-10 rounded-full" />
           </div>
 
           <div className="space-y-6">

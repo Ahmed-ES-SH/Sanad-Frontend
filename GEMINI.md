@@ -33,7 +33,7 @@ The Sanad brand is defined by three core pillars:
 - **Styling**: Tailwind CSS 4 (using CSS-based configuration in `globals.css`)
 - **Animations**: Framer Motion
 - **State Management**: Zustand
-- **Auth**: Clerk
+- **Auth**: Deal with Backend Auth
 - **Internationalization**: Custom `[local]` routing with `ar` and `en` translations.
 
 ### Conventions

@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -74,7 +73,9 @@ export default function PortfolioHero({ local, projectCount }: Props) {
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: "var(--primary)" }}
               />
-              {isRTL ? `${projectCount} مشروع مُنجز` : `${projectCount} projects delivered`}
+              {isRTL
+                ? `${projectCount} مشروع مُنجز`
+                : `${projectCount} projects delivered`}
             </div>
           </motion.div>
         </div>

@@ -48,6 +48,11 @@
     "join": "Start Your Journey"
   },
 
+  "mobileSidebar": {
+    "closeMenu": "Close menu",
+    "tagline": "Your digital journey starts here"
+  },
+
   "aboutSection": {
     "sectionTitleSmall": "About Sanad",
     "sectionTitleLarge": "Your Trusted Partner in Growth",
@@ -85,13 +90,70 @@
     "contactUs": "Contact us",
     "description": "We are here to help and answer any questions you might have. Reach out to us and we'll respond as soon as we can.",
     "messageLabel": "Message",
-    "sendMessage": "Send Message"
+    "sendMessage": "Send Message",
+    "nameLabel": "Name",
+    "namePlaceholder": "Enter your name",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "messagePlaceholder": "Your message",
+    "imageAlt": "Contact Background"
   },
 
   "footerLines": {
     "heading": "Get the latest news!",
     "description": "Stay up to date with all the latest news",
-    "subscribeButton": "Subscribe"
+    "subscribeButton": "Subscribe",
+    "emailPlaceholder": "john@rhcp.com",
+    "sections": {
+      "services": {
+        "title": "Services",
+        "links": {
+          "oneOnOneCoaching": "1on1 Coaching",
+          "companyReview": "Company Review",
+          "hrConsulting": "HR Consulting"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "links": {
+          "about": "About",
+          "meetTheTeam": "Meet the Team",
+          "careers": "Careers"
+        }
+      },
+      "helpfulLinks": {
+        "title": "Helpful Links",
+        "links": {
+          "contact": "Contact",
+          "faqs": "FAQs",
+          "liveChat": "Live Chat"
+        }
+      },
+      "legal": {
+        "title": "Legal",
+        "links": {
+          "accessibility": "Accessibility",
+          "refundPolicy": "Refund Policy",
+          "termsOfService": "Terms of Service"
+        }
+      },
+      "downloads": {
+        "title": "Downloads",
+        "links": {
+          "marketingCalendar": "Marketing Calendar",
+          "seoInfographics": "SEO Infographics",
+          "brochure": "Brochure"
+        }
+      }
+    },
+    "socialMedia": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "linkedIn": "LinkedIn"
+    }
   },
 
   "aboutPage": {
@@ -101,7 +163,12 @@
     "about_us_title": "About Us",
     "about_us_description": "Sanad Arabia Advertising and Publicity Company is a leading Saudi company specialized in providing digital marketing services and commercial promotion on social media platforms and providing road, television and radio advertising in cooperation with the largest advertising and publicity companies in the Kingdom through a dedicated team to build integrated marketing strategies that ensure the development of commercial relations and reaching your target customer with high quality and following up and preparing marketing reports with the aim of continuous improvement and development",
     "creative_title": "We are Creative Everytime",
-    "creative_description": "Pagedone isn’t just a collection of components and guidelines; it's a philosophy. We go beyond aesthetics, prioritizing accessibility, scalability, and usability. Every element, from the tiniest detail to the grandest layout, is meticulously crafted to enhance functionality and elevate user satisfaction."
+    "creative_description": "Pagedone isn't just a collection of components and guidelines; it's a philosophy. We go beyond aesthetics, prioritizing accessibility, scalability, and usability. Every element, from the tiniest detail to the grandest layout, is meticulously crafted to enhance functionality and elevate user satisfaction.",
+    "aboutLabel": "ABOUT US — Sanad ARABIA",
+    "ourStory": "OUR STORY",
+    "ourPhilosophy": "OUR PHILOSOPHY",
+    "commitment": "COMMITMENT",
+    "support": "SUPPORT"
   },
 
   "companyStats": {
@@ -118,7 +185,54 @@
 
   "testimonialsSection": {
     "title": "What Our Clients Say",
-    "description": "What our clients say about their experience with us"
+    "description": "What our clients say about their experience with us",
+    "testimonials": [
+      {
+        "id": 1,
+        "name": "Ahmed Mohamed",
+        "position": "CTO",
+        "company": "Advanced Tech Co.",
+        "content": "An amazing experience with the Sanad team. They developed our website with high professionalism and on time. The results exceeded our expectations.",
+        "rating": 5,
+        "avatar": "AM"
+      },
+      {
+        "id": 2,
+        "name": "Fatima Ali",
+        "position": "Project Manager",
+        "company": "Innovation Foundation",
+        "content": "Excellent customer service and continuous technical support. The application they developed for us helped significantly increase work efficiency.",
+        "rating": 5,
+        "avatar": "FA"
+      },
+      {
+        "id": 3,
+        "name": "Mohammed Hassan",
+        "position": "Head of Marketing",
+        "company": "Digital Renaissance Co.",
+        "content": "A professional and specialized team. They helped us turn our ideas into an outstanding digital reality. I highly recommend them.",
+        "rating": 5,
+        "avatar": "MH"
+      },
+      {
+        "id": 4,
+        "name": "Sara Ahmed",
+        "position": "General Manager",
+        "company": "Al-Ibdaa Group",
+        "content": "Fruitful collaboration and innovative solutions. We achieved remarkable growth in our business thanks to the technical solutions they provided.",
+        "rating": 4,
+        "avatar": "SA"
+      },
+      {
+        "id": 5,
+        "name": "Omar Khaled",
+        "position": "Company Founder",
+        "company": "Startup Tech",
+        "content": "A successful partnership from the start. They quickly understood our needs and delivered practical, effective solutions.",
+        "rating": 5,
+        "avatar": "OK"
+      }
+    ]
   },
 
   "servicesPage": {
@@ -271,7 +385,35 @@
     "SignIn": " Sign in",
     "or": "Or",
     "title": "Create Account",
-    "subtitle": "Join us today and get started"
+    "subtitle": "Join us today and get started",
+    "formTitle": "Create your account",
+    "formSubtitle": "Start your journey with Sanad",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Ahmed Al-Rashid",
+    "email": "Email",
+    "emailPlaceholder": "ahmed@company.com",
+    "password": "Password",
+    "passwordPlaceholder": "Create a strong password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "submit": "Create Account",
+    "orContinueWith": "or continue with",
+    "signIn": "Sign in",
+    "passwordLength": "At least 8 characters",
+    "passwordLowercase": "Lowercase letter",
+    "passwordUppercase": "Uppercase letter",
+    "passwordNumber": "Number",
+    "weak": "Weak",
+    "fair": "Fair",
+    "good": "Good",
+    "strong": "Strong",
+    "passwordsMatch": "Passwords match",
+    "google": "Google",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "accountCreatedSuccess": "Account created successfully!",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "googleSignInComingSoon": "Google sign-in coming soon"
   },
 
   "signInPage": {

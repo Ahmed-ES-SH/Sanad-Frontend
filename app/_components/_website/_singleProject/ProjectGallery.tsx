@@ -65,14 +65,14 @@ export default function ProjectGallery({ project, local }: Props) {
           aria-label={`${isRTL ? "عرض الصورة 1" : "View image 1"}`}
         >
           {imageErrors[0] ? (
-            <div className="w-full aspect-[16/10] flex items-center justify-center">
+            <div className="w-full aspect-16/10 flex items-center justify-center">
               <FiImage className="w-12 h-12 text-surface-400" />
             </div>
           ) : (
             <img
               src={images[0]}
               alt={`${project.title[local]} — ${isRTL ? "صورة 1" : "Image 1"}`}
-              className="w-full aspect-[16/10] object-cover transition-transform duration-700 group-hover:scale-[1.01]"
+              className="w-full aspect-16/10 lg:aspect-2.4/1 object-cover transition-transform duration-700 group-hover:scale-[1.01]"
               onError={() => handleImageError(0)}
             />
           )}
@@ -93,14 +93,14 @@ export default function ProjectGallery({ project, local }: Props) {
                   aria-label={`${isRTL ? `عرض الصورة ${globalIndex + 1}` : `View image ${globalIndex + 1}`}`}
                 >
                   {imageErrors[globalIndex] ? (
-                    <div className="w-full aspect-[3/2] flex items-center justify-center">
+                    <div className="w-full aspect-3/2 flex items-center justify-center">
                       <FiImage className="w-10 h-10 text-surface-400" />
                     </div>
                   ) : (
                     <img
                       src={img}
                       alt={`${project.title[local]} — ${isRTL ? `صورة ${globalIndex + 1}` : `Image ${globalIndex + 1}`}`}
-                      className="w-full aspect-[3/2] object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                      className="w-full aspect-3/2 lg:aspect-video object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                       onError={() => handleImageError(globalIndex)}
                     />
                   )}
@@ -154,7 +154,7 @@ export default function ProjectGallery({ project, local }: Props) {
             )}
 
             {imageErrors[lightboxIndex] ? (
-              <div className="w-full max-w-3xl aspect-[4/3] bg-surface-800 flex items-center justify-center rounded-lg">
+              <div className="w-full max-w-3xl aspect-4/3 bg-surface-800 flex items-center justify-center rounded-lg">
                 <FiImage className="w-16 h-16 text-surface-600" />
               </div>
             ) : (

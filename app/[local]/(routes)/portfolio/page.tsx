@@ -1,6 +1,6 @@
+import ClientPortfolio from "@/app/_components/_website/_portfolio/ClientPortfolio";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 import { getTranslations } from "@/app/helpers/helpers";
-import ClientPortfolio from "./ClientPortfolio";
 
 interface PageParams {
   params: Promise<{ local: string }>;

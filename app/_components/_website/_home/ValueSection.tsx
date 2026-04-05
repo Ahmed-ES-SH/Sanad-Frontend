@@ -49,7 +49,7 @@ export default function ValueSection() {
             <div className="relative group">
               <div className="absolute -inset-4 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-colors duration-500" />
               <Img
-                src="/Sanad-hero-3.png"
+                src="/about-2.png"
                 className="w-full max-w-[580px] object-contain drop-shadow-[0_20px_50px_rgba(99,102,241,0.3)] transform group-hover:scale-105 transition-transform duration-700"
               />
             </div>

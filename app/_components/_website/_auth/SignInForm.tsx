@@ -82,8 +82,6 @@ export default function SignInForm() {
         <FormHeader title={signInPage.title} subtitle={signInPage.subtitle} />
 
         <form onSubmit={handleSignIn} className="w-full">
-          <div className="hidden" id="clerk-captcha" />
-
           <SignInFields
             locale={local}
             formData={formData}

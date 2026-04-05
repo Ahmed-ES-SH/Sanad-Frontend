@@ -10,13 +10,13 @@ import LocalLink from "./LocalLink";
 export default function Navbar() {
   return (
     <ClientDiv>
-      <header className="w-full h-20 fixed top-0 left-0 z-[999] transition-all duration-300 bg-primary/80 backdrop-blur-sm">
+      <header className="w-full h-20 fixed top-0 left-0 z-999 transition-all border-b border-gray-100 shadow-sm duration-300 bg-white/80 backdrop-blur-sm">
         <div className="c-container h-full flex items-center justify-between">
           <div className="logo relative">
             <LocalLink href={"/"}>
               <Img
-                src="/logo.webp"
-                className="w-32 object-contain transition-transform duration-300 hover:scale-105"
+                src="/sanad-logo.png"
+                className="lg:w-16 w-12 object-contain transition-transform duration-300 hover:scale-105"
               />
             </LocalLink>
           </div>
