@@ -16,6 +16,7 @@ interface InputFieldProps {
   showPasswordToggle?: boolean;
   onTogglePassword?: () => void;
   showPassword?: boolean;
+  autoComplete?: string;
 }
 
 function InputField(props: InputFieldProps) {
@@ -31,21 +32,26 @@ function InputField(props: InputFieldProps) {
     showPasswordToggle,
     onTogglePassword,
     showPassword,
+    autoComplete,
   } = props;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-2"
-    >
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
-        {label}
-      </label>
+    <div className="space-y-1.5">
+      {label && (
+        <label
+          htmlFor={name}
+          className="block text-sm font-medium"
+          style={{ color: "var(--surface-700)" }}
+        >
+          {label}
+        </label>
+      )}
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <span className="text-gray-400">{icon}</span>
+        <div
+          className="absolute inset-y-0 start-0 ps-3 flex items-center pointer-events-none"
+          style={{ color: "var(--surface-400)" }}
+        >
+          {icon}
         </div>
         <input
           id={name}
@@ -56,11 +62,25 @@ function InputField(props: InputFieldProps) {
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`block w-full pl-10 pr-12 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-            error
-              ? "border-red-300 bg-red-50"
-              : "border-gray-300 bg-white hover:border-gray-400"
-          }`}
+          autoComplete={autoComplete}
+          className="block w-full ps-10 pe-12 py-2.5 rounded-lg shadow-sm transition-all duration-200 placeholder-[color:var(--surface-400)]"
+          style={{
+            backgroundColor: "var(--surface-input-bg)",
+            borderColor: error ? "var(--accent-rose)" : "var(--surface-input-border)",
+            color: "var(--surface-900)",
+          }}
+          onFocus={(e) => {
+            if (!error) {
+              e.target.style.borderColor = "var(--primary)";
+              e.target.style.boxShadow = "0 0 0 3px rgba(249, 115, 22, 0.15)";
+            }
+          }}
+          onBlur={(e) => {
+            if (!error) {
+              e.target.style.borderColor = "var(--surface-input-border)";
+              e.target.style.boxShadow = "none";
+            }
+          }}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${name}-error` : undefined}
         />
@@ -68,12 +88,17 @@ function InputField(props: InputFieldProps) {
           <button
             type="button"
             onClick={onTogglePassword}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            className="absolute inset-y-0 end-0 pe-3 flex items-center transition-colors duration-150"
+            style={{ color: "var(--surface-400)" }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "var(--surface-600)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color = "var(--surface-400)")
+            }
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            <span className="text-gray-400 hover:text-gray-600 transition-colors">
-              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-            </span>
+            {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
           </button>
         )}
       </div>
@@ -83,7 +108,8 @@ function InputField(props: InputFieldProps) {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center space-x-2 text-red-600 text-sm"
+          className="flex items-center gap-1.5 text-sm"
+          style={{ color: "var(--accent-rose)" }}
           id={`${name}-error`}
           role="alert"
         >
@@ -91,7 +117,7 @@ function InputField(props: InputFieldProps) {
           <span>{error}</span>
         </motion.div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

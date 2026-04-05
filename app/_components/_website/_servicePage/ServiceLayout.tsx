@@ -1,95 +1,90 @@
 "use client";
 import React from "react";
-import ServiceHeader from "./ServiceHeader";
-import ServiceDescription from "./ServiceDescription";
-import BenefitsList from "./BenefitsList";
-import FeaturesList from "./FeaturesList";
-import TargetAudience from "./TargetAudience";
-import OtherServicesSidebar from "./OtherServicesSidebar";
 import { servicesData } from "@/app/constants/servicesData";
-import { notFound, useSearchParams } from "next/navigation";
-import ProjectsOfSlider from "../_projectPage/SliderOfProjects";
-import { projectsData } from "@/app/constants/projects";
+import { useSearchParams } from "next/navigation";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
-import ActionButtons from "./ActionButtons";
+import { motion } from "framer-motion";
+import ServiceHero from "./ServiceHero";
+import ServiceAbout from "./ServiceAbout";
+import ServiceProcess from "./ServiceProcess";
+import ServiceFAQ from "./ServiceFAQ";
+import ServiceOrderCTA from "./ServiceOrderCTA";
+import RelatedServices from "./RelatedServices";
+import { projectsData } from "@/app/constants/projects";
 
 export default function ServiceLayout() {
   const { local } = useVariables();
-  const { ProjectPage } = getTranslations(local);
-
-  const isArabic = local == "ar";
+  const { ProjectPage, servicePage } = getTranslations(local);
+  const isArabic = local === "ar";
   const searchParams = useSearchParams();
-
   const serviceId = searchParams.get("serviceId");
   const service =
-    servicesData.find((service) => service.id == Number(serviceId)) ||
+    servicesData.find((service) => service.id === Number(serviceId)) ||
     servicesData[0];
 
-  const otherServices = servicesData;
-
-  if (!service) {
-    return notFound();
-  }
-
   return (
-    <div dir={directionMap[local]} className="min-h-screen pt-20 bg-gray-50">
-      <div className="c-container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-2/3">
-            <ServiceHeader
-              local={local}
-              title={service.title}
-              image={service.fullImage}
-            />
+    <div dir={directionMap[local]} className="min-h-screen mt-12 max-md:mt-20">
+      <ServiceHero
+        title={service.title}
+        smallDesc={service.smallDesc}
+        image={service.fullImage}
+        category={service.category}
+        stats={service.stats}
+      />
 
-            <div className="space-y-8 mt-8">
-              <ServiceDescription
-                local={local}
-                smallDesc={service.smallDesc}
-                description={service.description}
-              />
+      <ServiceAbout
+        description={service.description}
+        benefits={service.benefits}
+        targetAudience={service.targetAudience}
+        local={local}
+        translations={servicePage}
+      />
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <BenefitsList local={local} benefits={service.benefits} />
-                <FeaturesList local={local} features={service.features} />
-              </div>
+      <ServiceProcess
+        steps={service.processSteps}
+        local={local}
+        translations={servicePage}
+      />
 
-              <TargetAudience local={local} audience={service.targetAudience} />
+      <ServiceFAQ faq={service.faq} local={local} translations={servicePage} />
 
-              <ActionButtons local={local} />
-            </div>
-          </div>
+      <ServiceOrderCTA
+        packages={service.packages}
+        local={local}
+        translations={servicePage}
+        serviceTitle={service.title}
+      />
 
-          <div className="lg:w-1/3">
-            <OtherServicesSidebar
-              services={otherServices}
-              currentServiceSlug={service.slug}
-            />
-          </div>
-        </div>
-        <div className="my-4 pt-4 border-t border-gray-300">
-          <div
-            className={`text-center mb-8 ${
-              isArabic ? "text-right" : "text-left"
-            }`}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <RelatedServices
+        currentServiceId={service.id}
+        currentCategory={service.category}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="c-container mx-auto px-4 py-16 md:py-24"
+      >
+        <div className="surface-card-elevated p-6 md:p-10">
+          <div className="text-center mb-10">
+            <h2 className="display-sm text-surface-900 font-display mb-3">
               {ProjectPage.allProjects}
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="body-lg text-surface-500 max-w-2xl mx-auto">
               {ProjectPage.exploreProjects}
             </p>
           </div>
-
-          <ProjectsOfSlider
+          {/* <ProjectsOfSlider
             projects={projectsData}
             language={local}
             isArabic={isArabic}
-          />
+          /> */}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

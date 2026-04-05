@@ -1,26 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import ProjectsPortfolio from "@/app/_components/_website/_portfolio/ProjectsPortfolio";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 import { getTranslations } from "@/app/helpers/helpers";
-import React from "react";
+import ClientPortfolio from "./ClientPortfolio";
 
-export async function generateMetadata({ params }: any) {
+interface PageParams {
+  params: Promise<{ local: string }>;
+}
+
+export async function generateMetadata({ params }: PageParams) {
   const { local } = await params;
   const translations = getTranslations(local ?? "en");
 
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
-    title: translations.portfolioMeta.title,
-    description: translations.portfolioMeta.description,
+    title: translations.portfolioMeta?.title || "Our Portfolio — Sanad",
+    description:
+      translations.portfolioMeta?.description ||
+      "Explore our delivered projects across web, mobile, branding, and more.",
     ...sharedMetadata,
   };
 }
 
 export default function Portfolio() {
-  return (
-    <>
-      <ProjectsPortfolio />
-    </>
-  );
+  return <ClientPortfolio />;
 }

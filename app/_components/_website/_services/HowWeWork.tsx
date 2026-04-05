@@ -1,203 +1,126 @@
 "use client";
 import React from "react";
-import { easeOut, motion } from "framer-motion";
-import { FiTarget, FiSettings, FiTrendingUp } from "react-icons/fi";
-import Img from "../../_global/Img";
+import { motion } from "framer-motion";
+import { FiTarget, FiSettings, FiTrendingUp, FiArrowRight } from "react-icons/fi";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 
-interface WorkStep {
-  number: string;
-  title: { en: string; ar: string };
-  description: { en: string; ar: string };
-  icon: React.ReactNode;
-}
-
 export default function HowWeWork() {
   const { local } = useVariables();
   const { howWeWork } = getTranslations(local);
+  const isRTL = local === "ar";
 
-  const workSteps: WorkStep[] = [
+  const steps = [
     {
-      number: "1",
-      title: {
-        en: "Understand Your Needs",
-        ar: "فهم احتياجاتك",
-      },
-      description: {
-        en: "We begin every project by carefully understanding your unique business goals, challenges, and audience. This deep discovery process ensures we create a solution that's not only relevant but also built around your specific needs and expectations.",
-        ar: "نبدأ كل مشروع بفهم دقيق لأهدافك التجارية الفريدة، وتحدياتك، وجمهورك المستهدف. تضمن هذه المرحلة من الاكتشاف العميق إنشاء حل مناسب ومصمم خصيصًا لتلبية احتياجاتك وتوقعاتك.",
-      },
-      icon: <FiTarget className="w-8 h-8 text-primary-blue" />,
+      num: "01",
+      icon: <FiTarget />,
+      title: { en: "Business Discovery", ar: "اكتشاف الأعمال" },
+      desc: { en: "We map your current infrastructure to identify bottlenecks and transformation opportunities.", ar: "نقوم برسم بنية تحتية عملك الحالية لتحديد العقبات وفرص التحول." }
     },
     {
-      number: "2",
-      title: {
-        en: "Design Tailored Solutions",
-        ar: "تصميم حلول مخصصة",
-      },
-      description: {
-        en: "Our team transforms insights into strategic, creative, and scalable solutions. Every element is customized to align with your vision, ensuring the final product is both impactful and functional—designed to solve real problems and deliver measurable results.",
-        ar: "يقوم فريقنا بتحويل الرؤى إلى حلول استراتيجية وإبداعية وقابلة للتوسع. يتم تخصيص كل عنصر ليتماشى مع رؤيتك، مما يضمن أن يكون المنتج النهائي مؤثرًا وفعالًا، ومصممًا لحل المشكلات الحقيقية وتحقيق نتائج قابلة للقياس.",
-      },
-      icon: <FiSettings className="w-8 h-8 text-primary-blue" />,
+      num: "02",
+      icon: <FiSettings />,
+      title: { en: "Technical Blueprint", ar: "المخطط التقني" },
+      desc: { en: "Designing a scalable architecture using modern stacks (Next.js, Cloud-Native, AI).", ar: "تصميم بنية قابلة للتوسع باستخدام تقنيات حديثة (Next.js، سحابة، ذكاء اصطناعي)." }
     },
     {
-      number: "3",
-      title: {
-        en: "Deliver And Support",
-        ar: "التسليم والدعم",
-      },
-      description: {
-        en: "We focus on delivering high-quality, on-time results with a seamless process. Post-launch, we remain committed through ongoing support, improvements, and optimization—ensuring your investment continues to perform and adapt to evolving business needs.",
-        ar: "نركز على تقديم نتائج عالية الجودة وفي الوقت المحدد من خلال عملية سلسة. بعد الإطلاق، نظل ملتزمين بالدعم المستمر، والتحسينات، والتطوير لضمان استمرار أداء استثمارك وتكيفه مع الاحتياجات المتغيرة للأعمال.",
-      },
-      icon: <FiTrendingUp className="w-8 h-8 text-primary-blue" />,
-    },
+      num: "03",
+      icon: <FiTrendingUp />,
+      title: { en: "Deployment & Scale", ar: "النشر والتوسع" },
+      desc: { en: "Launching your solution with zero downtime and continuous performance monitoring.", ar: "إطلاق حلك مع ضمان استمرارية الخدمة ومراقبة الأداء المستمرة." }
+    }
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: easeOut,
-      },
-    },
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.8,
-        ease: easeOut,
-      },
-    },
-  };
-
-  const numberVariants = {
-    hidden: { scale: 0.5, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: easeOut,
-      },
-    },
-  };
-
   return (
-    <div
-      dir={directionMap[local]}
-      className="min-h-screen bg-linear-to-br from-gray-50 to-white"
-    >
-      <div className="c-container ">
-        <motion.div
-          className="grid lg:grid-cols-2 gap-12 items-center w-full"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {/* Left side - Image and title */}
-          <motion.div className="relative h-full" variants={imageVariants}>
-            <div className="relative overflow-hidden rounded-3xl shadow-2xl h-full">
-              <Img
-                src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                alt="Business professionals collaborating"
-                className="w-full h-full max-lg:h-[550px] object-cover"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
-
-              {/* How We Work badge */}
-              <motion.div
-                className="absolute top-6 left-6 bg-primary-blue text-white px-4 py-2 rounded-full text-sm font-semibold"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.3 }}
-              >
-                {howWeWork.sectionTitle}
-              </motion.div>
-
-              {/* Title overlay */}
-              <div className="absolute bottom-8 left-6 right-6">
-                <motion.h1
-                  className="text-4xl lg:text-5xl font-bold text-white leading-tight"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.6 }}
-                >
-                  {howWeWork.sectionSubtitle}
-                </motion.h1>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right side - Steps */}
-          <motion.div className="space-y-8" variants={containerVariants}>
-            {workSteps.map((step) => (
-              <motion.div
-                key={step.number}
-                className="group"
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="bg-linear-to-r from-sky-50 to-sky-100/50 p-8 rounded-2xl border border-sky-100 hover:shadow-xl transition-all duration-300">
-                  <div className="flex items-start max-lg:flex-col gap-6">
-                    {/* Number */}
-                    <motion.div
-                      className="shrink-0"
-                      variants={numberVariants}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <div className="w-16 h-16 bg-linear-to-br from-primary-blue to-sky-700 rounded-2xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl font-bold text-white">
-                          {step.number}
-                        </span>
+    <section id="how-we-work" className="py-24 bg-surface-50 overflow-hidden" dir={directionMap[local]}>
+      <div className="c-container">
+        <div className="grid lg:grid-cols-12 gap-16 items-center">
+          
+          {/* Left: Content & Visual Roadmap */}
+          <div className="lg:col-span-5">
+            <motion.span 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-6 block"
+            >
+              {howWeWork.sectionTitle}
+            </motion.span>
+            <h2 className="display-md font-display text-surface-900 mb-8 leading-tight">
+              {howWeWork.sectionSubtitle}
+            </h2>
+            
+            <div className="relative p-2 bg-surface-card-bg rounded-[2.5rem] shadow-surface-xl">
+               <div className="aspect-[4/5] bg-surface-900 rounded-[2.2rem] overflow-hidden relative p-8">
+                  {/* Technical Roadmap Visual */}
+                  <div className="h-full flex flex-col justify-between">
+                    {[1, 2, 3].map((node) => (
+                      <div key={node} className="flex items-center gap-6">
+                        <div className={`size-12 rounded-xl border flex items-center justify-center ${node === 1 ? 'bg-primary border-primary-light' : 'border-surface-800 bg-surface-900'}`}>
+                           <div className={`size-2 rounded-full ${node === 1 ? 'bg-white' : 'bg-surface-700'}`} />
+                        </div>
+                        <div className="flex-1 space-y-2">
+                           <div className={`h-2 rounded-full ${node === 1 ? 'w-3/4 bg-primary/40' : 'w-1/2 bg-surface-800'}`} />
+                           <div className={`h-2 w-1/4 rounded-full ${node === 1 ? 'bg-primary/20' : 'bg-surface-800/50'}`} />
+                        </div>
                       </div>
-                    </motion.div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
-                        <motion.div
-                          whileHover={{ rotate: 360 }}
-                          transition={{ duration: 0.6 }}
-                        >
-                          {step.icon}
-                        </motion.div>
-                        <h3 className="text-xl font-bold text-gray-800 group-hover:text-primary-blue transition-colors">
-                          {step.title[local]}
-                        </h3>
-                      </div>
-                      <p className="text-gray-600 leading-relaxed">
-                        {step.description[local]}
-                      </p>
-                    </div>
+                    ))}
+                    {/* Connecting Line */}
+                    <div className="absolute left-[3.5rem] top-20 bottom-20 w-px bg-gradient-to-b from-primary to-surface-800" />
                   </div>
+                  
+                  {/* Floating Metric */}
+                  <div className="absolute top-1/2 right-4 translate-y-[-50%] p-4 bg-primary rounded-2xl shadow-button">
+                    <p className="caption text-primary-100 uppercase">Uptime</p>
+                    <p className="heading-md font-display text-white">99.9%</p>
+                  </div>
+
+                  <div className="absolute bottom-10 inset-x-10">
+                    <p className="text-white/30 caption-xs font-bold tracking-widest uppercase">System Architecture Blueprint v2.0</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+
+          {/* Right: Vertical Steps with Faster Stagger */}
+          <div className="lg:col-span-7 space-y-4">
+            {steps.map((step, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, x: isRTL ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  delay: i * 0.05, 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 30 
+                }}
+                role="article"
+                aria-labelledby={`step-title-${i}`}
+                className="surface-card group flex gap-8 p-10 transition-all duration-300"
+              >
+                <div className="display-sm font-display font-black text-surface-100 group-hover:text-primary-50 transition-colors duration-300" aria-hidden="true">
+                  {step.num}
+                </div>
+                <div className="flex-1">
+                  <h3 id={`step-title-${i}`} className="heading-md font-display text-surface-900 mb-4 flex items-center justify-between">
+                    <span className="flex items-center gap-3">
+                      <span className="text-primary text-xl" aria-hidden="true">{step.icon}</span>
+                      {step.title[local]}
+                    </span>
+                    <FiArrowRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-primary" aria-hidden="true" />
+                  </h3>
+                  <p className="body-lg text-surface-500 leading-relaxed">
+                    {step.desc[local]}
+                  </p>
                 </div>
               </motion.div>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

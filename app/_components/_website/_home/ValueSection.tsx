@@ -9,31 +9,50 @@ import LocalLink from "../../_global/LocalLink";
 export default function ValueSection() {
   const { local } = useVariables();
   const { companyValuesSection, aboutSection } = getTranslations(local);
+
   return (
-    <section dir={directionMap[local]}>
-      <div className="c-container py-6">
-        <div className="lg:h-[80vh] max-lg:flex-col-reverse w-full h-fit flex items-center justify-between">
-          <div className="relative flex items-center w-full max-lg:self-start lg:flex-1">
-            <div className="p-2">
-              <h2 className="text-2xl text-primary-red font-bold sm:text-3xl underline dark:text-second-text">
+    <section
+      dir={directionMap[local]}
+      className="relative py-20 lg:py-32 overflow-hidden bg-surface-900 text-white"
+    >
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-violet rounded-full blur-[120px]" />
+      </div>
+
+      <div className="c-container relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24">
+          <div className="order-2 lg:order-1 space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-[2.25rem] sm:text-[3.5rem] font-bold leading-[1.1] tracking-tight">
                 {companyValuesSection.title}
               </h2>
+              <div className="w-20 h-1.5 bg-primary rounded-full" />
+            </div>
 
-              <p className="mt-4 md:w-[90%] lg:w-3/4 max-md:w-full text-second-text">
-                {companyValuesSection.description}
-              </p>
+            <p className="text-[1.25rem] text-surface-300 leading-relaxed max-w-xl">
+              {companyValuesSection.description}
+            </p>
 
-              <LocalLink href="/about" className="primary-btn group">
+            <div className="pt-6">
+              <LocalLink
+                href="/about"
+                className="surface-btn-primary px-10 h-14 text-lg"
+              >
                 {aboutSection.buttonText}
               </LocalLink>
             </div>
           </div>
 
-          <div className="relative z-10 lg:py-16 flex-1">
-            <Img
-              src="/madad-hero-3.png"
-              className="lg:w-[750px] w-[550px]  object-contain"
-            />
+          <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-colors duration-500" />
+              <Img
+                src="/Sanad-hero-3.png"
+                className="w-full max-w-[580px] object-contain drop-shadow-[0_20px_50px_rgba(99,102,241,0.3)] transform group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
           </div>
         </div>
       </div>

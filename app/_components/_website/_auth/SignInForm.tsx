@@ -4,10 +4,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
-import { useSignIn, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { OAuthStrategy } from "@clerk/types";
 import SocialButton from "./SocialButtonProps ";
 import SubmitButton from "./SubmitButton";
 import FormHeader from "./FormHeader";
@@ -23,18 +21,10 @@ interface FormErrors {
 }
 
 export default function SignInForm() {
-  const { signIn, setActive } = useSignIn();
-  const { user } = useUser();
   const { local } = useVariables();
   const { formValidation, signInPage } = getTranslations(local);
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      router.push(`/`);
-    }
-  }, [user, router]);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -76,49 +66,9 @@ export default function SignInForm() {
     }
   }
 
-  if (!signIn) return;
+  const handleSignIn = async (e: React.ChangeEvent<HTMLFormElement>) => {};
 
-  const handleSignIn = async (e: React.ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const isValid = validateForm();
-    if (!isValid) return;
-
-    try {
-      setIsLoading(true);
-      const result = await signIn.create({
-        identifier: formData.email,
-        password: formData.password,
-      });
-
-      await setActive({ session: result.createdSessionId });
-      router.push(`/`);
-    } catch (err: any) {
-      const errorMessage = err.errors?.[0]?.message || "Something went wrong";
-      // ✅ Show error toast
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const signInWith = (strategy: OAuthStrategy) => {
-    return signIn
-      .authenticateWithRedirect({
-        strategy,
-        redirectUrl: `/`,
-        redirectUrlComplete: "/",
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err: any) => {
-        console.log(err.errors);
-        console.error(err, null, 2);
-      });
-  };
-
-  if (user) return null;
+  const signInWith = (strategy: "oauth_google" | "oauth_facebook") => {};
 
   return (
     <>
@@ -176,11 +126,6 @@ export default function SignInForm() {
           local={local}
           provider="google"
           onClick={() => signInWith("oauth_google")}
-        />
-        <SocialButton
-          local={local}
-          provider="facebook"
-          onClick={() => signInWith("oauth_facebook")}
         />
       </motion.div>
     </>

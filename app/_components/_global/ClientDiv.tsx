@@ -9,5 +9,9 @@ interface props {
 
 export default function ClientDiv({ children }: props) {
   const { local } = useVariables();
-  return <div dir={directionMap[local || "en"]}>{children}</div>;
+  return (
+    <div className="" dir={directionMap[local || "en"]}>
+      {children}
+    </div>
+  );
 }

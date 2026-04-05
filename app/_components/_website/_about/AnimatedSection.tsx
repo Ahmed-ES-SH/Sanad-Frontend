@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 
 interface Props {
   children: ReactNode;
-  className?: string; // اجعلها اختيارية لتجنب الخطأ عند عدم تمريرها
+  className?: string;
 }
 
 export default function AnimatedSection({ children, className = "" }: Props) {

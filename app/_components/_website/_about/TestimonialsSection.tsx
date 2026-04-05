@@ -5,16 +5,10 @@ import { FaQuoteLeft, FaQuoteRight, FaStar } from "react-icons/fa";
 
 // Swiper components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Navigation,
-  Pagination,
-  Autoplay,
-  EffectCoverflow,
-} from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "swiper/css/effect-coverflow";
 import { directionMap } from "@/app/constants/constants";
 import { getTranslations } from "@/app/helpers/helpers";
 import { useVariables } from "@/app/context/VariablesContext";
@@ -35,9 +29,10 @@ function StarRating({ rating }: { rating: number }) {
       {[...Array(5)].map((_, i) => (
         <FaStar
           key={i}
-          className={`text-lg ${
-            i < rating ? "text-yellow-400" : "text-gray-300"
-          }`}
+          className="text-lg"
+          style={{
+            color: i < rating ? "var(--accent-amber)" : "var(--surface-300)",
+          }}
         />
       ))}
     </div>
@@ -56,51 +51,62 @@ export default function TestimonialsSection() {
   const testimonials: Testimonial[] = [
     {
       id: 1,
-      name: "أحمد محمد",
-      position: "مدير تقني",
-      company: "شركة التقنية المتقدمة",
+      name: local === "ar" ? "أحمد محمد" : "Ahmed Mohamed",
+      position: local === "ar" ? "مدير تقني" : "CTO",
+      company: local === "ar" ? "شركة التقنية المتقدمة" : "Advanced Tech Co.",
       content:
-        "تجربة رائعة مع فريق مدد. لقد قاموا بتطوير موقعنا بمهنية عالية وفي الوقت المحدد. النتائج فاقت توقعاتنا.",
+        local === "ar"
+          ? "تجربة رائعة مع فريق سند. لقد قاموا بتطوير موقعنا بمهنية عالية وفي الوقت المحدد. النتائج فاقت توقعاتنا."
+          : "An amazing experience with the Sanad team. They developed our website with high professionalism and on time. The results exceeded our expectations.",
       rating: 5,
       avatar: "AM",
     },
     {
       id: 2,
-      name: "فاطمة علي",
-      position: "مديرة مشروع",
-      company: "مؤسسة الابتكار",
+      name: local === "ar" ? "فاطمة علي" : "Fatima Ali",
+      position: local === "ar" ? "مديرة مشروع" : "Project Manager",
+      company: local === "ar" ? "مؤسسة الابتكار" : "Innovation Foundation",
       content:
-        "خدمة عملاء ممتازة ودعم فني متواصل. التطبيق الذي طوروه لنا ساعد في زيادة كفاءة العمل بشكل كبير.",
+        local === "ar"
+          ? "خدمة عملاء ممتازة ودعم فني متواصل. التطبيق الذي طوروه لنا ساعد في زيادة كفاءة العمل بشكل كبير."
+          : "Excellent customer service and continuous technical support. The application they developed for us helped significantly increase work efficiency.",
       rating: 5,
       avatar: "FA",
     },
     {
       id: 3,
-      name: "محمد حسن",
-      position: "رئيس قسم التسويق",
-      company: "شركة النهضة الرقمية",
+      name: local === "ar" ? "محمد حسن" : "Mohammed Hassan",
+      position: local === "ar" ? "رئيس قسم التسويق" : "Head of Marketing",
+      company:
+        local === "ar" ? "شركة النهضة الرقمية" : "Digital Renaissance Co.",
       content:
-        "فريق محترف ومتخصص. ساعدونا في تحويل أفكارنا إلى واقع رقمي متميز. أنصح بهم بشدة.",
+        local === "ar"
+          ? "فريق محترف ومتخصص. ساعدونا في تحويل أفكارنا إلى واقع رقمي متميز. أنصح بهم بشدة."
+          : "A professional and specialized team. They helped us turn our ideas into an outstanding digital reality. I highly recommend them.",
       rating: 5,
       avatar: "MH",
     },
     {
       id: 4,
-      name: "سارة أحمد",
-      position: "مديرة عامة",
-      company: "مجموعة الإبداع",
+      name: local === "ar" ? "سارة أحمد" : "Sara Ahmed",
+      position: local === "ar" ? "مديرة عامة" : "General Manager",
+      company: local === "ar" ? "مجموعة الإبداع" : "Al-Ibdaa Group",
       content:
-        "تعاون مثمر وحلول مبتكرة. لقد حققنا نموًا ملحوظًا في أعمالنا بفضل الحلول التقنية التي قدموها.",
+        local === "ar"
+          ? "تعاون مثمر وحلول مبتكرة. لقد حققنا نموًا ملحوظًا في أعمالنا بفضل الحلول التقنية التي قدموها."
+          : "Fruitful collaboration and innovative solutions. We achieved remarkable growth in our business thanks to the technical solutions they provided.",
       rating: 4,
       avatar: "SA",
     },
     {
       id: 5,
-      name: "عمر خالد",
-      position: "مؤسس الشركة",
-      company: "ستارت أب تك",
+      name: local === "ar" ? "عمر خالد" : "Omar Khaled",
+      position: local === "ar" ? "مؤسس الشركة" : "Company Founder",
+      company: local === "ar" ? "ستارت أب تك" : "Startup Tech",
       content:
-        "شراكة ناجحة من البداية. فهموا احتياجاتنا بسرعة وقدموا حلولاً عملية وفعالة.",
+        local === "ar"
+          ? "شراكة ناجحة من البداية. فهموا احتياجاتنا بسرعة وقدموا حلولاً عملية وفعالة."
+          : "A successful partnership from the start. They quickly understood our needs and delivered practical, effective solutions.",
       rating: 5,
       avatar: "OK",
     },
@@ -112,14 +118,8 @@ export default function TestimonialsSection() {
         dir={directionMap[local]}
         ref={ref}
         className="py-20 relative overflow-hidden"
+        style={{ background: "var(--surface-50)" }}
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className={`absolute top-0 left-0 w-full h-full  bg-repeat`}
-          ></div>
-        </div>
-
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: -30 }}
@@ -127,11 +127,16 @@ export default function TestimonialsSection() {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl font-bold mb-4 ">
+            <h2
+              className="text-5xl font-bold mb-4"
+              style={{ color: "var(--surface-900)" }}
+            >
               {testimonialsSection.title}
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-6"></div>
-            <p className="text-lg  max-w-2xl mx-auto">
+            <p
+              className="text-lg max-w-2xl mx-auto mb-16"
+              style={{ color: "var(--surface-500)" }}
+            >
               {testimonialsSection.description}
             </p>
           </motion.div>
@@ -143,27 +148,18 @@ export default function TestimonialsSection() {
             className="w-full mx-auto"
           >
             <Swiper
-              modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
+              modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={30}
               slidesPerView={1}
               navigation
               pagination={{
                 clickable: true,
-                bulletClass: "swiper-pagination-bullet !bg-white !opacity-50",
-                bulletActiveClass:
-                  "swiper-pagination-bullet-active !bg-yellow-400 !opacity-100",
+                bulletClass: "swiper-pagination-bullet",
+                bulletActiveClass: "swiper-pagination-bullet-active",
               }}
               autoplay={{
                 delay: 5000,
                 disableOnInteraction: false,
-              }}
-              effect="coverflow"
-              coverflowEffect={{
-                rotate: 50,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
               }}
               breakpoints={{
                 640: {
@@ -173,41 +169,63 @@ export default function TestimonialsSection() {
                   slidesPerView: 2,
                 },
                 1024: {
-                  slidesPerView: 4,
+                  slidesPerView: 3,
                 },
               }}
               className="testimonials-swiper"
             >
               {testimonials.map((testimonial) => (
                 <SwiperSlide key={testimonial.id}>
-                  <div className="bg-primary-blue backdrop-blur-sm p-8 rounded-2xl border border-white/20 hover:bg-sky-500  transition-all duration-300 h-full">
-                    <div className="flex flex-col h-full">
-                      <div className="flex-1">
-                        <FaQuoteLeft className="text-yellow-400 text-2xl mb-4" />
+                  <div className="surface-card p-8 h-full flex flex-col">
+                    <div className="flex-1">
+                      <FaQuoteLeft
+                        className="text-2xl mb-4"
+                        style={{ color: "var(--primary-light)" }}
+                      />
 
-                        <StarRating rating={testimonial.rating} />
+                      <StarRating rating={testimonial.rating} />
 
-                        <p className=" leading-relaxed mb-6 text-center text-white">
-                          {testimonial.content}
-                        </p>
+                      <p
+                        className="leading-relaxed mb-6 text-center"
+                        style={{ color: "var(--surface-700)" }}
+                      >
+                        {testimonial.content}
+                      </p>
 
-                        <FaQuoteRight className="text-yellow-400 text-2xl mb-6 ml-auto" />
+                      <FaQuoteRight
+                        className="text-2xl mb-6 ml-auto"
+                        style={{ color: "var(--primary-light)" }}
+                      />
+                    </div>
+
+                    <div
+                      className="pt-6 border-t"
+                      style={{ borderColor: "var(--surface-200)" }}
+                    >
+                      <div
+                        className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center font-bold text-lg text-white"
+                        style={{ background: "var(--gradient-primary)" }}
+                      >
+                        {testimonial.avatar}
                       </div>
-
-                      <div className="text-center pt-6 border-t border-white/20">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-blue-500 rounded-full flex items-center justify-center  font-bold text-lg">
-                          {testimonial.avatar}
-                        </div>
-                        <h4 className="font-bold text-lg text-white mb-1">
-                          {testimonial.name}
-                        </h4>
-                        <p className="text-blue-200 text-sm mb-1">
-                          {testimonial.position}
-                        </p>
-                        <p className="text-yellow-400 text-sm font-medium">
-                          {testimonial.company}
-                        </p>
-                      </div>
+                      <h4
+                        className="font-bold text-lg text-center mb-1"
+                        style={{ color: "var(--surface-900)" }}
+                      >
+                        {testimonial.name}
+                      </h4>
+                      <p
+                        className="text-sm text-center mb-1"
+                        style={{ color: "var(--surface-500)" }}
+                      >
+                        {testimonial.position}
+                      </p>
+                      <p
+                        className="text-sm font-medium text-center"
+                        style={{ color: "var(--primary)" }}
+                      >
+                        {testimonial.company}
+                      </p>
                     </div>
                   </div>
                 </SwiperSlide>

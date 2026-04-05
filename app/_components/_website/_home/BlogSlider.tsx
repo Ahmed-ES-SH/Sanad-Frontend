@@ -8,10 +8,13 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 import LocalLink from "../../_global/LocalLink";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 export default function BlogSlider() {
   const { local } = useVariables();
   const { blogSection } = getTranslations(local);
+  const isRTL = local === "ar";
+
   const slides = [
     {
       image: "/portfoliosection/2.jpg",
@@ -43,90 +46,100 @@ export default function BlogSlider() {
   return (
     <div
       dir={directionMap[local]}
-      className="c-container max-lg:flex-col gap-5 flex items-start justify-between border-t border-gray-300 py-10 lg:py-14"
+      className="c-container max-lg:flex-col gap-12 lg:gap-20 flex items-center justify-between py-16 lg:py-24 border-t border-surface-200/50"
     >
-      <div className="w-full flex justify-between flex-col  lg:w-2/5">
-        <div
-          className={`block ${
-            local == "en" ? "lg:text-left" : "lg:text-right"
-          } text-center`}
-        >
-          <h2 className="text-4xl font-bold text-gray-900  leading-[3.25rem] mb-5">
-            {blogSection.title}{" "}
-            <span className=" text-primary-red underline">
-              {blogSection.blogs}
-            </span>
-          </h2>
-          <p className="text-gray-500 mb-10 max-lg:max-w-xl max-lg:mx-auto">
-            {blogSection.paragraphLine}
-          </p>
+      <div className="w-full lg:w-2/5 flex flex-col space-y-8">
+        <div className={isRTL ? "text-right" : "text-left"}>
+          <div className="space-y-4 mb-8">
+            <h2 className="text-[2.25rem] lg:text-[3rem] font-bold text-surface-900 leading-[1.15] tracking-tight">
+              {blogSection.title}{" "}
+              <span className="text-primary">
+                {blogSection.blogs}
+              </span>
+            </h2>
+            <p className="text-[1.125rem] text-surface-600 leading-relaxed max-lg:mx-auto">
+              {blogSection.paragraphLine}
+            </p>
+          </div>
+          
           <LocalLink
             href="/blog"
-            className="primary-btn max-lg:mx-auto bg-primary-red hover:bg-white hover:border-primary-red"
+            className="surface-btn-primary px-10 h-12 max-lg:mx-auto"
           >
             {blogSection.button}
           </LocalLink>
         </div>
-        <div className="flex relative w-1/2  mx-auto h-[20vh] max-md:h-[8vh] items-center lg:justify-center justify-center lg:mt-0 mt-16 gap-4 mb-4">
+
+        <div className="flex items-center gap-4 pt-4 max-lg:justify-center">
           <button
             id="slider-button-left"
-            className="swiper-button-prev group text-primary-red flex justify-center items-center   w-11 h-11 transition-all duration-500 rounded-full "
-          ></button>
+            aria-label="Previous slide"
+            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50"
+          >
+            <FiChevronLeft size={24} />
+          </button>
           <button
             id="slider-button-right"
-            className="swiper-button-next group flex justify-center items-center   w-11 h-11 transition-all duration-500 rounded-full "
-          ></button>
+            aria-label="Next slide"
+            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50"
+          >
+            <FiChevronRight size={24} />
+          </button>
         </div>
       </div>
 
-      <div style={{ direction: "ltr" }} className="lg:w-3/5 max-lg:w-full">
+      <div className="w-full lg:w-3/5 overflow-hidden rounded-2xl shadow-surface-lg">
         <Swiper
+          dir={isRTL ? "rtl" : "ltr"}
+          key={local} // Re-mount swiper on language change for proper RTL/LTR layout
           autoplay={{
-            delay: 1500,
+            delay: 3000,
+            disableOnInteraction: false,
           }}
-          spaceBetween={30}
+          spaceBetween={24}
           slidesPerView={1}
           navigation={{
             prevEl: "#slider-button-left",
             nextEl: "#slider-button-right",
           }}
           modules={[Navigation, Autoplay]}
+          className="w-full"
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
               <LocalLink
-                className="group relative block rounded-xl focus:outline-none"
+                className="group relative block rounded-2xl focus:outline-none overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-[500px]"
                 href="#"
               >
-                <div className="relative rounded-xl overflow-hidden w-full h-[450px] before:absolute before:inset-x-0 before:z-[1] before:size-full before:bg-gradient-to-t before:from-gray-900/70">
+                <div className="relative size-full before:absolute before:inset-0 before:z-[1] before:bg-gradient-to-t before:from-surface-900/80 before:to-transparent">
                   <Img
-                    className="size-full absolute top-0 start-0 object-cover"
+                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
                     src={slide.image}
                   />
                 </div>
 
-                <div className="absolute top-0 inset-x-0 z-10">
-                  <div className="p-4 flex items-center sm:p-6">
-                    <div className="shrink-0 bg-white/50 rounded-full">
+                <div className="absolute top-0 inset-x-0 z-10 p-6">
+                  <div className="flex items-center">
+                    <div className="shrink-0 bg-white/20 backdrop-blur-md p-1 rounded-full border border-white/30 shadow-lg">
                       <Img
-                        className="size-[46px] border-2 border-white rounded-full"
+                        className="size-10 rounded-full"
                         src="/logo.png"
                       />
                     </div>
-                    <div className="ms-2.5 sm:ms-4">
-                      <h4 className="font-semibold text-white">Admin</h4>
-                      <p className="text-xs text-white/80">{slide.date}</p>
+                    <div className="mx-3">
+                      <h4 className="text-sm font-semibold text-white drop-shadow-md">Admin</h4>
+                      <p className="text-[10px] text-white/70">{slide.date}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute bottom-0 inset-x-0 z-10">
-                  <div className="flex flex-col p-4 sm:p-6">
-                    <h3 className="text-lg sm:text-3xl font-semibold text-white group-hover:text-white/80 group-focus:text-white/80">
-                      {slide.title}
-                    </h3>
-                    <p className="mt-2 text-white/80">{slide.desc}</p>
-                  </div>
+                <div className="absolute bottom-0 inset-x-0 z-10 p-6 lg:p-10">
+                  <h3 className="text-xl lg:text-3xl font-bold text-white mb-3 group-hover:text-white/90 transition-colors leading-tight">
+                    {slide.title}
+                  </h3>
+                  <p className="text-sm lg:text-base text-white/80 line-clamp-2 leading-relaxed max-w-2xl">
+                    {slide.desc}
+                  </p>
                 </div>
               </LocalLink>
             </SwiperSlide>

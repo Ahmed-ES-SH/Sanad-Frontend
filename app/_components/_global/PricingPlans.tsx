@@ -1,376 +1,157 @@
 "use client";
 import React, { useState } from "react";
-import { motion, AnimatePresence, easeOut } from "framer-motion";
-import { FiCheck, FiStar } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { FiCheck, FiArrowRight, FiZap, FiTarget, FiShield } from "react-icons/fi";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 
-interface PricingFeature {
-  name: { en: string; ar: string };
-  included: boolean;
-}
-
-interface PricingPlan {
-  name: { en: string; ar: string };
-  monthlyPrice: number;
-  yearlyPrice: number;
-  description: { en: string; ar: string };
-  isPopular?: boolean;
-  features: PricingFeature[];
-  buttonText: { en: string; ar: string };
-}
-
 export default function PricingPlans() {
   const { local } = useVariables();
   const { pricing } = getTranslations(local);
-  const [isYearly, setIsYearly] = useState<boolean>(false);
+  const [isYearly, setIsYearly] = useState(false);
 
-  const plans: PricingPlan[] = [
+  const plans = [
     {
-      name: {
-        en: "Basic Plan",
-        ar: "الخطة الأساسية",
-      },
-      monthlyPrice: 99,
-      yearlyPrice: 990,
-      description: {
-        en: "Perfect for growing businesses with moderate IT needs",
-        ar: "مثالية للشركات المتنامية ذات الاحتياجات التقنية المتوسطة",
-      },
+      name: { en: "Foundation", ar: "التأسيس" },
+      icon: <FiZap className="text-primary-light" />,
+      price: isYearly ? "990" : "99",
+      desc: { en: "Essential IT & Digital Presence", ar: "الأساسيات التقنية والتواجد الرقمي" },
       features: [
-        {
-          name: { en: "Software installation", ar: "تثبيت البرامج" },
-          included: true,
-        },
-        {
-          name: {
-            en: "Basic troubleshooting",
-            ar: "استكشاف الأخطاء وإصلاحها الأساسية",
-          },
-          included: true,
-        },
-        { name: { en: "Remote support", ar: "دعم عن بُعد" }, included: true },
-        {
-          name: { en: "Essential IT support", ar: "دعم تقني أساسي" },
-          included: true,
-        },
-      ],
-      buttonText: {
-        en: "Get Started",
-        ar: "ابدأ الآن",
-      },
+        { en: "Managed Cloud Hosting", ar: "استضافة سحابية مدارة" },
+        { en: "Basic Security Audits", ar: "تدقيق أمني أساسي" },
+        { en: "Next.js Web Starter", ar: "موقع Next.js أساسي" },
+        { en: "Email & Chat Support", ar: "دعم عبر البريد والدردشة" },
+      ]
     },
     {
-      name: {
-        en: "Business Plan",
-        ar: "خطة الأعمال",
-      },
-      monthlyPrice: 399,
-      yearlyPrice: 3990,
-      description: {
-        en: "Perfect for growing businesses with moderate IT needs",
-        ar: "مثالية للشركات المتنامية ذات الاحتياجات التقنية المتوسطة",
-      },
-      isPopular: true,
+      name: { en: "Growth", ar: "النمو" },
+      icon: <FiTarget className="text-white" />,
+      price: isYearly ? "2,490" : "249",
+      popular: true,
+      desc: { en: "Complete Scalable Infrastructure", ar: "بنية تحتية متكاملة وقابلة للتوسع" },
       features: [
-        {
-          name: { en: "Software installation", ar: "تثبيت البرامج" },
-          included: true,
-        },
-        {
-          name: {
-            en: "Basic troubleshooting",
-            ar: "استكشاف الأخطاء وإصلاحها الأساسية",
-          },
-          included: true,
-        },
-        { name: { en: "Remote support", ar: "دعم عن بُعد" }, included: true },
-        {
-          name: { en: "Essential IT support", ar: "دعم تقني أساسي" },
-          included: true,
-        },
-      ],
-      buttonText: {
-        en: "Get Started",
-        ar: "ابدأ الآن",
-      },
+        { en: "Custom CRM Integration", ar: "تكامل نظام إدارة العملاء" },
+        { en: "Advanced SEO & Analytics", ar: "تحسين محركات البحث والتحليلات" },
+        { en: "Priority 24/7 Response", ar: "استجابة ذات أولوية 24/7" },
+        { en: "Monthly Tech Strategy", ar: "استراتيجية تقنية شهرية" },
+        { en: "Performance Optimization", ar: "تحسين أداء النظام" },
+      ]
     },
     {
-      name: {
-        en: "Enterprise Plan",
-        ar: "خطة المؤسسات",
-      },
-      monthlyPrice: 199,
-      yearlyPrice: 1990,
-      description: {
-        en: "Perfect for growing businesses with moderate IT needs",
-        ar: "مثالية للشركات المتنامية ذات الاحتياجات التقنية المتوسطة",
-      },
+      name: { en: "Enterprise", ar: "المؤسسات" },
+      icon: <FiShield className="text-primary-light" />,
+      price: isYearly ? "Custom" : "Custom",
+      desc: { en: "Full Digital Transformation", ar: "تحول رقمي شامل للمؤسسات" },
       features: [
-        {
-          name: { en: "Software installation", ar: "تثبيت البرامج" },
-          included: true,
-        },
-        {
-          name: {
-            en: "Basic troubleshooting",
-            ar: "استكشاف الأخطاء وإصلاحها الأساسية",
-          },
-          included: true,
-        },
-        { name: { en: "Remote support", ar: "دعم عن بُعد" }, included: true },
-        {
-          name: { en: "Essential IT support", ar: "دعم تقني أساسي" },
-          included: true,
-        },
-      ],
-      buttonText: {
-        en: "Get Started",
-        ar: "ابدأ الآن",
-      },
-    },
+        { en: "Dedicated Account Team", ar: "فريق حسابات مخصص" },
+        { en: "Custom AI Automations", ar: "أتمتة مخصصة بالذكاء الاصطناعي" },
+        { en: "On-site Infrastructure Support", ar: "دعم البنية التحتية في الموقع" },
+        { en: "Regulatory Compliance", ar: "الامتثال للمعايير التنظيمية" },
+      ]
+    }
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: easeOut,
-      },
-    },
-  };
-
-  const priceVariants = {
-    hidden: { scale: 0.5, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: easeOut,
-      },
-    },
-  };
-
   return (
-    <div dir={directionMap[local]} className="min-h-screen   px-6">
-      <div className="c-container border-t border-gray-200 py-2">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          {/* Badge */}
-          <motion.div
-            className="inline-block bg-primary-blue text-white px-6 py-2 rounded-full text-sm font-semibold mb-6"
+    <section id="pricing" className="py-24 bg-surface-900 text-white overflow-hidden antialiased" dir={directionMap[local]}>
+      <div className="c-container">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.span 
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="surface-badge bg-white/5 text-primary-light border-white/10 mb-6 inline-block"
           >
             {pricing.title}
-          </motion.div>
-
-          {/* Title */}
-          <motion.h1
-            className="text-3xl lg:text-5xl font-bold text-primary-red underline mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
+          </motion.span>
+          <h2 className="display-md font-display font-bold mb-8 leading-tight">
             {pricing.subtitle}
-          </motion.h1>
-
-          {/* Toggle Switch */}
-          <motion.div
-            className="flex items-center justify-center gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-          >
-            <span
-              className={`text-lg font-medium transition-colors ${
-                !isYearly ? "text-gray-900" : "text-gray-500"
-              }`}
-            >
-              {pricing.monthly}
-            </span>
-            <button
+          </h2>
+          
+          <div className="flex items-center justify-center gap-4">
+            <span className={`body-sm font-medium ${!isYearly ? 'text-white' : 'text-surface-400'}`}>Monthly</span>
+            <button 
               onClick={() => setIsYearly(!isYearly)}
-              className="relative w-16 h-8 bg-primary-blue rounded-full p-1 transition-colors"
+              role="switch"
+              aria-checked={isYearly}
+              aria-label={local === "en" ? "Toggle yearly billing" : "تبديل الفوترة السنوية"}
+              className="w-14 h-7 bg-surface-800 rounded-full p-1 relative transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-900"
             >
-              <motion.div
-                className="w-6 h-6 bg-white rounded-full shadow-lg"
-                animate={{ x: isYearly ? (local == "en" ? 32 : -32) : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              <motion.div 
+                animate={{ x: isYearly ? 28 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="size-5 bg-primary rounded-full shadow-button" 
               />
             </button>
-            <span
-              className={`text-lg font-medium transition-colors ${
-                isYearly ? "text-gray-900" : "text-gray-500"
-              }`}
-            >
-              {pricing.yearly}
-            </span>
-          </motion.div>
-        </motion.div>
+            <span className={`body-sm font-medium ${isYearly ? 'text-white' : 'text-surface-400'}`}>Yearly</span>
+          </div>
+        </div>
 
-        {/* Pricing Cards */}
-        <motion.div
-          className="grid lg:grid-cols-3 gap-8 w-full mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {plans.map((plan) => (
-            <motion.div
-              key={plan.name[local]}
-              variants={cardVariants}
-              whileHover={{ y: -10, scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-              className={`relative rounded-3xl p-8 border-2 transition-all duration-300 ${
-                plan.isPopular
-                  ? "bg-primary-blue border-primary-blue text-white shadow-2xl"
-                  : "bg-white border-gray-200 hover:border-primary-blue shadow-lg hover:shadow-xl"
+        <div className="grid md:grid-cols-3 gap-8 items-start">
+          {plans.map((plan, i) => (
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 30 }}
+              className={`relative p-10 rounded-[2.5rem] flex flex-col transition-all duration-300 ${
+                plan.popular 
+                  ? 'bg-primary shadow-[0_40px_80px_-15px_rgba(99,102,241,0.4)] md:-mt-6 z-10' 
+                  : 'bg-surface-800 border border-surface-700 hover:border-primary/30'
               }`}
             >
-              {/* Popular Badge */}
-              {plan.isPopular && (
-                <motion.div
-                  className="absolute -top-4 left-1/2 transform -translate-x-1/2"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="bg-green-400 text-green-900 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
-                    <FiStar className="w-4 h-4" />
-                    {pricing.popular}
-                  </div>
-                </motion.div>
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-primary px-4 py-1 rounded-full caption-xs font-black uppercase tracking-widest shadow-xl">
+                  Most Popular
+                </div>
               )}
 
-              {/* Plan Name */}
-              <h3
-                className={`text-2xl font-bold mb-6 ${
-                  plan.isPopular ? "text-white" : "text-gray-900"
-                }`}
-              >
-                {plan.name[local]}
-              </h3>
-
-              {/* Price */}
-              <div className="mb-6">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={isYearly ? "yearly" : "monthly"}
-                    variants={priceVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="flex items-baseline gap-2"
-                  >
-                    <span
-                      className={`text-5xl font-bold ${
-                        plan.isPopular ? "text-white" : "text-primary-blue"
-                      }`}
-                    >
-                      ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
-                    </span>
-                    <span
-                      className={`text-lg ${
-                        plan.isPopular ? "text-white" : "text-gray-500"
-                      }`}
-                    >
-                      {pricing.per} {isYearly ? pricing.year : pricing.month}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-              {/* Description */}
-              <p
-                className={`mb-8 leading-relaxed ${
-                  plan.isPopular ? "text-white" : "text-gray-600"
-                }`}
-              >
-                {plan.description[local]}
-              </p>
-
-              {/* CTA Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-full py-4 px-6 rounded-2xl font-semibold text-lg transition-all duration-300 mb-8 ${
-                  plan.isPopular
-                    ? "bg-white text-primary-blue hover:bg-gray-50 shadow-lg"
-                    : "bg-primary-blue text-white hover:bg-primary-blue shadow-lg hover:shadow-xl"
-                }`}
-              >
-                {plan.buttonText[local]}
-              </motion.button>
-
-              {/* Features */}
-              <div>
-                <h4
-                  className={`font-bold text-lg mb-4 ${
-                    plan.isPopular ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  {pricing.features}
-                </h4>
-                <div className="space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <motion.div
-                      key={feature.name[local]}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        delay: 0.1 * featureIndex + 0.6,
-                        duration: 0.4,
-                      }}
-                      className="flex items-center gap-3"
-                    >
-                      <div
-                        className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                          plan.isPopular ? "bg-green-400" : "bg-green-100"
-                        }`}
-                      >
-                        <FiCheck
-                          className={`w-4 h-4 ${
-                            plan.isPopular ? "text-green-900" : "text-green-600"
-                          }`}
-                        />
-                      </div>
-                      <span
-                        className={`${
-                          plan.isPopular ? "text-white" : "text-gray-700"
-                        }`}
-                      >
-                        {feature.name[local]}
-                      </span>
-                    </motion.div>
-                  ))}
+              <div className="flex justify-between items-start mb-6">
+                <div className={`p-3 rounded-2xl ${plan.popular ? 'bg-white/10' : 'bg-surface-700'}`}>
+                  {plan.icon}
                 </div>
+                <h3 className="heading-sm font-bold">{plan.name[local]}</h3>
               </div>
+
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="display-sm font-display font-bold">
+                    {plan.price !== "Custom" && "$"}
+                    {plan.price}
+                  </span>
+                  {plan.price !== "Custom" && (
+                    <span className={plan.popular ? 'text-primary-100' : 'text-surface-400'}>
+                      /{isYearly ? 'yr' : 'mo'}
+                    </span>
+                  )}
+                </div>
+                <p className={`body-sm mt-3 ${plan.popular ? 'text-primary-100/70' : 'text-surface-400'}`}>
+                  {plan.desc[local]}
+                </p>
+              </div>
+              
+              <ul className="space-y-4 mb-10 flex-grow">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-3 body-sm">
+                    <FiCheck className={plan.popular ? 'text-white' : 'text-primary-light'} />
+                    <span className={plan.popular ? 'text-primary-50' : 'text-surface-300'}>
+                      {feature[local]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <button className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/20 ${
+                plan.popular 
+                  ? 'bg-white text-primary hover:bg-surface-50' 
+                  : 'bg-surface-700 text-white hover:bg-primary'
+              }`}>
+                Get Started <FiArrowRight />
+              </button>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

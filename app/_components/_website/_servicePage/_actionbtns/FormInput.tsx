@@ -23,14 +23,14 @@ export default function FormInput({
   multiline,
   placeholder,
 }: props) {
-  const inputClasses = `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-    error ? "border-red-500 bg-red-50" : "border-gray-300"
+  const inputClasses = `surface-input w-full ${
+    error ? "border-red-500 bg-red-50/50" : ""
   }`;
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-sm font-medium text-surface-700 font-display">
+        {label} {required && <span className="text-accent-rose">*</span>}
       </label>
       {multiline ? (
         <textarea

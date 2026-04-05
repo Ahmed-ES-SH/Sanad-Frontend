@@ -46,23 +46,23 @@ function ContactInfoCard({ info, index }: infoCardType) {
   const { local } = useVariables();
   return (
     <motion.div
-      className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300"
+      className="bg-white rounded-2xl p-6 shadow-surface-sm hover:shadow-surface-md transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -4 }}
     >
-      <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+      <div className="flex items-start gap-5">
+        <div className="flex-shrink-0 w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center text-primary shadow-sm">
           {info.icon}
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">
+          <h3 className="heading-sm font-display text-surface-900 mb-2">
             {info.title[local]}
           </h3>
           <div className="space-y-1">
             {info.details.map((detail, idx) => (
-              <p key={idx} className="text-gray-600 text-sm">
+              <p key={idx} className="body-sm text-surface-600">
                 {detail}
               </p>
             ))}
@@ -79,21 +79,27 @@ export default function ContactInfo() {
   return (
     <motion.div
       dir={directionMap[local]}
-      className="space-y-6"
+      className="space-y-8"
       initial={{ opacity: 0, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
     >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="mb-10">
+        <h2 className="heading-lg font-display text-surface-900 mb-3">
           {contactPage.contactTitle}
         </h2>
-        <p className="text-gray-600">{contactPage.contactHelperText}</p>
+        <p className="body text-surface-600">{contactPage.contactHelperText}</p>
       </div>
 
-      {contactInfo.map((info, index) => (
-        <ContactInfoCard key={`${info} + ${index}`} info={info} index={index} />
-      ))}
+      <div className="space-y-6">
+        {contactInfo.map((info, index) => (
+          <ContactInfoCard
+            key={`${info} + ${index}`}
+            info={info}
+            index={index}
+          />
+        ))}
+      </div>
     </motion.div>
   );
 }

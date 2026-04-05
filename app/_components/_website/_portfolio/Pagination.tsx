@@ -14,51 +14,90 @@ export default function Pagination({
   currentPage,
   handlePageChange,
 }: props) {
+  const getVisiblePages = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible + 2) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
   return (
     <>
       {totalPages > 1 && (
         <motion.div
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.3 }}
         >
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`p-3 rounded-xl transition-colors ${
-              currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className="p-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ color: "var(--surface-500)" }}
+            onMouseEnter={(e) => {
+              if (currentPage !== 1) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-100)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+            }}
           >
             <FiChevronLeft className="w-5 h-5" />
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <motion.button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-4 py-2 rounded-xl transition-colors ${
-                currentPage === page
-                  ? "bg-primary-blue text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {page}
-            </motion.button>
-          ))}
+          {getVisiblePages().map((page, idx) =>
+            typeof page === "string" ? (
+              <span key={`ellipsis-${idx}`} className="px-2" style={{ color: "var(--surface-400)" }}>
+                {page}
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className="w-10 h-10 rounded-lg text-sm font-medium transition-colors"
+                style={
+                  currentPage === page
+                    ? { backgroundColor: "var(--primary)", color: "white" }
+                    : { backgroundColor: "transparent", color: "var(--surface-600)" }
+                }
+                onMouseEnter={(e) => {
+                  if (currentPage !== page) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-100)";
+                }}
+                onMouseLeave={(e) => {
+                  if (currentPage !== page) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                }}
+              >
+                {page}
+              </button>
+            )
+          )}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`p-3 rounded-xl transition-colors ${
-              currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className="p-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ color: "var(--surface-500)" }}
+            onMouseEnter={(e) => {
+              if (currentPage !== totalPages) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-100)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+            }}
           >
             <FiChevronRight className="w-5 h-5" />
           </button>

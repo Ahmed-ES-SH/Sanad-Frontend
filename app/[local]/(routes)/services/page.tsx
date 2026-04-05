@@ -2,6 +2,7 @@
 import PricingPlans from "@/app/_components/_global/PricingPlans";
 import HowWeWork from "@/app/_components/_website/_services/HowWeWork";
 import ServicesComponent from "@/app/_components/_website/_services/ServicesComponent";
+import SectionNav from "@/app/_components/_global/SectionNav";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
 import { getTranslations } from "@/app/helpers/helpers";
 import React from "react";
@@ -21,10 +22,10 @@ export async function generateMetadata({ params }: any) {
 
 export default function page() {
   return (
-    <>
+    <main id="main-content" className="relative mt-12">
       <ServicesComponent />
       <HowWeWork />
       <PricingPlans />
-    </>
+    </main>
   );
 }

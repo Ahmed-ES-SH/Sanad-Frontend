@@ -1,5 +1,6 @@
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import InputField from "./InputField";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 
 interface Props {
   locale: "en" | "ar";
@@ -69,6 +70,7 @@ export default function SignupFields({
         error={errors.fullName}
         icon={<FiUser size={18} />}
         placeholder={t.enterFullName}
+        autoComplete="name"
       />
 
       <InputField
@@ -80,6 +82,7 @@ export default function SignupFields({
         error={errors.email}
         icon={<FiMail size={18} />}
         placeholder={t.enterEmail}
+        autoComplete="email"
       />
 
       <InputField
@@ -94,7 +97,16 @@ export default function SignupFields({
         showPasswordToggle
         onTogglePassword={() => setShowPassword(!showPassword)}
         showPassword={showPassword}
+        autoComplete="new-password"
       />
+      {formData.password && (
+        <div className="ps-1">
+          <PasswordStrengthIndicator
+            password={formData.password}
+            locale={locale}
+          />
+        </div>
+      )}
 
       <InputField
         label={t.confirmPassword}
@@ -108,6 +120,7 @@ export default function SignupFields({
         showPasswordToggle
         onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
         showPassword={showConfirmPassword}
+        autoComplete="new-password"
       />
     </div>
   );

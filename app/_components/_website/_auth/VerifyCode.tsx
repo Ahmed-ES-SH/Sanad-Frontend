@@ -1,8 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { useSignUp } from "@clerk/nextjs";
 import { VscLoading } from "react-icons/vsc";
 import { useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -18,7 +16,6 @@ export default function VerifyCode({ onClose }: props) {
   const { local } = useVariables();
   const { verifyCode } = getTranslations(local);
 
-  const { signUp, isLoaded } = useSignUp();
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -30,7 +27,7 @@ export default function VerifyCode({ onClose }: props) {
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const val = e.target.value;
     if (!/^\d*$/.test(val)) return;
@@ -47,7 +44,7 @@ export default function VerifyCode({ onClose }: props) {
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     if (e.key === "Backspace" && values[index] === "" && index > 0) {
       inputsRef.current[index - 1]?.focus();
@@ -73,32 +70,7 @@ export default function VerifyCode({ onClose }: props) {
     inputsRef.current[lastIndex]?.focus();
   };
 
-  if (!signUp) return;
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isLoaded) return;
-
-    try {
-      setLoading(true);
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-
-      if (completeSignUp.status === "complete") {
-        toast.success("User signed up and verified!");
-        setValues(Array(6).fill(""));
-        router.push("/signin");
-      } else {
-        toast.error("Verification incomplete");
-      }
-    } catch (err) {
-      console.error("Verification error:", err);
-      toast.error("Verification error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleVerify = async (e: React.FormEvent) => {};
 
   const handleCancel = () => {
     setSureMessage(false);
@@ -112,7 +84,7 @@ export default function VerifyCode({ onClose }: props) {
           initial={{ opacity: 0, y: -300 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -300 }}
-          className="w-full h-screen fixed top-0 left-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md"
+          className="w-full h-screen fixed top-0 left-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-md"
         >
           <div className="bg-white shadow-xl p-6 rounded-3xl space-y-8 border border-gray-200 relative w-[95%] lg:w-[80%] xl:w-1/2">
             <FaTimes
@@ -158,7 +130,7 @@ export default function VerifyCode({ onClose }: props) {
                 type="submit"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 w-full rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg"
+                className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 w-full rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg"
               >
                 {loading ? (
                   <motion.div
@@ -181,7 +153,7 @@ export default function VerifyCode({ onClose }: props) {
           initial={{ opacity: 0, y: -300 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -300 }}
-          className="w-full h-screen fixed top-0 left-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md"
+          className="w-full h-screen fixed top-0 left-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-md"
         >
           <div className="lg:w-1/2 w-[80%] bg-white flex flex-col gap-4 items-center py-6 px-2 rounded-md">
             <PiWarningOctagon className="size-12 text-red-400" />

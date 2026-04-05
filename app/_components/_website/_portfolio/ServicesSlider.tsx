@@ -16,18 +16,18 @@ export default function ServicesSlider() {
     <>
       <div
         dir={directionMap[local]}
-        className="content my-8 pt-2 border-t border-gray-300"
+        className="content my-8 pt-8 border-t"
+        style={{ borderColor: "var(--surface-200)" }}
       >
-        <h2 className="text-3xl font-extrabold text-zinc-800 dark:text-white">
+        <h2 className="text-2xl font-bold" style={{ color: "var(--surface-900)" }}>
           {servicesSlider.title}
         </h2>
-        <p className="text-zinc-600 dark:text-zinc-300 mt-4 text-sm sm:text-base leading-relaxed">
+        <p className="mt-3 text-sm sm:text-base leading-relaxed" style={{ color: "var(--surface-500)" }}>
           {servicesSlider.description}
         </p>
       </div>
-      <div dir="ltr" id="swiper">
+      <div id="swiper">
         <Swiper
-          style={{ direction: "ltr" }}
           autoplay={{ delay: 2500 }}
           breakpoints={{
             640: { slidesPerView: 2 },

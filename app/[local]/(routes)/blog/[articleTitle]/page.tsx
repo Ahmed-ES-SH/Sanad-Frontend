@@ -24,7 +24,7 @@ export async function generateMetadata({ params, searchParams }: any) {
   }
 
   return {
-    title: `Madad Post - ${article.title}`,
+    title: `Sanad Post - ${article.title}`,
     description: article.excerpt,
     ...sharedMetadata,
   };

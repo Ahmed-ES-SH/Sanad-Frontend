@@ -9,34 +9,46 @@ import LocalLink from "../../_global/LocalLink";
 export default function AboutComponent() {
   const { local } = useVariables();
   const { aboutSection } = getTranslations(local);
-  return (
-    <>
-      <section id="about" dir={directionMap[local]} className=" relative">
-        <div className=" c-container py-8 sm:px-6 sm:py-12 lg:py-16">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
-            <Img
-              src="/madad-hero-2.png"
-              className="lg:w-[650px] w-[550px] max-lg:mx-auto object-cover"
-            />
 
-            <div className="lg:py-24">
-              <h2 className="text-xl ml-1 underline underline-primary-blue my-3  font-bold text-primary-red">
+  return (
+    <section
+      id="about"
+      dir={directionMap[local]}
+      className="relative py-16 lg:py-24"
+    >
+      <div className="c-container">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="surface-card-elevated p-4 relative">
+            <Img
+              src="/Sanad-hero-2.png"
+              className="w-full rounded-xl object-cover shadow-lg"
+            />
+            {/* Subtle glow behind image */}
+            <div className="absolute -inset-2 bg-primary/5 blur-xl -z-10 rounded-2xl" />
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <span className="surface-badge uppercase tracking-wider text-xs">
                 {aboutSection.sectionTitleSmall}
-              </h2>
-              <h2 className="text-3xl text-primary-text  font-bold sm:text-4xl">
+              </span>
+              <h2 className="text-[2.25rem] sm:text-[3rem] font-bold leading-[1.15] text-surface-900 tracking-tight">
                 {aboutSection.sectionTitleLarge}
               </h2>
-              <p className="mt-4 w-full lg:w-3/4 lg:text-lg text-[17px] text-second-text">
-                {aboutSection.description}
-              </p>
+            </div>
 
-              <LocalLink href="/about" className="primary-btn group">
+            <p className="text-[1.125rem] text-surface-600 leading-relaxed max-w-xl">
+              {aboutSection.description}
+            </p>
+
+            <div className="pt-4">
+              <LocalLink href="/about" className="surface-btn-primary px-8">
                 {aboutSection.buttonText}
               </LocalLink>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

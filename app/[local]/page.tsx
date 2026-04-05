@@ -6,7 +6,6 @@ import PortfolioSection from "../_components/_website/_home/PortfolioSection";
 import ServicesSection from "../_components/_website/_home/ServicesSection";
 import BlogSlider from "../_components/_website/_home/BlogSlider";
 import ContactUS from "../_components/_website/_home/ContanctUS";
-import PricingPlans from "../_components/_global/PricingPlans";
 
 export default function Home() {
   return (
@@ -16,7 +15,6 @@ export default function Home() {
       <ValueSection />
       <ServicesSection />
       <PortfolioSection />
-      <PricingPlans />
       <BlogSlider />
       <ContactUS />
     </>

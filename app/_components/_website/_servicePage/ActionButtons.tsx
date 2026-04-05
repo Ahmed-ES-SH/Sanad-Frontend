@@ -41,14 +41,14 @@ const FormSelect: React.FC<{
 }> = ({ label, value, onChange, options, error, required }) => {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-sm font-medium text-surface-700 font-display">
+        {label} {required && <span className="text-accent-rose">*</span>}
       </label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-          error ? "border-red-500 bg-red-50" : "border-gray-300"
+        className={`surface-input w-full ${
+          error ? "border-red-500 bg-red-50/50" : ""
         }`}
         aria-invalid={!!error}
         aria-describedby={error ? `${label}-error` : undefined}
@@ -266,25 +266,25 @@ const ServiceRequestModal: React.FC<{
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh]  relative overflow-y-auto"
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="surface-card-elevated w-full max-w-2xl max-h-[90vh] relative overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-surface-200">
               <h2
                 id="modal-title"
-                className="text-xl font-semibold text-gray-800"
+                className="heading-md text-primary font-display"
               >
                 Request Service
               </h2>
               {!isLoading && (
                 <button
                   onClick={handleClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  className="p-2 rounded-full hover:bg-surface-100 text-surface-400 hover:text-surface-600 transition-colors"
                   aria-label="Close modal"
                 >
                   <FaTimes size={20} />
@@ -293,11 +293,11 @@ const ServiceRequestModal: React.FC<{
             </div>
 
             {/* Content */}
-            <div className="p-6">
+            <div className="p-6 overflow-y-auto">
               {showSuccess ? (
                 <SuccessMessage />
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <FormInput
                     label="Project Title"
                     value={formData.projectTitle}
@@ -342,7 +342,7 @@ const ServiceRequestModal: React.FC<{
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+                    className="surface-btn-primary w-full py-4 gap-3"
                   >
                     {isLoading ? (
                       <>
@@ -350,7 +350,10 @@ const ServiceRequestModal: React.FC<{
                         Processing...
                       </>
                     ) : (
-                      "Submit Request"
+                      <>
+                        <FaShoppingCart />
+                        Submit Request
+                      </>
                     )}
                   </button>
                 </form>
@@ -381,16 +384,16 @@ export default function ActionButtons({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-4 my-6 mx-auto w-fit">
+      <div className="flex flex-col sm:flex-row gap-6 mt-12 mb-8 mx-auto w-fit">
         {/* Request Service Button */}
         <motion.button
           onClick={() => setIsModalOpen(true)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl shadow-md transition-all duration-300"
+          className="surface-btn-primary min-w-[200px] gap-3"
         >
-          <FaShoppingCart />
-          <span>{servicePage.orderService}</span>
+          <FaShoppingCart className="text-lg" />
+          <span className="font-display">{servicePage.orderService}</span>
         </motion.button>
 
         {/* Contact Support Button */}
@@ -398,10 +401,10 @@ export default function ActionButtons({
           onClick={handleContactSupport}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-2xl shadow-md transition-all duration-300"
+          className="surface-btn-secondary min-w-[200px] gap-3"
         >
-          <FaEnvelope />
-          <span>{servicePage.contactbtn}</span>
+          <FaEnvelope className="text-lg" />
+          <span className="font-display">{servicePage.contactbtn}</span>
         </motion.button>
       </div>
 

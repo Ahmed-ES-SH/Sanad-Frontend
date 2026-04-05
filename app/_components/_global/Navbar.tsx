@@ -10,25 +10,29 @@ import LocalLink from "./LocalLink";
 export default function Navbar() {
   return (
     <ClientDiv>
-      <div className="w-full z-[999] min-h-[70px] shadow-md px-2 py-2 fixed bg-primary-blue">
-        <div className="c-container flex items-center justify-between">
+      <header className="w-full h-20 fixed top-0 left-0 z-[999] transition-all duration-300 bg-primary/80 backdrop-blur-sm">
+        <div className="c-container h-full flex items-center justify-between">
           <div className="logo relative">
             <LocalLink href={"/"}>
-              <Img src="/logo.png" className="w-[90px] object-contain" />
+              <Img
+                src="/logo.webp"
+                className="w-32 object-contain transition-transform duration-300 hover:scale-105"
+              />
             </LocalLink>
           </div>
-          {/* Links */}
-          <NavLinks />
-          {/* ////////////////////////////////// */}
-          <div className="flex items-center gap-2 ">
+
+          <nav className="flex-1 flex justify-center">
+            <NavLinks />
+          </nav>
+
+          <div className="flex items-center gap-4">
             <Joinbtn />
-            {/* SelectLanguage */}
+            <div className="w-px h-6 bg-white/10 hidden md:block" />
             <SelectLanguage />
-            {/* ///////////////// */}
             <MobailSidebar />
           </div>
         </div>
-      </div>
+      </header>
     </ClientDiv>
   );
 }

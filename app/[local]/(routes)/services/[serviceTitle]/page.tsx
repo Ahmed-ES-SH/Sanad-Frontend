@@ -11,7 +11,7 @@ export async function generateMetadata({ params, searchParams }: any) {
   const { serviceId } = await searchParams;
 
   const service: any = servicesData.find(
-    (service) => service.id === Number(serviceId)
+    (service) => service.id === Number(serviceId),
   );
 
   const translations = getTranslations(local ?? "en");
@@ -26,7 +26,7 @@ export async function generateMetadata({ params, searchParams }: any) {
   }
 
   return {
-    title: `Madad Service - ${service.title[local ?? "en"]}`,
+    title: `Sanad Service - ${service.title[local ?? "en"]}`,
     description: service.description[local ?? "en"],
     ...sharedMetadata,
   };

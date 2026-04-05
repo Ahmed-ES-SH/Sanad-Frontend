@@ -19,16 +19,20 @@ export default function BenefitsList({ benefits, local }: BenefitsListProps) {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.4, duration: 0.5 }}
-      className="bg-white p-6 rounded-xl shadow-md"
+      className="surface-card-subtle p-8 h-full bg-gradient-surface"
     >
-      <h3 className="text-xl font-semibold text-primary-text mb-4">
+      <h3 className="heading-sm text-primary font-display mb-6">
         {servicePage.benefits}
       </h3>
-      <ul className="space-y-3">
+      <ul className="space-y-5">
         {benefits[local].map((benefit, index) => (
-          <li key={index} className="flex gap-3 items-start">
-            <FaCheckCircle className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-            <span className="text-primary-text">{benefit}</span>
+          <li key={index} className="flex gap-4 items-start group">
+            <div className="mt-1 w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-accent-emerald text-white shadow-sm transition-transform group-hover:scale-110">
+              <FaCheckCircle className="text-sm" />
+            </div>
+            <span className="text-surface-700 body-lg font-medium">
+              {benefit}
+            </span>
           </li>
         ))}
       </ul>

@@ -1,6 +1,7 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 interface props {
   src: string;
@@ -11,6 +12,8 @@ interface props {
   loading?: "lazy" | "eager" | undefined;
   priority?: boolean;
   onLoad?: () => void;
+  onError?: () => void;
+  fallback?: React.ReactNode;
   ref?: any;
 }
 
@@ -23,21 +26,33 @@ export default function Img({
   loading = "lazy",
   priority = false,
   onLoad,
+  onError,
+  fallback,
   ref,
 }: props) {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    setHasError(true);
+    onError?.();
+  };
+
+  if (hasError && fallback) {
+    return <>{fallback}</>;
+  }
+
   return (
-    <>
-      <Image
-        src={src}
-        alt={alt}
-        className={className}
-        width={width}
-        height={height}
-        loading={loading}
-        priority={priority}
-        onLoad={onLoad}
-        ref={ref}
-      />
-    </>
+    <Image
+      src={src}
+      alt={alt}
+      className={className}
+      width={width}
+      height={height}
+      loading={loading}
+      priority={priority}
+      onLoad={onLoad}
+      onError={handleError}
+      ref={ref}
+    />
   );
 }

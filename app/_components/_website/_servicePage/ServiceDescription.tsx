@@ -24,10 +24,14 @@ export default function ServiceDescription({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.3, duration: 0.5 }}
-      className="bg-white p-6 rounded-xl shadow-md"
+      className="surface-card p-8"
     >
-      <p className="text-primary-text text-lg mb-4">{smallDesc[local]}</p>
-      <p className="text-primary-text/90">{description[local]}</p>
+      <p className="text-primary font-display heading-sm mb-4">
+        {smallDesc[local]}
+      </p>
+      <p className="text-surface-600 body-lg leading-relaxed">
+        {description[local]}
+      </p>
     </motion.div>
   );
 }

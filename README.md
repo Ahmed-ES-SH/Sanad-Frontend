@@ -1,8 +1,8 @@
-# Madad - Technical Services Company Website
+# Sanad - Technical Services Company Website
 
 ## 📋 Overview
 
-Madad is a modern web application designed for a company specializing in technical services. The project provides a contemporary and interactive user interface to showcase services and facilitate client communication.
+Sanad is a modern web application designed for a company specializing in technical services. The project provides a contemporary and interactive user interface to showcase services and facilitate client communication.
 
 ## 🚀 Technologies Used
 
@@ -29,7 +29,7 @@ Madad is a modern web application designed for a company specializing in technic
 ## 📁 Project Structure
 
 ```
-MADAD-PROJECT/
+Sanad-PROJECT/
 ├── .clerk/                 # Clerk authentication configuration
 ├── .vscode/               # VS Code settings
 ├── _components/           # Reusable React components
@@ -60,7 +60,7 @@ MADAD-PROJECT/
 
    ```bash
    git clone [repository-url]
-   cd MADAD-PROJECT
+   cd Sanad-PROJECT
    ```
 
 2. **Install dependencies**
@@ -130,13 +130,13 @@ npm run lint         # Run ESLint
 
 ## 📄 License
 
-This project is proprietary software developed for Madad Technical Services Company.
+This project is proprietary software developed for Sanad Technical Services Company.
 
 ## 📞 Support
 
-For technical support or inquiries about the Madad platform, please contact the development team.
+For technical support or inquiries about the Sanad platform, please contact the development team.
 
 ---
 
-**Built with ❤️ for Madad Technical Services**
+**Built with ❤️ for Sanad Technical Services**
 **Built with ❤️ by Ahmed Ismail**

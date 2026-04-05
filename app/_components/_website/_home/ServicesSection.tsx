@@ -9,57 +9,70 @@ import LocalLink from "../../_global/LocalLink";
 export default function ServicesSection() {
   const { local } = useVariables();
   const { services } = getTranslations(local);
+  
   return (
-    <>
-      <section dir={directionMap[local]}>
-        <div className="c-container sm:py-12 lg:py-16">
-          <div className="mx-auto max-w-lg text-center">
-            <h2 className="text-xl text-primary-red underline  my-4 font-bold sm:text-2xl">
+    <section dir={directionMap[local]} className="relative py-20 lg:py-32 bg-surface-50">
+      <div className="c-container">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 lg:mb-24">
+          <div className="max-w-2xl space-y-4">
+            <span className="inline-flex items-center gap-2 text-primary font-bold tracking-widest text-xs uppercase">
+              <span className="w-8 h-px bg-primary" />
               {services.subtitle}
+            </span>
+            <h2 className="text-[2.5rem] lg:text-[4rem] font-extrabold leading-[1.1] text-surface-900 tracking-tight">
+              {services.title}
             </h2>
-            <h2 className="text-3xl font-bold sm:text-4xl">{services.title}</h2>
           </div>
-
-          <p className="mt-4 lg:w-1/2  w-full mx-auto text-center text-second-text">
+          <p className="text-[1.125rem] text-surface-600 leading-relaxed max-w-md">
             {services.description}
           </p>
-
-          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {servicesSection.map((service, index) => (
-              <LocalLink
-                key={index}
-                href={`/services/${formatTitle(
-                  service.title[local]
-                )}?serviceId=${service.id}`}
-                className="block group py-12 rounded-xl border border-gray-300  p-8 shadow-xl transition hover:border-primary-yellow hover:shadow-primary-yellow relative overflow-hidden"
-              >
-                <div className="group-hover:scale-[140%] group-hover:rotate-[360deg] duration-500 w-fit">
-                  <Img src={service.src} className="w-[50px] " />
-                </div>
-
-                <h2 className="mt-4 group-hover:text-white duration-300 text-xl font-bold text-primary-blue ">
-                  {service.title[local]}
-                </h2>
-
-                <p className="mt-1 group-hover:text-white duration-300 text-sm text-black/70 ">
-                  {service.smallDesc[local]}
-                </p>
-
-                <div className="w-0 h-full absolute top-0 left-0 bg-primary-yellow z-[-1] group-hover:w-full duration-500"></div>
-              </LocalLink>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <LocalLink
-              href="/services"
-              className="primary-btn mx-auto bg-primary-yellow hover:bg-white  hover:border-primary-yellow"
-            >
-              {services.cta}
-            </LocalLink>
-          </div>
         </div>
-      </section>
-    </>
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {servicesSection.map((service, index) => (
+            <LocalLink
+              key={index}
+              href={`/services/${formatTitle(
+                service.title[local]
+              )}?serviceId=${service.id}`}
+              className="group bg-white p-10 rounded-[2rem] shadow-surface-sm hover:shadow-surface-lg transition-all duration-500 hover:-translate-y-2 border border-surface-200/50 relative overflow-hidden"
+            >
+              {/* Numeric Indicator */}
+              <span className="absolute top-8 right-10 text-5xl font-black text-surface-100 group-hover:text-primary/5 transition-colors duration-500 select-none">
+                0{index + 1}
+              </span>
+
+              <div className="mb-8 p-4 rounded-2xl bg-primary/5 w-fit group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
+                <Img src={service.src} className="w-10 h-10 object-contain group-hover:brightness-0 group-hover:invert transition-all duration-500" />
+              </div>
+
+              <h3 className="text-[1.5rem] font-bold text-surface-900 group-hover:text-primary transition-colors duration-300 mb-4">
+                {service.title[local]}
+              </h3>
+
+              <p className="text-body text-surface-500 leading-relaxed group-hover:text-surface-600 transition-colors duration-300">
+                {service.smallDesc[local]}
+              </p>
+
+              <div className="mt-8 flex items-center gap-2 text-primary font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+                {local === "ar" ? "اكتشف المزيد" : "Learn More"}
+                <span className={`transition-transform duration-300 ${local === 'ar' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
+                  {local === 'ar' ? '←' : '→'}
+                </span>
+              </div>
+            </LocalLink>
+          ))}
+        </div>
+
+        <div className="mt-20 flex justify-center">
+          <LocalLink
+            href="/services"
+              className="surface-btn-primary px-12 h-14 text-lg"
+          >
+            {services.cta}
+          </LocalLink>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -42,18 +42,18 @@ export const formVariants = {
 // Main Contact Page Component
 export default function ContactPage() {
   return (
-    <div className="min-h-screen pt-20 bg-gray-50">
+    <div className="min-h-screen pt-20 page-bg">
       <HeadContactPage />
 
-      <main className="c-container py-16">
+      <main className="c-container py-20">
         {/* Contact Section */}
         <motion.section
-          className="mb-24"
+          className="mb-32"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
             {/* Contact Form */}
             <motion.div className="lg:col-span-2" variants={formVariants}>
               <ContactForm />

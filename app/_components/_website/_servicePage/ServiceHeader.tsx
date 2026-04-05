@@ -19,30 +19,62 @@ export default function ServiceHeader({
 }: ServiceHeaderProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative rounded-xl overflow-hidden shadow-lg"
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="relative rounded-[2rem] overflow-hidden shadow-surface-lg group"
     >
-      <div className="h-64 md:h-80 w-full relative">
+      <div className="h-[400px] md:h-[500px] w-full relative">
         <Image
           src={image}
           alt={title.en}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-1000 group-hover:scale-105"
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl md:text-4xl lg:text-5xl text-gray-200 font-bold  text-center"
-            suppressHydrationWarning
+
+        {/* Decorative Mesh Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent opacity-60" />
+
+        {/* Glass Content Card */}
+        <div className="absolute inset-0 flex items-end p-8 md:p-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, y: 0, backdropFilter: "blur(16px)" }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="surface-card-elevated p-8 md:p-10 max-w-2xl border-white/30"
           >
-            {title[local]}
-          </motion.h1>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex items-center gap-2 mb-4"
+            >
+              <span className="surface-badge">Sanad Services</span>
+              <div className="h-px w-12 bg-accent-cyan" />
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="display-md text-surface-900 font-display leading-tight"
+              suppressHydrationWarning
+            >
+              {title[local]}
+            </motion.h1>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 }}
+              className="mt-6 flex gap-4"
+            >
+              <div className="h-1.5 w-12 rounded-full bg-gradient-primary" />
+              <div className="h-1.5 w-4 rounded-full bg-accent-cyan/40" />
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </motion.div>

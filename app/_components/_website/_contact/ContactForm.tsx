@@ -43,11 +43,11 @@ const InputField: React.FC<{
   placeholder: string;
 }> = ({ label, type, name, value, onChange, error, icon, placeholder }) => (
   <motion.div className="space-y-2" variants={itemVariants}>
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+    <label htmlFor={name} className="block body-sm font-medium text-surface-700">
       {label}
     </label>
     <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-surface-400">
         {icon}
       </div>
       <input
@@ -57,17 +57,17 @@ const InputField: React.FC<{
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${
+        className={`w-full body pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all duration-200 ${
           error
-            ? "border-red-500 bg-red-50"
-            : "border-gray-300 hover:border-gray-400"
+            ? "border-accent-rose bg-accent-rose/5"
+            : "border-surface-200 hover:border-surface-300 bg-white"
         }`}
       />
     </div>
     <AnimatePresence>
       {error && (
         <motion.p
-          className="text-red-500 text-sm flex items-center gap-1"
+          className="text-accent-rose caption flex items-center gap-1 mt-1"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -92,7 +92,7 @@ const TextareaField: React.FC<{
   rows?: number;
 }> = ({ label, name, value, onChange, error, placeholder, rows = 5 }) => (
   <motion.div className="space-y-2" variants={itemVariants}>
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+    <label htmlFor={name} className="block body-sm font-medium text-surface-700">
       {label}
     </label>
     <div className="relative">
@@ -103,17 +103,17 @@ const TextareaField: React.FC<{
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-vertical ${
+        className={`w-full body px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all duration-200 resize-vertical ${
           error
-            ? "border-red-500 bg-red-50"
-            : "border-gray-300 hover:border-gray-400"
+            ? "border-accent-rose bg-accent-rose/5"
+            : "border-surface-200 hover:border-surface-300 bg-white"
         }`}
       />
     </div>
     <AnimatePresence>
       {error && (
         <motion.p
-          className="text-red-500 text-sm flex items-center gap-1"
+          className="text-accent-rose caption flex items-center gap-1 mt-1"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -245,7 +245,7 @@ export default function ContactForm() {
   if (isSubmitted) {
     return (
       <motion.div
-        className="bg-white rounded-2xl shadow-lg p-8 text-center"
+        className="bg-white rounded-2xl shadow-surface-md p-10 text-center"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -254,28 +254,28 @@ export default function ContactForm() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          className="w-20 h-20 bg-accent-emerald/10 rounded-full flex items-center justify-center mx-auto mb-6"
         >
-          <FiCheck className="w-8 h-8 text-green-600" />
+          <FiCheck className="w-10 h-10 text-accent-emerald" />
         </motion.div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+        <h3 className="heading-lg font-display text-surface-900 mb-3">
           {contactPage.messageSend}
         </h3>
-        <p className="text-gray-600">{contactPage.thanksMessage}</p>
+        <p className="body text-surface-600">{contactPage.thanksMessage}</p>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-lg p-8"
+      className="bg-white rounded-2xl shadow-surface-md p-10"
       variants={formVariants}
     >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="mb-10">
+        <h2 className="heading-lg font-display text-surface-900 mb-3">
           {contactPage.sendMessage}
         </h2>
-        <p className="text-gray-600">{contactPage.formDescription}</p>
+        <p className="body text-surface-600">{contactPage.formDescription}</p>
       </div>
 
       <motion.form
@@ -286,7 +286,7 @@ export default function ContactForm() {
         animate="visible"
       >
         {/* الحقول التي تظهر في عمودين */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           {inputFields
             .filter((field) => field.colSpan)
             .map((field) =>
@@ -351,9 +351,9 @@ export default function ContactForm() {
         <motion.button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="w-full bg-primary hover:bg-primary-dark disabled:bg-surface-300 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-button hover:shadow-button-hover"
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
           variants={itemVariants}
         >
           {isSubmitting ? (

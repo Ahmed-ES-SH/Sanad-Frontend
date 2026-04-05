@@ -20,25 +20,25 @@ function FAQItem({ item, index }: props) {
 
   return (
     <motion.div
-      className="bg-white rounded-xl shadow-sm overflow-hidden"
+      className="bg-white rounded-2xl shadow-surface-sm overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
     >
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
-        whileHover={{ backgroundColor: "rgb(249 250 251)" }}
+        className="w-full px-8 py-5 text-left flex items-center justify-between hover:bg-surface-50 transition-colors duration-200"
+        whileHover={{ backgroundColor: "var(--surface-50)" }}
       >
-        <h3 className="font-semibold text-gray-900 pr-4">
+        <h3 className="heading-sm font-display text-surface-900 pr-4">
           {item.question[local]}
         </h3>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="flex-shrink-0"
         >
-          <FiChevronDown className="w-5 h-5 text-gray-500" />
+          <FiChevronDown className={`w-5 h-5 ${isOpen ? 'text-primary' : 'text-surface-400'}`} />
         </motion.div>
       </motion.button>
 
@@ -48,11 +48,11 @@ function FAQItem({ item, index }: props) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} // ease-out-expo
             className="overflow-hidden"
           >
-            <div className="px-6 pb-4">
-              <p className="text-gray-600 leading-relaxed">
+            <div className="px-8 pb-6">
+              <p className="body text-surface-600 leading-relaxed">
                 {item.answer[local]}
               </p>
             </div>
@@ -68,16 +68,16 @@ export default function FAQSection() {
   const { contactPage } = getTranslations(local);
   return (
     <motion.section
-      className="w-full"
+      className="w-full max-w-4xl mx-auto"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <motion.div className="text-center mb-12" variants={itemVariants}>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <motion.div className="text-center mb-16" variants={itemVariants}>
+        <h2 className="display-sm font-display text-surface-900 mb-4">
           {contactPage.faqTitle}
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="body text-surface-600 max-w-2xl mx-auto">
           {contactPage.faqDescription}
         </p>
       </motion.div>

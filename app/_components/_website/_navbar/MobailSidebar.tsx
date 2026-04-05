@@ -6,8 +6,12 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { IoClose } from "react-icons/io5";
 import LocalLink from "../../_global/LocalLink";
 
+import { getTranslations } from "@/app/helpers/helpers";
+import Img from "../../_global/Img";
+
 export default function MobailSidebar() {
   const { width, local } = useVariables();
+  const { hero } = getTranslations(local);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -23,45 +27,82 @@ export default function MobailSidebar() {
   return (
     <>
       <div
-        className={`text-white cursor-pointer lg:hidden ${
-          isSidebarOpen && "opacity-0"
+        className={`text-white cursor-pointer lg:hidden transition-opacity duration-300 ${
+          isSidebarOpen ? "opacity-0" : "opacity-100"
         }`}
         onClick={toggleSidebar}
       >
-        <HiOutlineBars3BottomRight size={30} />
+        <HiOutlineBars3BottomRight size={32} />
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar Overlay */}
+      <div
+        className={`fixed inset-0 bg-surface-900/40 backdrop-blur-sm z-[9998] transition-opacity duration-300 lg:hidden ${
+          isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={toggleSidebar}
+      />
+
+      {/* Sidebar Content */}
       <aside
-        className={`fixed top-0 right-0 w-72 h-full bg-white shadow-xl z-[9999] transform transition-transform duration-300 ease-in-out lg:hidden flex flex-col p-5 gap-6 ${
-          isSidebarOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 ${local === "ar" ? "left-0" : "right-0"} w-80 h-full bg-white z-[9999] transform transition-transform duration-500 ease-out lg:hidden flex flex-col shadow-2xl ${
+          isSidebarOpen
+            ? "translate-x-0"
+            : local === "ar"
+              ? "-translate-x-full"
+              : "translate-x-full"
         }`}
       >
-        <button onClick={toggleSidebar} aria-label="Close menu">
-          <IoClose size={28} className="text-primary-blue w-fit ml-auto" />
-        </button>
+        <div className="p-6 flex items-center justify-between border-b border-surface-100">
+          <div className="w-24">
+            <LocalLink href="/">
+              <Img
+                src="/logo.png"
+                className="w-full object-contain brightness-0"
+              />
+            </LocalLink>
+          </div>
+          <button
+            onClick={toggleSidebar}
+            aria-label="Close menu"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-50 text-surface-900 hover:bg-primary/10 hover:text-primary transition-colors"
+          >
+            <IoClose size={24} />
+          </button>
+        </div>
 
-        <nav className="flex flex-col gap-4 text-primary-dark">
+        <nav className="flex-1 overflow-y-auto p-6 space-y-2">
           {navLinks.map((item, index) => (
-            <div
+            <LocalLink
               key={index}
+              href={item.link || "/#contactus"}
               onClick={() => setIsSidebarOpen(false)}
-              className="not-last:border-b hover:text-primary-blue border-b-gray-400 pb-2 hover:border-b-primary-blue transition-colors duration-200"
+              className="flex items-center gap-4 p-4 rounded-2xl text-surface-600 hover:bg-primary/5 hover:text-primary font-semibold transition-all duration-200"
             >
-              <LocalLink
-                href={item.link || "/#contactus"}
-                className="flex items-center gap-3 text-lg   "
-              >
-                {item.icon && (
-                  <span className="text-xl">
-                    <item.icon />
-                  </span>
-                )}
-                <span>{item.text[local]}</span>
-              </LocalLink>
-            </div>
+              {item.icon && (
+                <span className="text-xl opacity-70">
+                  <item.icon />
+                </span>
+              )}
+              <span>{item.text[local]}</span>
+            </LocalLink>
           ))}
         </nav>
+
+        <div className="p-6 border-t border-surface-100 bg-surface-50/50">
+          <LocalLink
+            href="/signup"
+            onClick={() => setIsSidebarOpen(false)}
+            className="surface-btn-primary w-full h-14 text-base"
+          >
+            {hero.join}
+          </LocalLink>
+          <p className="mt-4 text-center text-[10px] text-surface-400 font-medium uppercase tracking-widest">
+            {local === "ar"
+              ? "رحلتك الرقمية تبدأ هنا"
+              : "Your digital journey starts here"}
+          </p>
+        </div>
       </aside>
     </>
   );

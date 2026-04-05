@@ -1,41 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ProjectDetailsPage from "@/app/_components/_website/_projectPage/ProjectDetailsPage";
-import React, { Suspense } from "react";
-import Loading from "../../services/[serviceTitle]/loading";
-import { projectsData } from "@/app/constants/projects";
-import { getTranslations } from "@/app/helpers/helpers";
+import { redirect } from "next/navigation";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
+import { getTranslations } from "@/app/helpers/helpers";
+import React from "react";
+import { portfolioData } from "@/app/constants/portfolioData";
 
-export async function generateMetadata({ params, searchParams }: any) {
+interface PageParams {
+  params: Promise<{ local: string }>;
+  searchParams: Promise<{ projectId?: string }>;
+}
+
+export async function generateMetadata({ params, searchParams }: PageParams) {
   const { local } = await params;
   const { projectId } = await searchParams;
 
-  const project: any = projectsData.find(
-    (service) => service.id === Number(projectId)
-  );
-
+  const project = portfolioData.find((p) => p.id === Number(projectId));
   const translations = getTranslations(local ?? "en");
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   if (!project) {
     return {
-      title: "project Title",
-      description: "project Description",
+      title: "Project — Sanad",
+      description: "Explore our delivered projects.",
       ...sharedMetadata,
     };
   }
 
   return {
-    title: `Madad Project - ${project.title[local ?? "en"]}`,
+    title: `${project.title[local ?? "en"]} — Sanad`,
     description: project.description[local ?? "en"],
     ...sharedMetadata,
   };
 }
 
-export default function ProjectPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ProjectDetailsPage />;
-    </Suspense>
-  );
+export default async function ProjectPage({ params, searchParams }: PageParams) {
+  const { local } = await params;
+  const { projectId } = await searchParams;
+
+  if (projectId) {
+    redirect(`/${local}/project?projectId=${projectId}`);
+  }
+
+  redirect(`/${local}/project`);
 }

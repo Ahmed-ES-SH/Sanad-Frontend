@@ -12,13 +12,25 @@ function FormHeader(props: FormHeaderProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-center space-y-2"
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="text-center space-y-2 mb-6"
     >
-      <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-      <p className="text-gray-600">{subtitle}</p>
+      <h1
+        className="text-3xl font-bold font-display"
+        style={{ color: "var(--surface-900)" }}
+      >
+        {title}
+      </h1>
+      {subtitle && (
+        <p
+          className="text-base"
+          style={{ color: "var(--surface-500)" }}
+        >
+          {subtitle}
+        </p>
+      )}
     </motion.div>
   );
 }

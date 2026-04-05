@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Img from "../../_global/Img";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiEye } from "react-icons/fi";
 import { Project } from "./ProjectsPortfolio";
 import { useRouter } from "next/navigation";
 import { formatTitle } from "@/app/helpers/helpers";
 import ShareButton from "./ShareButton";
+import ProjectThumbnail from "./ProjectThumbnail";
 
 interface props {
   project: Project;
@@ -16,21 +16,7 @@ interface props {
 
 export default function ProjectCard({ project, local, index }: props) {
   const router = useRouter();
-  const [mainurl, setMainurl] = useState("");
-
-  useEffect(() => {
-    let currentUrl = window.location.href;
-
-    if (!currentUrl.includes("/portfolio")) {
-      if (currentUrl.endsWith("/")) {
-        currentUrl += "portfolio";
-      } else {
-        currentUrl += "/portfolio";
-      }
-    }
-
-    setMainurl(currentUrl);
-  }, []);
+  const [imageError, setImageError] = useState(false);
 
   const goToProject = () => {
     router.push(
@@ -39,81 +25,116 @@ export default function ProjectCard({ project, local, index }: props) {
       }`
     );
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToProject();
+    }
+  };
+
   return (
-    <>
-      <motion.div
-        key={project.id}
-        layout
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -50 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
-        whileHover={{ y: -10 }}
-        className="bg-white rounded-2xl shadow-lg  group cursor-pointer"
-      >
-        {/* Project Image */}
-        <div className="relative z-[99]">
-          <div className="h-48  overflow-hidden">
-            <Img
+    <motion.div
+      key={project.id}
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View project: ${project.title[local]}`}
+      className="group cursor-pointer overflow-hidden rounded-xl border bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      style={{ borderColor: "var(--surface-200)" }}
+      onClick={goToProject}
+      onKeyDown={handleKeyDown}
+    >
+      {/* Project Image / Branded Thumbnail */}
+      <div className="relative overflow-hidden" style={{ backgroundColor: "var(--surface-100)" }}>
+        {project.imgSrc ? (
+          imageError ? (
+            <ProjectThumbnail
+              title={project.title[local]}
+              category={project.category[local]}
+              local={local}
+            />
+          ) : (
+            <img
               src={project.imgSrc}
               alt={project.title[local]}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={() => setImageError(true)}
             />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          )
+        ) : (
+          <ProjectThumbnail
+            title={project.title[local]}
+            category={project.category[local]}
+            local={local}
+          />
+        )}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
 
-          {/* Hover Actions */}
-          <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <motion.button
-              onClick={goToProject}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors"
-            >
-              <FiEye className="w-5 h-5 text-gray-800" />
-            </motion.button>
+        {/* Hover Actions */}
+        <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <button
+            className="bg-white p-2.5 rounded-full shadow-lg hover:bg-surface-50 transition-colors"
+            style={{ color: "var(--surface-900)" }}
+            aria-label="View Project"
+            onClick={(e) => {
+              e.stopPropagation();
+              goToProject();
+            }}
+          >
+            <FiEye className="w-5 h-5" style={{ color: "var(--primary)" }} />
+          </button>
+          <div onClick={(e) => e.stopPropagation()}>
             <ShareButton
-              link={`${mainurl}/${formatTitle(
-                project.title[local]
-              )}?projectId=${project.id}`}
+              projectId={project.id}
+              projectTitle={project.title[local]}
+              local={local}
             />
           </div>
         </div>
+      </div>
 
-        {/* Project Content */}
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="px-3 py-1 bg-sky-400/50 text-primary-blue rounded-full text-sm font-medium">
-              {project.category[local]}
-            </span>
-          </div>
-
-          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-blue transition-colors">
-            {project.title[local]}
-          </h3>
-
-          <p className="text-gray-600 mb-4 line-clamp-3">
-            {project.description[local]}
-          </p>
-
-          {/* Skills Tags */}
-          <div className="flex flex-wrap gap-2">
-            {project.skills.slice(0, 3).map((skill) => (
-              <span
-                key={skill}
-                className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs"
-              >
-                {skill}
-              </span>
-            ))}
-            {project.skills.length > 3 && (
-              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
-                +{project.skills.length - 3} more
-              </span>
-            )}
-          </div>
+      {/* Project Content */}
+      <div className="p-5 flex flex-col flex-grow">
+        <div className="flex items-center mb-3">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider" style={{ backgroundColor: "var(--primary-100)", color: "var(--primary)" }}>
+            {project.category[local]}
+          </span>
         </div>
-      </motion.div>
-    </>
+
+        <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-1" style={{ color: "var(--surface-900)" }}>
+          {project.title[local]}
+        </h3>
+
+        <p className="text-sm mb-4 line-clamp-2 leading-relaxed flex-grow" style={{ color: "var(--surface-500)" }}>
+          {project.description[local]}
+        </p>
+
+        {/* Skills Tags */}
+        <div className="flex flex-wrap gap-1.5">
+          {project.skills.slice(0, 3).map((skill) => (
+            <span
+              key={skill}
+              className="px-2 py-0.5 rounded text-xs font-medium"
+              style={{ backgroundColor: "var(--surface-100)", color: "var(--surface-500)" }}
+            >
+              {skill}
+            </span>
+          ))}
+          {project.skills.length > 3 && (
+            <span
+              className="px-2 py-0.5 rounded text-xs font-medium"
+              style={{ backgroundColor: "var(--surface-100)", color: "var(--surface-500)" }}
+            >
+              +{project.skills.length - 3}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }

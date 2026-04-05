@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import AuthLayout from "@/app/_components/_website/_auth/AuthLayout";
 import SignupForm from "@/app/_components/_website/_auth/SignupForm";
 import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
+import AuthLayout from "@/app/_components/_website/_auth/AuthLayout";
 
-export async function generateMetadata({ params }: any) {
+interface PageParams {
+  params: Promise<{ local: string }>;
+}
+
+export async function generateMetadata({ params }: PageParams) {
   const { local } = await params;
   const translations = getTranslations(local ?? "en");
 
