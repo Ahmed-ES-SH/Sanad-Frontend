@@ -1,39 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ArticleDetailPage from "@/app/_components/_website/_articlePage/ArticleDetailsPage";
+import ArticleDetailsPage from "@/app/_components/_website/_articlePage/ArticleDetailsPage";
 import React, { Suspense } from "react";
 import Loading from "../../services/[serviceTitle]/loading";
-import { blogPosts } from "@/app/constants/blogposts";
 import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
+import { getArticleBySlug } from "@/app/actions/blogActions";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params, searchParams }: any) {
-  const { local } = await params;
-  const { articleId } = await searchParams;
-
-  const article = blogPosts.find((service) => service.id === Number(articleId));
-
+  const { local, articleTitle } = await params;
   const translations = getTranslations(local ?? "en");
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
-  if (!article) {
+  try {
+    const article = await getArticleBySlug(articleTitle);
     return {
-      title: "Post Title",
-      description: "Post Description",
+      title: `Sanad Post - ${article.title}`,
+      description: article.excerpt || "",
+      ...sharedMetadata,
+    };
+  } catch {
+    return {
+      title: translations.blogMeta.title,
+      description: translations.blogMeta.description,
       ...sharedMetadata,
     };
   }
-
-  return {
-    title: `Sanad Post - ${article.title}`,
-    description: article.excerpt,
-    ...sharedMetadata,
-  };
 }
 
-export default function ArticlePage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ArticleDetailPage />
-    </Suspense>
-  );
+export default async function ArticlePage({ params }: any) {
+  const { articleTitle } = await params;
+
+  try {
+    const article = await getArticleBySlug(articleTitle);
+    return (
+      <Suspense fallback={<Loading />}>
+        <ArticleDetailsPage article={article} />
+      </Suspense>
+    );
+  } catch {
+    notFound();
+  }
 }

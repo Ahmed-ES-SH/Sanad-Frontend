@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: any) {
   };
 }
 
-export default function SignupPage() {
+export default function SigninPage() {
   return (
     <AuthLayout>
       <SignInForm />

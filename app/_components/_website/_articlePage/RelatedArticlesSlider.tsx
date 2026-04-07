@@ -8,6 +8,7 @@ import "swiper/css/navigation";
 import { blogPosts } from "@/app/constants/blogposts";
 import ArticleCard from "../_blog/ArticleCard";
 import { useVariables } from "@/app/context/VariablesContext";
+import { Article } from "./types";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -47,7 +48,7 @@ export default function RelatedArticlesSlider() {
       >
         {blogPosts.map((article, index) => (
           <SwiperSlide key={article.id}>
-            <ArticleCard post={article} index={index} />
+            <ArticleCard article={article as any} index={index} />
           </SwiperSlide>
         ))}
       </Swiper>

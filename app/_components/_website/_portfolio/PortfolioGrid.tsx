@@ -2,12 +2,32 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import PortfolioCard from "./PortfolioCard";
 import ProjectSpotlight from "./ProjectSpotlight";
-import { PortfolioProject } from "@/app/constants/portfolioData";
 
 const ITEMS_PER_LOAD = 6;
 
+interface MappedProject {
+  id: string | number;
+  imgSrc: string;
+  title: { en: string; ar: string };
+  description: { en: string; ar: string };
+  category: { en: string; ar: string };
+  tools: string[];
+  services: string[];
+  metrics: { value: string; label: { en: string; ar: string } }[];
+  year: string;
+  featured?: boolean;
+  spotlight?: Record<string, unknown>;
+  gallery?: string[];
+  longDescription?: string | null;
+  liveUrl?: string | null;
+  repoUrl?: string | null;
+  slug?: string;
+  client?: { en: string; ar: string };
+  duration?: { en: string; ar: string };
+}
+
 interface Props {
-  projects: PortfolioProject[];
+  projects: MappedProject[];
   local: "en" | "ar";
 }
 
@@ -35,7 +55,6 @@ export default function PortfolioGrid({ projects, local }: Props) {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
 
-    // Simulate minimal delay for UX feedback
     requestAnimationFrame(() => {
       const nextCount = Math.min(visibleCount + ITEMS_PER_LOAD, projects.length);
       setVisibleCount(nextCount);
@@ -99,7 +118,7 @@ export default function PortfolioGrid({ projects, local }: Props) {
                     onMouseLeave={() => setIsSpotlightPaused(false)}
                   >
                     <ProjectSpotlight
-                      projects={spotlightProjects}
+                      projects={spotlightProjects as unknown as Parameters<typeof ProjectSpotlight>[0]['projects']}
                       local={local}
                       isPaused={isSpotlightPaused}
                     />

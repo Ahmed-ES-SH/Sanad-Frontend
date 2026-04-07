@@ -53,15 +53,13 @@ export default function BlogSlider() {
           <div className="space-y-4 mb-8">
             <h2 className="text-[2.25rem] lg:text-[3rem] font-bold text-surface-900 leading-[1.15] tracking-tight">
               {blogSection.title}{" "}
-              <span className="text-primary">
-                {blogSection.blogs}
-              </span>
+              <span className="text-primary">{blogSection.blogs}</span>
             </h2>
             <p className="text-[1.125rem] text-surface-600 leading-relaxed max-lg:mx-auto">
               {blogSection.paragraphLine}
             </p>
           </div>
-          
+
           <LocalLink
             href="/blog"
             className="surface-btn-primary px-10 h-12 max-lg:mx-auto"
@@ -123,11 +121,13 @@ export default function BlogSlider() {
                     <div className="shrink-0 bg-white/20 backdrop-blur-md p-1 rounded-full border border-white/30 shadow-lg">
                       <Img
                         className="size-10 rounded-full"
-                        src="/logo.png"
+                        src="/sanad-logo.png"
                       />
                     </div>
                     <div className="mx-3">
-                      <h4 className="text-sm font-semibold text-white drop-shadow-md">Admin</h4>
+                      <h4 className="text-sm font-semibold text-white drop-shadow-md">
+                        Admin
+                      </h4>
                       <p className="text-[10px] text-white/70">{slide.date}</p>
                     </div>
                   </div>

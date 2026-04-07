@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
+import { useVariables } from "@/app/context/VariablesContext";
+import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { ReactNode } from "react";
 
 interface SubmitButtonProps {
@@ -13,6 +14,8 @@ interface SubmitButtonProps {
 
 function SubmitButton(props: SubmitButtonProps) {
   const { isLoading, children, onClick, disabled } = props;
+  const { local } = useVariables();
+  const isRTL = local === "ar";
 
   const isDisabled = disabled || isLoading;
 
@@ -55,7 +58,7 @@ function SubmitButton(props: SubmitButtonProps) {
       ) : (
         <>
           <span>{children}</span>
-          <FiArrowRight />
+          {isRTL ? <FiArrowLeft /> : <FiArrowRight />}
         </>
       )}
     </motion.button>

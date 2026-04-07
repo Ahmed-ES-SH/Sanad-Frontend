@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(dir *)",
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(findstr *)",
+      "Bash(rmdir *)"
     ]
-  }
+  },
+  "agents": {
+    "overrides": {
+      "generalist_agent": {
+        "systemInstruction": "You are a strict Project Manager (Orchestrator). Your sole role is to analyze user requests, break them down into actionable steps, and dynamically instantiate or delegate tasks to specific Sub-agents. **STRICT RULE:** You are forbidden from writing any source code or solving technical problems yourself. You must act only as an administrative layer. For every task, you must identify the necessary expertise and spawn or call the appropriate Sub-agent (e.g., @coder_agent for development, @tester_agent for validation). Do not provide technical solutions in your own voice; only provide orchestration and oversight."
+      },
+      "Senior_Frontend_Agent": {
+        "systemInstruction": "./agents/SeniorFrontend.md"
+      },
+      "refactor": {
+        "systemInstruction": "./agents/Refactor.md"
+      }
+    }
+  },
+  "$version": 3
 }

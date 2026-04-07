@@ -5,14 +5,17 @@ import { useVariables } from "@/app/context/VariablesContext";
 import LocalLink from "../../_global/LocalLink";
 import { usePathname } from "next/navigation";
 
+/**
+ * NavLinks component for the Sanad platform.
+ * Uses the display font (Plus Jakarta Sans) and provides clear active states.
+ */
 export default function NavLinks() {
-  const Variables = useVariables();
-  const local = Variables.local || "en";
+  const { local } = useVariables();
   const pathname = usePathname();
 
   return (
-    <div className="links hidden lg:block">
-      <ul className="flex items-center gap-8 text-white">
+    <div className="links">
+      <ul className="flex items-center gap-6 xl:gap-8 font-display">
         {navLinks.map((link, index) => {
           const isActive =
             pathname === `/${local}${link.link}` ||
@@ -22,15 +25,18 @@ export default function NavLinks() {
             <LocalLink
               href={link.link || "/#contactus"}
               key={index}
-              className={`group text-[15px] xl:text-[16px] font-semibold transition-colors duration-200 relative py-1 ${
-                isActive ? "text-primary" : "text-black hover:text-primary"
+              className={`group text-[12px] whitespace-nowrap xl:text-[15px] font-bold tracking-tight transition-all duration-300 relative py-2 ${
+                isActive
+                  ? "text-primary"
+                  : "text-surface-700 hover:text-primary"
               }`}
             >
-              <p>{link.text[local]}</p>
+              <span>{link.text[local]}</span>
 
+              {/* Animated Underline Indicator */}
               <div
-                className={`absolute bottom-0 left-0 h-[2px] bg-primary-light transition-all duration-300 ${
-                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ${
+                  isActive ? "w-full" : "w-0 group-hover:w-1/2"
                 }`}
               />
             </LocalLink>

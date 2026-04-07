@@ -1,0 +1,60 @@
+"use client";
+
+import { Tooltip } from "@/app/_components/_dashboard/DashboardPage/Tooltip";
+import { Article } from "@/app/types/blog";
+import { motion } from "framer-motion";
+import {
+  FiVolume2,
+  FiMessageSquare,
+  FiSearch,
+  FiCheckSquare,
+} from "react-icons/fi";
+
+const actionTooltips = {
+  "Promote Post": "Share this article on social media to increase visibility",
+  "Manage Comments": "Review and moderate comments on this article",
+  "Update SEO": "Improve search engine ranking for this article",
+  "Check Readability": "Analyze content for reading difficulty and clarity",
+};
+
+export function ArticleQuickActions({ article }: { article: Article }) {
+  const actions = [
+    { icon: FiVolume2, label: "Promote Post" },
+    { icon: FiMessageSquare, label: "Manage Comments" },
+    { icon: FiSearch, label: "Update SEO" },
+    { icon: FiCheckSquare, label: "Check Readability" },
+  ];
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 1, 0.5, 1] }}
+      className="flex flex-wrap items-center gap-3 p-2 bg-stone-100/50 rounded-xl overflow-x-auto"
+    >
+      {actions.map((action, index) => {
+        const Icon = action.icon;
+        return (
+          <Tooltip
+            key={index}
+            content={
+              actionTooltips[action.label as keyof typeof actionTooltips]
+            }
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="surface-btn-secondary text-xs font-bold uppercase tracking-widest"
+            >
+              <Icon className="text-primary text-lg" />
+              {action.label}
+            </motion.button>
+          </Tooltip>
+        );
+      })}
+    </motion.section>
+  );
+}

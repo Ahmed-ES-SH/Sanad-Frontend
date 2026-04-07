@@ -1,35 +1,73 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Img from "./Img";
 import SelectLanguage from "../_website/_navbar/SelectLanguage";
-import MobailSidebar from "../_website/_navbar/MobailSidebar";
+import MobileSidebar from "../_website/_navbar/MobileSidebar";
 import NavLinks from "../_website/_navbar/NavLinks";
 import ClientDiv from "./ClientDiv";
 import Joinbtn from "../_website/_navbar/Joinbtn";
 import LocalLink from "./LocalLink";
 
+/**
+ * Navbar component for the Sanad technical services platform.
+ * Implements "Solid Depth" principles with a high-contrast border and subtle shadow.
+ * Features an "Intelligent" scroll-based transformation that reduces height and deepens the shadow.
+ * Ensures "perfect middle" centering for navigation links using a grid layout.
+ */
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    // Initial check in case page starts scrolled
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <ClientDiv>
-      <header className="w-full h-20 fixed top-0 left-0 z-999 transition-all border-b border-gray-100 shadow-sm duration-300 bg-white/80 backdrop-blur-sm">
-        <div className="c-container h-full flex items-center justify-between">
-          <div className="logo relative">
-            <LocalLink href={"/"}>
+      <header
+        className={`w-full fixed top-0 left-0 right-0 z-[999] bg-white transition-all duration-500 ease-out ${
+          isScrolled
+            ? "h-16 border-b border-surface-200 shadow-surface-md"
+            : "h-20 border-b border-surface-100 shadow-surface-sm"
+        }`}
+      >
+        <div className="c-container h-full lg:grid flex justify-between lg:grid-cols-3 items-center">
+          {/* Left: Logo */}
+          <div className="flex justify-start">
+            <LocalLink href={"/"} className="relative block">
               <Img
                 src="/sanad-logo.png"
-                className="lg:w-16 w-12 object-contain transition-transform duration-300 hover:scale-105"
+                className={`object-contain transition-all duration-500 ${
+                  isScrolled
+                    ? "lg:w-12 w-10 scale-95"
+                    : "lg:w-16 w-12 scale-100"
+                } hover:scale-110 active:scale-90`}
+                alt="Sanad Logo"
               />
             </LocalLink>
           </div>
 
-          <nav className="flex-1 flex justify-center">
+          {/* Middle: Navigation Links (Perfectly Centered) */}
+          <nav className="hidden lg:flex items-center justify-center h-full">
             <NavLinks />
           </nav>
 
-          <div className="flex items-center gap-4">
+          {/* Right: Actions */}
+          <div className="flex items-center justify-end gap-3 md:gap-4">
             <Joinbtn />
-            <div className="w-px h-6 bg-white/10 hidden md:block" />
-            <SelectLanguage />
-            <MobailSidebar />
+            <div className="w-px h-6 bg-surface-200 hidden md:block" />
+            <div className="flex items-center gap-2">
+              <SelectLanguage />
+              <MobileSidebar />
+            </div>
           </div>
         </div>
       </header>

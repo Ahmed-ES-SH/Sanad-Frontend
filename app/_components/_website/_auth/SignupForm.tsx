@@ -10,6 +10,9 @@ import LocalLink from "../../_global/LocalLink";
 import FormInput from "./FormInput";
 import { validateSignupForm } from "./validateForm";
 import { getSignUpInputs } from "./_signUp/getInputs";
+import { registerAction } from "@/app/actions/authActions";
+import { AUTH_ENDPOINTS } from "@/app/constants/endpoints";
+import { useRouter } from "next/navigation";
 
 interface FormErrors {
   fullName?: string;
@@ -22,6 +25,7 @@ function SignupForm() {
   const { local } = useVariables();
   const { signUpPage, formValidation } = getTranslations(local);
   const isRTL = local === "ar";
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -55,7 +59,18 @@ function SignupForm() {
     setIsLoading(true);
 
     try {
-      toast.success(signUpPage.accountCreatedSuccess);
+      const response = await registerAction({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.success) {
+        toast.success(response.message);
+        router.push(`/${local}/verify-email?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        toast.error(response.message);
+      }
     } catch (error: any) {
       toast.error(error?.message || signUpPage.somethingWentWrong);
     } finally {
@@ -64,7 +79,7 @@ function SignupForm() {
   };
 
   const signInWithGoogle = () => {
-    toast.info(signUpPage.googleSignInComingSoon);
+    window.location.href = AUTH_ENDPOINTS.GOOGLE_LOGIN;
   };
 
   const isFormValid =

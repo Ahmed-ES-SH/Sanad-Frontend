@@ -1,0 +1,115 @@
+"use client";
+
+import { useVariables } from "@/app/context/VariablesContext";
+import { getTranslations } from "@/app/helpers/helpers";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+}
+
+export function Pagination({ currentPage, totalPages }: PaginationProps) {
+  const { local } = useVariables();
+  const router = useRouter();
+  const { BlogPage } = getTranslations(local);
+  const t = BlogPage.Pagination;
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      if (currentPage > 3) {
+        pages.push('...');
+      }
+      
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push('...');
+      }
+      
+      // Always show last page
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', page.toString());
+    router.push(`/dashboard/blog?${params.toString()}`);
+  };
+
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 2.4 }}
+      className="mt-12 flex items-center justify-center gap-2"
+    >
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-100 text-stone-500 hover:bg-orange-500 hover:text-white transition-all rtl:rotate-180 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label={t.previous}
+      >
+        <span className="material-symbols-outlined">chevron_left</span>
+      </motion.button>
+      
+      {getPageNumbers().map((page, index) => (
+        typeof page === 'number' ? (
+          <motion.button
+            key={index}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => handlePageChange(page)}
+            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-xs transition-all ${
+              currentPage === page 
+                ? 'bg-orange-500 text-white' 
+                : 'bg-stone-100 text-stone-500 hover:bg-orange-500 hover:text-white'
+            }`}
+          >
+            {page}
+          </motion.button>
+        ) : (
+          <span key={index} className="text-stone-400 px-2 text-xs">...</span>
+        )
+      ))}
+      
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-100 text-stone-500 hover:bg-orange-500 hover:text-white transition-all rtl:rotate-180 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label={t.next}
+      >
+        <span className="material-symbols-outlined">chevron_right</span>
+      </motion.button>
+    </motion.div>
+  );
+}

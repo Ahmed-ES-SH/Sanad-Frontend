@@ -13,13 +13,14 @@ interface Metric {
 
 interface Props {
   project: {
-    id: number;
+    id: string | number;
     imgSrc: string;
     title: { en: string; ar: string };
     description: { en: string; ar: string };
     category: { en: string; ar: string };
     metrics: Metric[];
     year: string;
+    slug?: string;
   };
   index: number;
   isHero?: boolean;
@@ -28,6 +29,11 @@ interface Props {
 export default function PortfolioCard({ project, index, isHero }: Props) {
   const { local } = useVariables();
   const isRTL = local === "ar";
+
+  // Use slug if available, otherwise fall back to formatTitle
+  const projectHref = project.slug
+    ? project.slug
+    : formatTitle(project.title[local]);
 
   return (
     <motion.div
@@ -59,7 +65,7 @@ export default function PortfolioCard({ project, index, isHero }: Props) {
       }}
     >
       <Link
-        href={`/${local}/portfolio/${formatTitle(project.title[local])}?projectId=${project.id}`}
+        href={`/${local}/portfolio/${projectHref}`}
         className="block"
       >
         {/* Image */}

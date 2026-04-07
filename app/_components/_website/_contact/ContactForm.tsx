@@ -14,6 +14,7 @@ import {
 import { containerVariants, formVariants, itemVariants } from "./ContactPage";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
+import { submitContact } from "@/app/actions/contactActions";
 
 // Types
 interface ContactFormData {
@@ -43,7 +44,10 @@ const InputField: React.FC<{
   placeholder: string;
 }> = ({ label, type, name, value, onChange, error, icon, placeholder }) => (
   <motion.div className="space-y-2" variants={itemVariants}>
-    <label htmlFor={name} className="block body-sm font-medium text-surface-700">
+    <label
+      htmlFor={name}
+      className="block body-sm font-medium text-surface-700"
+    >
       {label}
     </label>
     <div className="relative">
@@ -92,7 +96,10 @@ const TextareaField: React.FC<{
   rows?: number;
 }> = ({ label, name, value, onChange, error, placeholder, rows = 5 }) => (
   <motion.div className="space-y-2" variants={itemVariants}>
-    <label htmlFor={name} className="block body-sm font-medium text-surface-700">
+    <label
+      htmlFor={name}
+      className="block body-sm font-medium text-surface-700"
+    >
       {label}
     </label>
     <div className="relative">
@@ -129,7 +136,8 @@ const TextareaField: React.FC<{
 
 export default function ContactForm() {
   const { local } = useVariables();
-  const { contactPage, validationMessages } = getTranslations(local);
+  const { contactPage, validationMessages, contactusSection } =
+    getTranslations(local);
 
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
@@ -141,9 +149,10 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -152,6 +161,8 @@ export default function ContactForm() {
     if (errors[name as keyof ContactFormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+    // Clear submit error on any field change
+    if (submitError) setSubmitError(null);
   };
 
   const validateForm = (): boolean => {
@@ -183,22 +194,36 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const result = await submitContact({
+        fullName: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
+      if (result.success) {
+        setIsSubmitted(true);
+
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({ name: "", email: "", subject: "", message: "" });
+        }, 3000);
+      } else {
+        setSubmitError(result.message);
+      }
+    } catch {
+      setSubmitError("Something went wrong");
+    }
 
     setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
   };
 
   const inputFields = [
@@ -278,6 +303,18 @@ export default function ContactForm() {
         <p className="body text-surface-600">{contactPage.formDescription}</p>
       </div>
 
+      {submitError && (
+        <motion.div
+          className="mb-6 bg-accent-rose/10 border border-accent-rose/20 rounded-xl p-4 flex items-center gap-3"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <FiAlertCircle className="w-5 h-5 text-accent-rose flex-shrink-0" />
+          <p className="body-sm text-accent-rose">{submitError}</p>
+        </motion.div>
+      )}
+
       <motion.form
         onSubmit={handleSubmit}
         className="space-y-6"
@@ -313,7 +350,7 @@ export default function ContactForm() {
                   onChange={handleInputChange}
                   error={errors[field.name as keyof ContactFormErrors]}
                 />
-              )
+              ),
             )}
         </div>
 
@@ -344,7 +381,7 @@ export default function ContactForm() {
                 onChange={handleInputChange}
                 error={errors[field.name as keyof ContactFormErrors]}
               />
-            )
+            ),
           )}
 
         {/* زر الإرسال */}

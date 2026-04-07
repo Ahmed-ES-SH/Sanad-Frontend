@@ -3,10 +3,34 @@ import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
-import { PortfolioProject } from "@/app/constants/portfolioData";
+
+interface SpotlightProject {
+  id: string | number;
+  imgSrc: string;
+  title: { en: string; ar: string };
+  description: { en: string; ar: string };
+  category: { en: string; ar: string };
+  tools: string[];
+  services: string[];
+  metrics: { value: string; label: { en: string; ar: string } }[];
+  year: string;
+  client?: { en: string; ar: string };
+  duration?: { en: string; ar: string };
+  gallery?: string[];
+  featured?: boolean;
+  spotlight?: {
+    tagline: { en: string; ar: string };
+    challenge: { en: string; ar: string };
+    solution: { en: string; ar: string };
+    coverImage: string;
+    liveUrl?: string;
+    process?: { title: { en: string; ar: string }; description: { en: string; ar: string } }[];
+    testimonial?: { quote: { en: string; ar: string }; author: { en: string; ar: string }; role: { en: string; ar: string } };
+  };
+}
 
 interface Props {
-  projects: PortfolioProject[];
+  projects: SpotlightProject[];
   local: "en" | "ar";
   isPaused: boolean;
 }

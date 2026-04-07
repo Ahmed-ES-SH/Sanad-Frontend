@@ -40,4 +40,24 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# documentation 
+/docs
+
+
+
+
+# screens
+/screens
+
+
+# ai agents folders
+.claude
+.gemini
+.antigravity
+.cursor
+.qwen
+.codex
+.opencode
+.agent
+
 

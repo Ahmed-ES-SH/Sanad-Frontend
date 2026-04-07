@@ -1,8 +1,8 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useVariables } from "@/app/context/VariablesContext";
 import { directionMap } from "@/app/constants/constants";
-import { portfolioData } from "@/app/constants/portfolioData";
+import type { Project } from "@/app/types/project";
 import {
   ProjectHero,
   ProjectBrief,
@@ -15,8 +15,55 @@ import {
   TechStack,
   RelatedProjects,
   ProjectCTA,
-  LocalLink,
 } from "./index";
+
+// Adapter: map API Project to PortfolioProject-compatible shape
+function adaptProject(project: Project) {
+  const title = { en: project.title, ar: project.title };
+  const shortDesc = {
+    en: project.shortDescription,
+    ar: project.shortDescription,
+  };
+  const longDesc = project.longDescription
+    ? { en: project.longDescription, ar: project.longDescription }
+    : shortDesc;
+  const category = {
+    en: project.category?.name || "Other",
+    ar: project.category?.name || "أخرى",
+  };
+
+  return {
+    ...project,
+    id: Number(project.id), // numeric id for legacy components
+    imgSrc: project.coverImageUrl || "",
+    title,
+    description: shortDesc,
+    category,
+    tools: project.techStack || [],
+    services: [],
+    metrics: [],
+    year: new Date(project.createdAt).getFullYear().toString(),
+    client: { en: "N/A", ar: "N/A" },
+    duration: { en: "N/A", ar: "N/A" },
+    gallery: project.images || [],
+    featured: project.isFeatured,
+    spotlight: project.longDescription
+      ? {
+          tagline: {
+            en: project.shortDescription,
+            ar: project.shortDescription,
+          },
+          challenge: { en: "", ar: "" },
+          solution: { en: "", ar: "" },
+          coverImage: project.coverImageUrl || project.images?.[0] || "",
+          liveUrl: project.liveUrl || undefined,
+          process: [],
+          testimonial: undefined,
+        }
+      : undefined,
+    longDescription: longDesc,
+  };
+}
 
 function ProjectNotFound({ local }: { local: "en" | "ar" }) {
   const isRTL = local === "ar";
@@ -57,33 +104,34 @@ function ProjectNotFound({ local }: { local: "en" | "ar" }) {
             ? "عذراً، لم نتمكن من العثور على المشروع الذي تبحث عنه."
             : "Sorry, we couldn't find the project you're looking for."}
         </p>
-        <LocalLink
+        <Link
           href={`/${local}/portfolio`}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+          style={{
+            backgroundColor: "var(--primary)",
+            color: "white",
+          }}
         >
           {isRTL ? "العودة للمشاريع" : "Back to Portfolio"}
-        </LocalLink>
+        </Link>
       </div>
     </div>
   );
 }
 
-export default function ClientProject() {
-  const { local } = useVariables();
-  const searchParams = useSearchParams();
-  const projectId = searchParams.get("projectId");
+interface Props {
+  project: Project;
+  local: "en" | "ar";
+}
 
-  const project = projectId
-    ? portfolioData.find((p) => p.id === Number(projectId))
-    : null;
+export default function ClientProject({ project, local }: Props) {
+  const adapted = adaptProject(project);
 
-  if (!project) return <ProjectNotFound local={local} />;
-
-  const challenge = project.spotlight?.challenge || { en: "", ar: "" };
-  const solution = project.spotlight?.solution || { en: "", ar: "" };
-  const description = project.spotlight?.tagline
-    ? { en: project.spotlight.tagline.en, ar: project.spotlight.tagline.ar }
-    : project.description;
+  const challenge = adapted.spotlight?.challenge || { en: "", ar: "" };
+  const solution = adapted.spotlight?.solution || { en: "", ar: "" };
+  const description = adapted.spotlight?.tagline
+    ? adapted.spotlight.tagline
+    : adapted.description;
 
   return (
     <div
@@ -91,14 +139,14 @@ export default function ClientProject() {
       className="min-h-dvh"
       style={{ backgroundColor: "var(--surface-50)" }}
     >
-      <ProjectHero project={project} local={local} />
+      <ProjectHero project={adapted} local={local} />
 
       {/* Divider */}
       <div className="c-container px-4">
         <div style={{ borderTop: "1px solid var(--surface-200)" }} />
       </div>
 
-      <ProjectBrief project={project} local={local} />
+      <ProjectBrief project={adapted} local={local} />
       <ProjectOverview description={description} local={local} />
 
       {/* Divider */}
@@ -113,36 +161,36 @@ export default function ClientProject() {
           local={local}
         />
       )}
-      <ProjectResults project={project} local={local} />
+      <ProjectResults project={adapted} local={local} />
 
       {/* Divider */}
       <div className="c-container px-4">
         <div style={{ borderTop: "1px solid var(--surface-200)" }} />
       </div>
 
-      <ProjectTimeline project={project} local={local} />
-      <Testimonial project={project} local={local} />
+      <ProjectTimeline project={adapted} local={local} />
+      <Testimonial project={adapted} local={local} />
 
       {/* Divider */}
       <div className="c-container px-4">
         <div style={{ borderTop: "1px solid var(--surface-200)" }} />
       </div>
 
-      <ProjectGallery project={project} local={local} />
+      <ProjectGallery project={adapted} local={local} />
 
       {/* Divider */}
       <div className="c-container px-4">
         <div style={{ borderTop: "1px solid var(--surface-200)" }} />
       </div>
 
-      <TechStack project={project} local={local} />
+      <TechStack project={adapted} local={local} />
 
       {/* Divider */}
       <div className="c-container px-4">
         <div style={{ borderTop: "1px solid var(--surface-200)" }} />
       </div>
 
-      <RelatedProjects currentProjectId={project.id} local={local} />
+      <RelatedProjects currentProjectId={adapted.id} local={local} />
       <ProjectCTA local={local} />
     </div>
   );

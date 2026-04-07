@@ -9,7 +9,7 @@ import LocalLink from "../../_global/LocalLink";
 import { getTranslations } from "@/app/helpers/helpers";
 import Img from "../../_global/Img";
 
-export default function MobailSidebar() {
+export default function MobileSidebar() {
   const { width, local } = useVariables();
   const { hero, mobileSidebar } = getTranslations(local);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

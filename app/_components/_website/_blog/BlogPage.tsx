@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BlogPost, blogPosts } from "@/app/constants/blogposts";
 import BlogPagination from "@/app/_components/_website/_blog/BlogPagination";
 import BlogSidebar from "@/app/_components/_website/_blog/BlogSidebar";
 import ArticleCard from "@/app/_components/_website/_blog/ArticleCard";
@@ -12,14 +11,20 @@ import { directionMap } from "@/app/constants/constants";
 import { useVariables } from "@/app/context/VariablesContext";
 import { FaSearch } from "react-icons/fa";
 import { getTranslations } from "@/app/helpers/helpers";
-
-// Types
+import { Article } from "@/app/types/blog";
 
 interface PaginationInfo {
   currentPage: number;
   totalPages: number;
   postsPerPage: number;
   totalPosts: number;
+}
+
+interface BlogPageProps {
+  initialArticles: Article[];
+  totalPosts: number;
+  totalPages: number;
+  currentPage: number;
 }
 
 const NoPostsFound: React.FC = () => {
@@ -42,7 +47,7 @@ const NoPostsFound: React.FC = () => {
 
 // Blog Grid Component
 const BlogGrid: React.FC<{
-  posts: BlogPost[];
+  posts: Article[];
   isLoading: boolean;
 }> = ({ posts, isLoading }) => (
   <AnimatePresence mode="wait">
@@ -60,7 +65,7 @@ const BlogGrid: React.FC<{
         transition={{ duration: 0.3 }}
       >
         {posts.map((post, index) => (
-          <ArticleCard key={post.id} post={post} index={index} />
+          <ArticleCard key={post.id} article={post} index={index} />
         ))}
       </motion.div>
     )}
@@ -68,59 +73,64 @@ const BlogGrid: React.FC<{
 );
 
 // Main Blog Component
-export default function BlogPage() {
+export default function BlogPage({ 
+  initialArticles, 
+  totalPosts, 
+  totalPages: initialTotalPages, 
+  currentPage: initialCurrentPage 
+}: BlogPageProps) {
   const { local } = useVariables();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("recent");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialCurrentPage);
   const [isLoading, setIsLoading] = useState(false);
-  const [displayedPosts, setDisplayedPosts] = useState<BlogPost[]>([]);
+  const [displayedPosts, setDisplayedPosts] = useState<Article[]>(initialArticles);
 
   const postsPerPage = 8;
 
-  // Filter and sort posts
+  // Client-side filter and sort on the initial data
   const filteredAndSortedPosts = useMemo(() => {
-    const filtered = blogPosts.filter(
+    const filtered = initialArticles.filter(
       (post) =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (post.excerpt && post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (post.category && post.category.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         post.tags.some((tag) =>
-          tag.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+          tag.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
     );
 
     switch (sortBy) {
       case "oldest":
         filtered.sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         );
         break;
       case "popular":
-        filtered.sort((a, b) => parseInt(b.readTime) - parseInt(a.readTime));
+        filtered.sort((a, b) => b.viewsCount - a.viewsCount);
         break;
       default:
         filtered.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
         break;
     }
 
     return filtered;
-  }, [searchTerm, sortBy]);
+  }, [searchTerm, sortBy, initialArticles]);
 
   // Pagination info
   const paginationInfo: PaginationInfo = {
     currentPage,
-    totalPages: Math.ceil(filteredAndSortedPosts.length / postsPerPage),
+    totalPages: initialTotalPages || Math.ceil(filteredAndSortedPosts.length / postsPerPage),
     postsPerPage,
-    totalPosts: filteredAndSortedPosts.length,
+    totalPosts: totalPosts || filteredAndSortedPosts.length,
   };
 
   const paginatedPosts = useMemo(() => {
     return filteredAndSortedPosts.slice(
       (currentPage - 1) * postsPerPage,
-      currentPage * postsPerPage
+      currentPage * postsPerPage,
     );
   }, [filteredAndSortedPosts, currentPage]);
 
@@ -130,7 +140,7 @@ export default function BlogPage() {
     const timeout = setTimeout(() => {
       setDisplayedPosts(paginatedPosts);
       setIsLoading(false);
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [paginatedPosts]);

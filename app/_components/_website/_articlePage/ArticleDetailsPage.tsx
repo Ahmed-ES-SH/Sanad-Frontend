@@ -9,23 +9,13 @@ import ArticleHeader from "./ArticleHeader";
 import ArticleContent from "./ArticleContent";
 import InteractionSection from "./InteractionSection";
 import CommentsSection from "./CommentsSection";
-import { blogPosts } from "@/app/constants/blogposts";
-import { useSearchParams } from "next/navigation";
 import { directionMap } from "@/app/constants/constants";
 import { useVariables } from "@/app/context/VariablesContext";
+import { Article } from "@/app/types/blog";
 
 // Types
-export interface Article {
-  id: number;
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  readTime: string;
-  category: string;
-  image: string;
-  tags: string[];
-  featured: boolean;
+export interface ArticleProps {
+  article: Article;
 }
 
 // Animation variants
@@ -44,18 +34,20 @@ const staggerContainer = {
 };
 
 // Article Image Component
-const ArticleImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
+const ArticleImage: React.FC<{ src: string | null; alt: string }> = ({ src, alt }) => (
   <motion.div
     className="mb-8"
     variants={fadeInUp}
     initial="initial"
     animate="animate"
   >
-    <Img
-      src={src}
-      alt={alt}
-      className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
-    />
+    {src && (
+      <Img
+        src={src}
+        alt={alt}
+        className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+      />
+    )}
   </motion.div>
 );
 
@@ -85,12 +77,22 @@ const ArticleTags: React.FC<{ tags: string[] }> = ({ tags }) => (
 );
 
 // Main Article Detail Page Component
-export default function ArticleDetailPage() {
+export default function ArticleDetailsPage({ article }: ArticleProps) {
   const { local } = useVariables();
-  const searchParams = useSearchParams();
-  const articleId = searchParams.get("articleId");
-  const article =
-    blogPosts.find((post) => post.id == Number(articleId)) || blogPosts[0];
+
+  // Map backend article to the format expected by existing components
+  const mappedArticle = {
+    id: Number(article.id),
+    title: article.title,
+    excerpt: article.excerpt || "",
+    author: "Admin",
+    date: article.publishedAt || article.createdAt,
+    readTime: `${article.readTimeMinutes} min read`,
+    category: article.category?.name || "General",
+    image: article.coverImageUrl || "",
+    tags: article.tags,
+    featured: false,
+  };
 
   return (
     <div dir={directionMap[local]} className="min-h-screen pt-20 bg-white">
@@ -102,10 +104,10 @@ export default function ArticleDetailPage() {
         >
           <div className="flex items-start gap-2 w-full h-full">
             <div className="flex-1/2">
-              <ArticleHeader article={article} />
-              <ArticleImage src={article.image} alt={article.title} />
-              <ArticleContent article={article} />
-              <ArticleTags tags={article.tags} />
+              <ArticleHeader article={mappedArticle} />
+              <ArticleImage src={mappedArticle.image} alt={mappedArticle.title} />
+              <ArticleContent content={article.content} />
+              <ArticleTags tags={mappedArticle.tags} />
               <InteractionSection />
             </div>
             <div className="xl:flex-1 xl:block sticky top-20 right-0  h-full hidden">

@@ -3,24 +3,17 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import React from "react";
 import LocalLink from "../../_global/LocalLink";
-
-function UserButton() {
-  return (
-    <div>
-      <p>UserButton</p>
-    </div>
-  );
-}
+import UserButton from "../../_global/UserButton";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Joinbtn() {
   const { local } = useVariables();
   const { hero } = getTranslations(local);
-
-  const user = false;
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
-      {!user && (
+      {!isAuthenticated && (
         <div className="hidden sm:block">
           <LocalLink
             href={"/signup"}
@@ -31,7 +24,7 @@ export default function Joinbtn() {
         </div>
       )}
 
-      {user && <UserButton />}
+      {isAuthenticated && <UserButton />}
     </>
   );
 }

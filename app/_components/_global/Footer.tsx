@@ -10,6 +10,7 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 import LocalLink from "./LocalLink";
+import { usePathname } from "next/navigation";
 
 //////////////////////////////////////////////////////
 ///////  Social media icon configuration with their
@@ -37,6 +38,10 @@ const sectionOrder = [
 export default function Footer() {
   const { local } = useVariables();
   const { footerLines } = getTranslations(local);
+
+  const pathname = usePathname();
+
+  if (pathname.includes(`/${local}/dashboard`)) return null;
 
   return (
     <footer dir={directionMap[local]} className="bg-gray-800 w-full">

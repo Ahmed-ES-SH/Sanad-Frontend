@@ -1,5 +1,6 @@
 import { FiMail, FiLock } from "react-icons/fi";
 import InputField from "./InputField";
+import LocalLink from "../../_global/LocalLink";
 
 interface Props {
   locale: "en" | "ar";
@@ -70,6 +71,14 @@ export default function SignInFields({
         onTogglePassword={() => setShowPassword(!showPassword)}
         showPassword={showPassword}
       />
+      <div className={`flex ${isRTL ? "justify-start" : "justify-end"}`}>
+        <LocalLink
+          href="/forgot-password"
+          className="text-xs font-semibold text-primary hover:underline transition-all"
+        >
+          {isRTL ? "نسيت كلمة المرور؟" : "Forgot Password?"}
+        </LocalLink>
+      </div>
     </div>
   );
 }

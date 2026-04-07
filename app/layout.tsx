@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Oswald, IBM_Plex_Sans } from "next/font/google";
 import ClientLayout from "./_components/_global/ClientLayout";
 import { Toaster } from "sonner";
 import { directionMap } from "./constants/constants";
@@ -8,6 +8,7 @@ import { getSharedMetadata } from "./helpers/getSharedMetadata";
 import Navbar from "./_components/_global/Navbar";
 import Footer from "./_components/_global/Footer";
 import FixedButtons from "./_components/_global/FixedButtons";
+import { getCurrentUserAction } from "./actions/authActions";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,6 +19,18 @@ const inter = Inter({
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
+});
+
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-plex-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export async function generateMetadata({ params }: any) {
@@ -36,10 +49,15 @@ export async function generateMetadata({ params }: any) {
 export default async function RootLayout({ params, children }: any) {
   const { local } = await params;
 
+  const authResponse = await getCurrentUserAction();
+  const initialUser = authResponse.success && authResponse.data?.user
+    ? authResponse.data.user
+    : null;
+
   return (
     <html dir={directionMap[local ?? "en"]} lang={local ?? "en"}>
       <body
-        className={`${inter.variable} ${plusJakartaSans.variable} font-sans antialiased`}
+        className={`${inter.variable} ${plusJakartaSans.variable} ${oswald.variable} ${ibmPlexSans.variable} font-sans antialiased`}
       >
         <a
           href="#main-content"
@@ -47,7 +65,7 @@ export default async function RootLayout({ params, children }: any) {
         >
           Skip to main content
         </a>
-        <ClientLayout>
+        <ClientLayout initialUser={initialUser}>
           <Navbar />
           <Toaster richColors position="top-center" />
           <div className="min-h-screen">
