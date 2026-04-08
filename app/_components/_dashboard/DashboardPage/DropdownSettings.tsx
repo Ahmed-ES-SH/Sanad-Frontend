@@ -1,17 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { FiSettings, FiUser, FiShield, FiBell, FiLogOut, FiGlobe } from "react-icons/fi";
+import {
+  FiSettings,
+  FiLogOut,
+  FiMonitor,
+  FiGrid,
+  FiCommand,
+  FiLink,
+  FiDatabase,
+} from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 
 const settingsOptions = [
-  { id: "profile", label: "My Profile", icon: FiUser },
-  { id: "security", label: "Security", icon: FiShield },
-  { id: "preferences", label: "Preferences", icon: FiSettings },
-  { id: "language", label: "Language", icon: FiGlobe },
-  { id: "notifications", label: "Notification Settings", icon: FiBell },
+  { id: "appearance", label: "Appearance & Theme", icon: FiMonitor },
+  { id: "workspace", label: "Workspace Settings", icon: FiGrid },
+  { id: "shortcuts", label: "Keyboard Shortcuts", icon: FiCommand },
+  { id: "integrations", label: "Integrations & APIs", icon: FiLink },
+  { id: "data", label: "Data & Storage", icon: FiDatabase },
 ];
 
 export default function DropdownSettings() {
@@ -27,7 +35,10 @@ export default function DropdownSettings() {
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -41,7 +52,7 @@ export default function DropdownSettings() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`p-2 text-stone-500 hover:bg-stone-200/50 rounded-full transition-colors ${isOpen ? 'bg-stone-200/50' : ''}`}
+        className={`p-2 text-stone-500 hover:bg-stone-200/50 rounded-full transition-colors ${isOpen ? "bg-stone-200/50" : ""}`}
         aria-label={t.settings}
       >
         <FiSettings size={20} />
@@ -54,10 +65,12 @@ export default function DropdownSettings() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className={`absolute top-full mt-2 w-56 bg-stone-100 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-stone-200 overflow-hidden z-50 ${isRTL ? 'left-0 origin-top-left' : 'right-0 origin-top-right'}`}
+            className={`absolute top-full mt-2 w-56 bg-stone-100 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-stone-200 overflow-hidden z-50 ${isRTL ? "left-0 origin-top-left" : "right-0 origin-top-right"}`}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 bg-stone-50">
-              <h3 className="text-sm font-semibold text-stone-800">{t.settings || "Settings"}</h3>
+              <h3 className="text-sm font-semibold text-stone-800">
+                {t.settings || "Settings"}
+              </h3>
             </div>
 
             <div className="flex flex-col py-1.5">
@@ -74,16 +87,8 @@ export default function DropdownSettings() {
                   </button>
                 );
               })}
-              
+
               <div className="my-1.5 border-t border-stone-200/60 mx-2"></div>
-              
-              <button
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-start font-medium transition-colors text-red-600 hover:bg-red-50 hover:text-red-700 w-full"
-                onClick={() => setIsOpen(false)}
-              >
-                <FiLogOut size={16} className="shrink-0" />
-                <span>Log Out</span>
-              </button>
             </div>
           </motion.div>
         )}

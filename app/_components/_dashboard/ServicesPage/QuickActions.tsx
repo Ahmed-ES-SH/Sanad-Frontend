@@ -1,6 +1,7 @@
 "use client";
 
 import { FiBox, FiLayers, FiCreditCard, FiFileText } from "react-icons/fi";
+import LocalLink from "../../_global/LocalLink";
 
 const quickActions = [
   {
@@ -11,6 +12,7 @@ const quickActions = [
     bgColor: "bg-orange-500",
     shadowColor: "shadow-orange-500/20",
     isPrimary: true,
+    href: "/dashboard/services/new",
   },
   {
     id: 2,
@@ -19,6 +21,7 @@ const quickActions = [
     icon: FiLayers,
     bgColor: "bg-stone-100",
     shadowColor: "shadow-stone-200/50",
+    href: "/dashboard/services/categories",
   },
   {
     id: 3,
@@ -27,6 +30,7 @@ const quickActions = [
     icon: FiCreditCard,
     bgColor: "bg-stone-100",
     shadowColor: "shadow-stone-200/50",
+    href: "/dashboard/services/pricing",
   },
   {
     id: 4,
@@ -36,6 +40,7 @@ const quickActions = [
     bgColor: "bg-stone-100",
     border: true,
     shadowColor: "shadow-stone-200/50",
+    href: "/dashboard/services/logs",
   },
 ];
 
@@ -44,14 +49,13 @@ export default function QuickActions() {
     <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {quickActions.map((action) => {
         const Icon = action.icon;
-        return (
+        const content = (
           <div
-            key={action.id}
             className={`
               ${action.bgColor} ${action.shadowColor} 
               p-6 rounded-xl transition-transform hover:-translate-y-1 
-              cursor-pointer flex flex-col justify-between h-40 group
-              ${action.isPrimary ? "text-white shadow-lg" : "bg-stone-50 hover:shadow-xl"}
+              flex flex-col justify-between h-40 group
+              ${action.isPrimary ? "text-white shadow-lg" : "bg-stone-50 hover:shadow-xl cursor-pointer"}
               ${action.border ? "border-2 border-dashed border-stone-300 hover:border-orange-300" : ""}
             `}
           >
@@ -84,6 +88,16 @@ export default function QuickActions() {
             </div>
           </div>
         );
+
+        if (action.href) {
+          return (
+            <LocalLink key={action.id} href={action.href}>
+              {content}
+            </LocalLink>
+          );
+        }
+
+        return <div key={action.id}>{content}</div>;
       })}
     </section>
   );

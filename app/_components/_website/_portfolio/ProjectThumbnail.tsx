@@ -1,3 +1,4 @@
+"use client";
 import { motion } from "framer-motion";
 import {
   FiMonitor,
@@ -78,9 +79,19 @@ const defaultConfig = {
 };
 
 const DotPattern = () => (
-  <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className="absolute inset-0 w-full h-full opacity-20"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <defs>
-      <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <pattern
+        id="dots"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+        patternUnits="userSpaceOnUse"
+      >
         <circle cx="2" cy="2" r="1.5" fill="white" />
       </pattern>
     </defs>

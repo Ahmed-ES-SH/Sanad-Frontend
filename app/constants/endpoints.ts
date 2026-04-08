@@ -12,10 +12,17 @@ export const AUTH_ENDPOINTS = {
 
 export const USER_ENDPOINTS = {
   CREATE_USER: "/api/user",
-  LIST_USERS: "/api/users",
+  LIST_USERS: "/api/user",
   GET_USER: (id: string | number) => `/api/user/${id}`,
   UPDATE_USER: (id: string | number) => `/api/user/${id}`,
   DELETE_USER: (id: string | number) => `/api/user/${id}`,
+
+  // Admin endpoints - per backend API plan
+  ADMIN_LIST: "/api/user",
+  ADMIN_GET: (id: string | number) => `/api/user/${id}`,
+  ADMIN_CREATE: "/api/user",
+  ADMIN_UPDATE: (id: string | number) => `/api/user/${id}`,
+  ADMIN_DELETE: (id: string | number) => `/api/user/${id}`,
 } as const;
 
 export const SERVICES_ENDPOINTS = {
@@ -43,6 +50,7 @@ export const PORTFOLIO_ENDPOINTS = {
 
 export const BLOG_ENDPOINTS = {
   LIST_PUBLISHED: "/api/blog",
+  CATEGORIES: "/api/categories",
   GET_BY_SLUG: (slug: string) => `/api/blog/${slug}`,
   ADMIN_LIST: "/api/admin/blog",
   ADMIN_CREATE: "/api/admin/blog",
@@ -67,8 +75,21 @@ export const PAYMENTS_ENDPOINTS = {
   ADMIN_REFUND: (id: string) => `/api/admin/payments/${id}/refund`,
 } as const;
 
+export const CART_ENDPOINTS = {
+  GET_CART: "/api/cart",
+  ADD_ITEM: "/api/cart/items",
+  UPDATE_ITEM: (itemId: string) => `/api/cart/items/${itemId}`,
+  REMOVE_ITEM: (itemId: string) => `/api/cart/items/${itemId}`,
+  CLEAR_CART: "/api/cart",
+  MERGE_CART: "/api/cart/merge",
+} as const;
+
 export const STRIPE_ENDPOINTS = {
   WEBHOOK: "/api/stripe/webhook",
+} as const;
+
+export const HOME_ENDPOINTS = {
+  LIST_PUBLISHED: "/api/home",
 } as const;
 
 export const ALL_ENDPOINTS = {
@@ -79,5 +100,7 @@ export const ALL_ENDPOINTS = {
   BLOG: BLOG_ENDPOINTS,
   CONTACT: CONTACT_ENDPOINTS,
   PAYMENTS: PAYMENTS_ENDPOINTS,
+  CART: CART_ENDPOINTS,
   STRIPE: STRIPE_ENDPOINTS,
+  HOME: HOME_ENDPOINTS,
 } as const;

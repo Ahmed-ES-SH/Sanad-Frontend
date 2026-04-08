@@ -4,6 +4,7 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi";
 
 interface PaginationProps {
   currentPage: number;
@@ -72,12 +73,12 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => handlePageChange(currentPage - 1)}
+        onClick={() => (currentPage > 1 ? handlePageChange(currentPage - 1) : null)}
         disabled={currentPage === 1}
         className="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-100 text-stone-500 hover:bg-orange-500 hover:text-white transition-all rtl:rotate-180 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label={t.previous}
       >
-        <span className="material-symbols-outlined">chevron_left</span>
+        <HiOutlineChevronLeft className="text-xl" />
       </motion.button>
       
       {getPageNumbers().map((page, index) => (
@@ -103,12 +104,12 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => handlePageChange(currentPage + 1)}
+        onClick={() => (currentPage < totalPages ? handlePageChange(currentPage + 1) : null)}
         disabled={currentPage === totalPages}
         className="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-100 text-stone-500 hover:bg-orange-500 hover:text-white transition-all rtl:rotate-180 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label={t.next}
       >
-        <span className="material-symbols-outlined">chevron_right</span>
+        <HiOutlineChevronRight className="text-xl" />
       </motion.button>
     </motion.div>
   );

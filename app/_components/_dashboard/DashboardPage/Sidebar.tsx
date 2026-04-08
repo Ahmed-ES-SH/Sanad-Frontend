@@ -16,11 +16,9 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "@/app/context/AuthContext";
 import { IoMdClose } from "react-icons/io";
+import { motion, AnimatePresence, spring } from "framer-motion";
+import Img from "../../_global/Img";
 
-//////////////////////////////////////////////////////
-///////  Nav item configuration — hrefs are framework-level
-///////  paths, labels are resolved via translation keys
-//////////////////////////////////////////////////////
 const navItems = [
   { labelKey: "overview", href: "/dashboard", icon: FiLayout },
   { labelKey: "users", href: "/dashboard/users", icon: FiUsers },
@@ -32,72 +30,161 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const { local } = useVariables();
+  const { local, isSidebarOpen, setIsSidebarOpen, width } = useVariables();
   const { logout, isLoading } = useAuth();
+  const isRTL = local === "ar";
+  const isMobile = width < 768;
 
   const pathname = usePathname();
   const { DashboardPage } = getTranslations(local);
   const t = DashboardPage.Sidebar;
 
+  const sidebarVariants = {
+    open: {
+      x: 0,
+      transition: { type: spring, stiffness: 300, damping: 30 },
+    },
+    closed: {
+      x: isRTL ? "100%" : "-100%",
+      transition: { type: spring, stiffness: 300, damping: 30 },
+    },
+  };
+
+  const asideContent = (
+    <>
+      {/* Brand Section */}
+      <div className="px-6 py-8 flex items-center gap-3 border-b border-stone-200/50 mb-4">
+        <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+          <Img
+            src="/sanad-logo.png"
+            alt="Sanad"
+            className="w-7 h-7 object-contain brightness-0 invert"
+          />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-xl font-bold text-stone-800 tracking-tight leading-none uppercase">
+            {t.brandName}
+          </span>
+          <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-widest mt-1">
+            {t.brandTagline}
+          </span>
+        </div>
+
+        {/* Mobile Close Button */}
+        <button
+          onClick={() => setIsSidebarOpen(false)}
+          className={`md:hidden ${
+            isRTL ? "mr-auto" : "ml-auto"
+          } text-stone-400 hover:text-red-500 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors`}
+          aria-label="Close menu"
+        >
+          <IoMdClose size={20} />
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+        {navItems.map((item) => {
+          const fullHref = `/${local}${item.href}`;
+          const isActive =
+            pathname === fullHref ||
+            (item.href === "/dashboard" && pathname === `/${local}/dashboard`);
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.href}
+              href={fullHref}
+              onClick={() => isMobile && setIsSidebarOpen(false)}
+              className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group relative ${
+                isActive
+                  ? "bg-orange-600 text-white shadow-md shadow-orange-100"
+                  : "text-stone-500 hover:bg-stone-200/60 hover:text-stone-800"
+              }`}
+            >
+              <Icon
+                className={`${isRTL ? "ml-3" : "mr-3"} shrink-0 transition-transform group-hover:scale-110`}
+                size={20}
+                strokeWidth={isActive ? 2.5 : 2}
+              />
+              <span className="text-sm font-semibold tracking-wide">
+                {t[item.labelKey as keyof typeof t] || item.labelKey}
+              </span>
+
+              {isActive && (
+                <motion.div
+                  layoutId="activeNav"
+                  className={`absolute ${isRTL ? "right-0" : "left-0"} w-1 h-6 bg-white rounded-full translate-y-[-50%] top-1/2`}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Bottom Actions */}
+      <div className="px-4 py-4 mt-auto border-t border-stone-200/50 bg-stone-50/50">
+        <button
+          onClick={() => logout()}
+          disabled={isLoading}
+          className="w-full cursor-pointer flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-sm font-bold text-red-600 hover:bg-red-50 group disabled:opacity-50"
+        >
+          {isLoading ? (
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+              <span>{t.loggingOut}</span>
+            </div>
+          ) : (
+            <>
+              <FiLogOut
+                className={`${isRTL ? "ml-3 rotate-180" : "mr-3"} shrink-0 transition-transform group-hover:translate-x-1`}
+                size={20}
+                strokeWidth={2.5}
+              />
+              <span>{t.logout}</span>
+            </>
+          )}
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-9999 md:hidden" />
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobile && isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] md:hidden"
+          />
+        )}
+      </AnimatePresence>
 
-      <aside className="bg-stone-100 w-64 max-md:w-1/2 max-sm:w-3/4 z-99  flex flex-col h-screen py-4 shrink-0 max-md:fixed max-md:z-9999 sticky top-0 border-r border-gray-300 shadow-md max-md:left-0 max-md:top-0 max-md:pr-4">
-        {/* overlay */}
-
-        {/* close button */}
-        <button className="ml-auto text-red-600 w-10 h-10 rounded-full flex items-center justify-center bg-red-400/10 hover:bg-red-400/20 transition-colors">
-          <IoMdClose className="size-6" />
-        </button>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-2 space-y-1 mt-6 lg:mt-16">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`mx-2 flex items-center px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium ${
-                  isActive
-                    ? "bg-orange-100 text-orange-700"
-                    : "text-stone-600 hover:bg-stone-200"
-                }`}
-              >
-                <Icon
-                  className="mr-3 shrink-0"
-                  size={20}
-                  strokeWidth={isActive ? 2.5 : 1.8}
-                />
-                <span>{item.labelKey}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Bottom Actions */}
-        <div className="px-2 pt-4 mt-4 border-t border-stone-200/50">
-          <div
-            onClick={() => logout()}
-            className="mx-2 cursor-pointer flex bg-red-400/60 text-white items-center px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium hover:bg-red-400/60"
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>{t.loggingOut}</span>
-              </div>
-            ) : (
-              <>
-                <FiLogOut className="mr-3 shrink-0" size={20} />
-                <span>{t.logout}</span>
-              </>
-            )}
-          </div>
-        </div>
+      {/* Sidebar Aside (Desktop) */}
+      <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-stone-100 border-r border-stone-200 shadow-sm z-40 shrink-0 overflow-hidden">
+        {asideContent}
       </aside>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence mode="wait">
+        {isMobile && isSidebarOpen && (
+          <motion.aside
+            key="mobile-sidebar"
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={sidebarVariants}
+            className={`fixed inset-y-0 ${isRTL ? "right-0" : "left-0"} w-72 bg-white z-[10000] flex flex-col shadow-2xl md:hidden overflow-hidden`}
+          >
+            {asideContent}
+          </motion.aside>
+        )}
+      </AnimatePresence>
     </>
   );
 }

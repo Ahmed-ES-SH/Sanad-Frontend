@@ -4,38 +4,48 @@ import ServiceLayout from "@/app/_components/_website/_servicePage/ServiceLayout
 import Loading from "./loading";
 import { getTranslations } from "@/app/helpers/helpers";
 import { getSharedMetadata } from "@/app/helpers/getSharedMetadata";
-import { servicesData } from "@/app/constants/servicesData";
+import { getServiceBySlug } from "@/app/actions/servicesActions";
+import { Service } from "@/app/types/service";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params, searchParams }: any) {
-  const { local } = await params;
-  const { serviceId } = await searchParams;
+interface ServicePageProps {
+  params: Promise<{ local: string; serviceTitle: string }>;
+}
 
-  const service: any = servicesData.find(
-    (service) => service.id === Number(serviceId),
-  );
-
+export async function generateMetadata({ params }: ServicePageProps) {
+  const { local, serviceTitle } = await params;
   const translations = getTranslations(local ?? "en");
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
-  if (!service) {
+  try {
+    const service = await getServiceBySlug(serviceTitle);
     return {
-      title: "Service Title",
-      description: "Service Description",
+      title: `Sanad Service - ${service.title}`,
+      description: service.shortDescription,
+      ...sharedMetadata,
+    };
+  } catch {
+    return {
+      title: translations.servicesMeta.title,
+      description: translations.servicesMeta.description,
       ...sharedMetadata,
     };
   }
-
-  return {
-    title: `Sanad Service - ${service.title[local ?? "en"]}`,
-    description: service.description[local ?? "en"],
-    ...sharedMetadata,
-  };
 }
 
-export default async function ServicePage() {
+export default async function ServicePage({ params }: ServicePageProps) {
+  const { local, serviceTitle } = await params;
+  let service: Service | null = null;
+
+  try {
+    service = await getServiceBySlug(serviceTitle);
+  } catch {
+    notFound();
+  }
+
   return (
     <Suspense fallback={<Loading />}>
-      <ServiceLayout />
+      <ServiceLayout service={service} />
     </Suspense>
   );
 }

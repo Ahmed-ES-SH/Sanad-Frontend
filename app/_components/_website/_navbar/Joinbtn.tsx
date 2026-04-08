@@ -17,7 +17,7 @@ export default function Joinbtn() {
         <div className="hidden sm:block">
           <LocalLink
             href={"/signup"}
-            className="surface-btn-primary min-h-[40px] px-6 text-sm"
+            className="surface-btn-primary min-h-[35px] px-2 text-xs"
           >
             {hero.join}
           </LocalLink>

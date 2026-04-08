@@ -11,9 +11,13 @@ import "swiper/css/free-mode";
 import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import LocalLink from "../../_global/LocalLink";
 import ProjectCard from "../_portfolio/ProjectCard";
-import { projectsData } from "@/app/constants/projects";
+import { Project } from "@/app/types/project";
 
-export default function PortfolioSection() {
+export default function PortfolioSection({
+  projects,
+}: {
+  projects: Project[];
+}) {
   const { local } = useVariables();
   const { portfolioSection } = getTranslations(local);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -23,10 +27,8 @@ export default function PortfolioSection() {
   };
 
   const filteredProjects = selectedCategory
-    ? projectsData.filter(
-        (project) => project.category[local] === selectedCategory
-      )
-    : projectsData;
+    ? projects.filter((project) => project.categoryId === selectedCategory)
+    : projects;
 
   return (
     <section
@@ -46,15 +48,23 @@ export default function PortfolioSection() {
         {/* Filter section */}
         <div className="relative mb-12">
           {/* Mobile Swipe Hint */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.5 }}
             className="flex lg:hidden items-center justify-center gap-2 mb-4 text-surface-400 text-xs font-medium uppercase tracking-wider"
           >
-            {local === "ar" ? <FiArrowRight size={14} className="animate-pulse" /> : <FiArrowLeft size={14} className="animate-pulse" />}
+            {local === "ar" ? (
+              <FiArrowRight size={14} className="animate-pulse" />
+            ) : (
+              <FiArrowLeft size={14} className="animate-pulse" />
+            )}
             <span>{local === "ar" ? "اسحب للتصفية" : "Swipe to filter"}</span>
-            {local === "ar" ? <FiArrowLeft size={14} className="animate-pulse" /> : <FiArrowRight size={14} className="animate-pulse" />}
+            {local === "ar" ? (
+              <FiArrowLeft size={14} className="animate-pulse" />
+            ) : (
+              <FiArrowRight size={14} className="animate-pulse" />
+            )}
           </motion.div>
 
           <div className="flex justify-center group">
@@ -95,7 +105,7 @@ export default function PortfolioSection() {
               ))}
             </Swiper>
           </div>
-          
+
           {/* Subtle edge fades for mobile */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-page-bg to-transparent z-10 pointer-events-none lg:hidden opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-page-bg to-transparent z-10 pointer-events-none lg:hidden opacity-0 group-hover:opacity-100 transition-opacity" />

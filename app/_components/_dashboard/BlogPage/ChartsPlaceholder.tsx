@@ -1,3 +1,4 @@
+"use client";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { motion } from "framer-motion";

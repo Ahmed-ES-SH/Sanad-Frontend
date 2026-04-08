@@ -6,13 +6,14 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { createProject } from "@/app/actions/portfolioActions";
 import { toast } from "sonner";
-import { FiLoader, FiChevronRight } from "react-icons/fi";
+import { FiLoader } from "react-icons/fi";
 import BasicInfoSection from "./_AddProject/BasicInfoSection";
 import ProjectIdentitySection from "./_AddProject/ProjectIdentitySection";
 import TechnicalDetailsSection from "./_AddProject/TechnicalDetailsSection";
 import ProjectPreview from "./_AddProject/ProjectPreview";
 import FormProgress from "./_AddProject/FormProgress";
 import ErrorSummary from "./_AddProject/ErrorSummary";
+import { Category } from "@/app/types/blog";
 
 //////////////////////////////////////////////////////
 ///////  FieldErrors interface for validation results
@@ -27,7 +28,11 @@ interface FieldErrors {
   repoUrl?: string;
 }
 
-export default function AddNewProject() {
+export default function AddNewProject({
+  categories,
+}: {
+  categories: Category[];
+}) {
   const { local } = useVariables();
   const { ProjectsPage } = getTranslations(local);
   const t = ProjectsPage.AddNewProject;
@@ -37,13 +42,17 @@ export default function AddNewProject() {
   const [category, setCategory] = useState("");
   const [shortDesc, setShortDesc] = useState("");
   const [longDesc, setLongDesc] = useState("");
+  const [coverImage, setCoverImage] = useState("");
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [techStack, setTechStack] = useState<string[]>([]);
   const [liveUrl, setLiveUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [newTech, setNewTech] = useState("");
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set(["basic"]));
+  const [openSections, setOpenSections] = useState<Set<string>>(
+    new Set(["basic"]),
+  );
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -89,15 +98,17 @@ export default function AddNewProject() {
   const validateField = (name: string, value: string) => {
     switch (name) {
       case "title":
-        return value.trim().length === 0 ? "Project title is required" : undefined;
+        return value.trim().length === 0
+          ? "Project title is required"
+          : undefined;
       case "category":
         return value.length === 0 ? "Please select a category" : undefined;
       case "shortDesc":
         return value.trim().length === 0
           ? "A short description is required"
           : value.length > 150
-          ? `Short description must be under 150 characters (currently ${value.length})`
-          : undefined;
+            ? `Short description must be under 150 characters (currently ${value.length})`
+            : undefined;
       case "longDesc":
         return value.trim().length < 20 && value.trim().length > 0
           ? "Description is too short — add at least 20 characters"
@@ -124,10 +135,14 @@ export default function AddNewProject() {
   // Track which required fields are missing
   const missingFields = useMemo(() => {
     const missing: string[] = [];
-    if (!formState.fields.title) missing.push(t?.basicInfo?.projectTitle || "Project Title");
-    if (!formState.fields.category) missing.push(t?.basicInfo?.category || "Category");
-    if (!formState.fields.shortDesc) missing.push(t?.basicInfo?.shortDesc || "Short Description");
-    if (!formState.fields.techStack) missing.push(t?.technicalDetails?.techStack || "Tech Stack");
+    if (!formState.fields.title)
+      missing.push(t?.basicInfo?.projectTitle || "Project Title");
+    if (!formState.fields.category)
+      missing.push(t?.basicInfo?.category || "Category");
+    if (!formState.fields.shortDesc)
+      missing.push(t?.basicInfo?.shortDesc || "Short Description");
+    if (!formState.fields.techStack)
+      missing.push(t?.technicalDetails?.techStack || "Tech Stack");
     return missing;
   }, [formState, t]);
 
@@ -163,7 +178,16 @@ export default function AddNewProject() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Mark all fields as touched
-    setTouched(new Set(["title", "category", "shortDesc", "longDesc", "liveUrl", "repoUrl"]));
+    setTouched(
+      new Set([
+        "title",
+        "category",
+        "shortDesc",
+        "longDesc",
+        "liveUrl",
+        "repoUrl",
+      ]),
+    );
     const allErrors = validateAll();
     setErrors(allErrors);
 
@@ -174,7 +198,12 @@ export default function AddNewProject() {
     if (errorMessages.length > 0) {
       setSubmitErrors(errorMessages);
       // Open the first section that has an error
-      if (allErrors.title || allErrors.category || allErrors.shortDesc || allErrors.longDesc) {
+      if (
+        allErrors.title ||
+        allErrors.category ||
+        allErrors.shortDesc ||
+        allErrors.longDesc
+      ) {
         setOpenSections((prev) => new Set(prev).add("basic"));
       }
       if (allErrors.liveUrl || allErrors.repoUrl) {
@@ -191,6 +220,11 @@ export default function AddNewProject() {
         title: title.trim(),
         shortDescription: shortDesc.trim(),
         longDescription: longDesc.trim() || undefined,
+        coverImage: coverImage || undefined,
+        images:
+          galleryImages.filter((img) => img.trim()).length > 0
+            ? galleryImages.filter((img) => img.trim())
+            : undefined,
         techStack: techStack.length > 0 ? techStack : undefined,
         liveUrl: liveUrl.trim() || undefined,
         repoUrl: repoUrl.trim() || undefined,
@@ -212,47 +246,28 @@ export default function AddNewProject() {
   };
 
   return (
-    <div className="ml-64 rtl:mr-64 rtl:ml-0 pt-24 pb-12 px-8">
+    <div className="mt-6 pb-12 px-8">
       {/* Header Section */}
       <div className="flex justify-between items-end mb-8">
         <div>
-          <nav className="flex gap-2 text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">
-            <span>{t?.breadcrumb?.projects || "Projects"}</span>
-            <FiChevronRight className="text-sm" />
-            <span className="text-orange-500">
-              {t?.breadcrumb?.addNew || "Add New Project"}
-            </span>
-          </nav>
           <h2 className="text-3xl font-extrabold text-stone-800 tracking-tight">
             {t?.title || "Create New Project"}
           </h2>
           <p className="text-sm text-stone-500 mt-1">
-            {t?.subtitle || "Fill in the required fields to create your project. Drafts are saved automatically."}
+            {t?.subtitle ||
+              "Fill in the required fields to create your project. Drafts are saved automatically."}
           </p>
-        </div>
-        <div className="flex gap-3 items-end">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-6 py-2.5 rounded-xl font-bold text-sm bg-white text-stone-600 border border-stone-300 hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t?.saveDraft || "Save Draft"}
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-8 py-3 rounded-xl font-bold text-sm bg-orange-500 text-white shadow-md shadow-orange-500/25 hover:bg-orange-600 active:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {submitting && <FiLoader className="animate-spin" size={16} />}
-            {t?.publishProject || "Publish Project"}
-          </button>
         </div>
       </div>
 
       {/* Layout Grid */}
       <div className="grid grid-cols-12 gap-8">
         {/* Left Column: Form */}
-        <form onSubmit={handleSubmit} className="col-span-8 space-y-8" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="col-span-8 space-y-8"
+          noValidate
+        >
           {/* Error Summary Banner */}
           <ErrorSummary submitErrors={submitErrors} />
 
@@ -273,6 +288,7 @@ export default function AddNewProject() {
             errors={errors}
             markTouched={markTouched}
             handleFieldChange={handleFieldChange}
+            categories={categories}
           />
 
           {/* Section 2: Project Identity */}
@@ -280,6 +296,10 @@ export default function AddNewProject() {
             t={t}
             open={openSections.has("identity")}
             toggleSection={toggleSection}
+            coverImage={coverImage}
+            galleryImages={galleryImages}
+            onCoverImageChange={setCoverImage}
+            onGalleryImagesChange={setGalleryImages}
           />
 
           {/* Section 3: Technical Details */}
@@ -302,6 +322,25 @@ export default function AddNewProject() {
             markTouched={markTouched}
             handleFieldChange={handleFieldChange}
           />
+
+          {/* Form Actions */}
+          <div className="flex gap-3 justify-end pt-4">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-6 py-2.5 rounded-xl font-bold text-sm bg-white text-stone-600 border border-stone-300 hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t?.saveDraft || "Save Draft"}
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-8 py-3 rounded-xl font-bold text-sm bg-orange-500 text-white shadow-md shadow-orange-500/25 hover:bg-orange-600 active:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {submitting && <FiLoader className="animate-spin" size={16} />}
+              {t?.publishProject || "Publish Project"}
+            </button>
+          </div>
         </form>
 
         {/* Right Column: Sidebar */}

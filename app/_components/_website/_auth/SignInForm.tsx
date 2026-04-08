@@ -59,9 +59,10 @@ export default function SignInForm() {
     return Object.keys(newErrors).length === 0;
   }
 
-  const isFormValid = formData.email.trim() && 
-                     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && 
-                     formData.password;
+  const isFormValid =
+    formData.email.trim() &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) &&
+    formData.password;
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -87,19 +88,32 @@ export default function SignInForm() {
         password: formData.password,
       });
 
+      if (response.statusCode === 403) {
+        toast.error(response.message);
+        router.push(`/${local}/verify-email?email=${formData.email}`);
+      }
+
+      if (response.statusCode === 400) {
+        toast.error(response.message);
+      }
+
       if (
         response.success &&
         response.data?.user &&
         response.data?.access_token
       ) {
-        setUser(response.data.user);
+        const user = response.data.user;
+        setUser(user);
         toast.success(response.message);
-        router.push(`/${local}/dashboard`);
+        router.push(
+          user.role === "admin"
+            ? `/${local}/dashboard`
+            : `/${local}/userdashboard`,
+        );
         router.refresh();
-      } else {
-        toast.error(response.message);
       }
     } catch (error: any) {
+      console.log(error);
       toast.error(error?.message || "An error occurred");
     } finally {
       setIsLoading(false);

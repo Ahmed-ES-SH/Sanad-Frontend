@@ -1,4 +1,3 @@
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
 import ServiceHeader from "./ServiceHeader";
 import StatsGrid from "./StatsGrid";
 import ServiceOverview from "./ServiceOverview";
@@ -7,13 +6,20 @@ import CustomerAdoptionChart from "./CustomerAdoptionChart";
 import ServiceConfiguration from "./ServiceConfiguration";
 import TopCustomers from "./TopCustomers";
 import RelatedServices from "./RelatedServices";
+import { Service } from "@/app/types/service";
 
-export default function ServiceDetailsContent() {
+interface ServiceDetailsContentProps {
+  service?: Service | null;
+}
+
+export default function ServiceDetailsContent({
+  service,
+}: ServiceDetailsContentProps) {
   return (
     <>
       <main className=" overflow-y-auto p-6 md:p-8 space-y-8 flex-1 w-full">
         {/* Service Header */}
-        <ServiceHeader />
+        <ServiceHeader service={service} />
 
         {/* Stats Grid */}
         <StatsGrid />
@@ -22,14 +28,14 @@ export default function ServiceDetailsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Left Column (Wide) */}
           <div className="lg:col-span-2 space-y-8">
-            <ServiceOverview />
+            <ServiceOverview service={service} />
             <PricingTable />
             <CustomerAdoptionChart />
           </div>
 
           {/* Right Column (Narrow) */}
           <div className="space-y-8">
-            <ServiceConfiguration />
+            <ServiceConfiguration service={service} />
             <TopCustomers />
             <RelatedServices />
           </div>

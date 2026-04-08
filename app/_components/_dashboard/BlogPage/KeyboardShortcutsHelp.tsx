@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
+import { HiOutlineX } from "react-icons/hi";
 
 const shortcuts = [
   { key: "N", descriptionKey: "createNewPost" },
@@ -63,12 +64,12 @@ export function KeyboardShortcutsHelp() {
         transition={{ delay: 3 }}
         className="fixed bottom-4 right-4 text-xs text-stone-400 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm border border-stone-200/50"
       >
-        <span className="flex items-center gap-1">
+        <div className="flex items-center gap-1">
           <kbd className="px-1.5 py-0.5 bg-stone-100 rounded text-stone-600 font-mono text-[10px]">
             ?
           </kbd>
           <span>{t.showShortcuts}</span>
-        </span>
+        </div>
       </motion.div>
 
       {/* Help Modal */}
@@ -94,9 +95,7 @@ export function KeyboardShortcutsHelp() {
                   onClick={() => setIsVisible(false)}
                   className="p-1 hover:bg-stone-100 rounded-lg transition-colors"
                 >
-                  <span className="material-symbols-outlined text-stone-400">
-                    close
-                  </span>
+                  <HiOutlineX className="text-stone-400 text-xl" />
                 </button>
               </div>
 

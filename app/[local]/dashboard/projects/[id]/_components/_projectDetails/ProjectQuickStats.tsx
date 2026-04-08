@@ -80,7 +80,7 @@ function StatCard({
   // Loading skeleton
   if (isLoading) {
     return (
-      <motion.div 
+      <motion.div
         className={`p-5 rounded-2xl shadow-[0_12px_32px_rgba(52,47,43,0.06)] flex flex-col justify-between h-32 bg-white animate-pulse`}
         variants={statVariants}
       >
@@ -96,8 +96,9 @@ function StatCard({
     );
   }
 
-  const baseClasses = "flex flex-col justify-between relative overflow-hidden group hover:shadow-[0_12px_32px_rgba(52,47,43,0.08)] transition-all duration-300";
-  
+  const baseClasses =
+    "flex flex-col justify-between relative overflow-hidden group hover:shadow-[0_12px_32px_rgba(52,47,43,0.08)] transition-all duration-300";
+
   const variantClasses = {
     default: "bg-white p-5 h-32 rounded-2xl",
     dark: "bg-[#1c1917] p-6 h-40 rounded-2xl",
@@ -106,24 +107,28 @@ function StatCard({
 
   const getStatusBadge = () => {
     if (!statusBadge) return null;
-    
+
     const statusConfig = {
       success: { bg: "bg-[#10b981]/20", text: "text-[#34d399]" },
       warning: { bg: "bg-[#fbbf24]/20", text: "text-[#fbbf24]" },
       error: { bg: "bg-[#dc2626]/20", text: "text-[#fca5a5]" },
       info: { bg: "bg-[#3b82f6]/20", text: "text-[#93c5fd]" },
     };
-    
+
     const config = statusConfig[statusBadge.color];
-    
+
     return (
-      <motion.span 
+      <motion.span
         className={`${config.bg} ${config.text} px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5`}
         whileHover={{ scale: 1.05 }}
       >
         {statusBadge.color === "success" && (
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
           </svg>
         )}
         {statusBadge.text}
@@ -132,11 +137,11 @@ function StatCard({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={`${baseClasses} ${variantClasses[variant]}`}
       variants={statVariants}
       role="region"
-      aria-label={`${label}: ${value}${subtext ? `, ${subtext}` : ''}`}
+      aria-label={`${label}: ${value}${subtext ? `, ${subtext}` : ""}`}
     >
       {/* Decorative elements */}
       {variant === "default" && (
@@ -145,19 +150,21 @@ function StatCard({
       {variant === "dark" && (
         <div className="absolute -right-8 -top-8 w-32 h-32 bg-[#10b981]/10 rounded-full blur-3xl group-hover:bg-[#10b981]/20 transition-all duration-500"></div>
       )}
-      
+
       <div className="flex justify-between items-start relative z-10">
-        <span className={`text-xs font-semibold tracking-wide ${variant === "dark" ? "text-[#34d399]" : "text-[#584237]/70"}`}>
+        <span
+          className={`text-xs font-semibold tracking-wide ${variant === "dark" ? "text-[#34d399]" : "text-[#584237]/70"}`}
+        >
           {label}
         </span>
         {getStatusBadge()}
       </div>
-      
+
       <div className="space-y-2 relative z-10">
         {variant === "default" && progress !== undefined && (
           <div className="w-full bg-[#fcf2eb] h-2 rounded-full overflow-hidden">
-            <motion.div 
-              className="bg-gradient-to-r from-[#f97316] to-[#fb923c] h-full rounded-full relative overflow-hidden"
+            <motion.div
+              className="bg-linear-to-r from-[#f97316] to-[#fb923c] h-full rounded-full relative overflow-hidden"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 1, delay: 0.5, ease: [0.25, 1, 0.5, 1] }}
@@ -171,11 +178,13 @@ function StatCard({
             </motion.div>
           </div>
         )}
-        
+
         {variant !== "accent" ? (
-          <motion.p 
+          <motion.p
             className={`text-${variant === "dark" ? "4xl font-black text-white" : "3xl font-black text-[#1c1917]"} tracking-tight`}
-            initial={variant === "dark" ? { opacity: 0, y: 10 } : { scale: 0.8 }}
+            initial={
+              variant === "dark" ? { opacity: 0, y: 10 } : { scale: 0.8 }
+            }
             animate={variant === "dark" ? { opacity: 1, y: 0 } : { scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
@@ -184,15 +193,23 @@ function StatCard({
         ) : (
           <p className="text-lg font-black text-white leading-tight">{value}</p>
         )}
-        
+
         {subtext && (
           <p className="text-xs font-medium mt-1.5" title={subtext}>
             {variant === "dark" ? (
               <span className="text-[#a8a29e]">{subtext}</span>
             ) : variant === "accent" ? (
               <span className="text-[#fdba74] flex items-center gap-1.5">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                <svg
+                  className="w-3 h-3"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 {subtext}
               </span>
@@ -236,7 +253,7 @@ export default function ProjectQuickStats({
   // Handle error state
   if (error) {
     return (
-      <motion.section 
+      <motion.section
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         variants={containerVariants}
         initial="hidden"
@@ -247,13 +264,26 @@ export default function ProjectQuickStats({
         <div className="col-span-full bg-white p-8 rounded-2xl shadow-[0_12px_32px_rgba(52,47,43,0.06)]">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="w-12 h-12 rounded-full bg-[#fef2f2] flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-[#dc2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+                className="w-6 h-6 text-[#dc2626]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
             </div>
-            <h4 className="text-[#1c1917] font-bold mb-2">Unable to load project statistics</h4>
+            <h4 className="text-[#1c1917] font-bold mb-2">
+              Unable to load project statistics
+            </h4>
             <p className="text-[#584237]/70 text-sm mb-4">
-              {error.message || "Something went wrong while loading project stats."}
+              {error.message ||
+                "Something went wrong while loading project stats."}
             </p>
           </div>
         </div>
@@ -272,7 +302,7 @@ export default function ProjectQuickStats({
   };
 
   return (
-    <motion.section 
+    <motion.section
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       variants={containerVariants}
       initial="hidden"
@@ -296,8 +326,18 @@ export default function ProjectQuickStats({
         subtext={`of ${formatCurrency(budget.total)} total budget`}
         variant="dark"
         statusBadge={{
-          text: budget.status === "on-track" ? "On Track" : budget.status === "over" ? "Over Budget" : "Under Budget",
-          color: budget.status === "on-track" ? "success" : budget.status === "over" ? "error" : "info",
+          text:
+            budget.status === "on-track"
+              ? "On Track"
+              : budget.status === "over"
+                ? "Over Budget"
+                : "Under Budget",
+          color:
+            budget.status === "on-track"
+              ? "success"
+              : budget.status === "over"
+                ? "error"
+                : "info",
         }}
         isLoading={isLoading}
       />
@@ -307,7 +347,10 @@ export default function ProjectQuickStats({
         label="Tasks"
         value={
           <span className="text-3xl font-black text-[#1c1917] tracking-tight">
-            {tasks.completed}<span className="text-[#584237]/50 font-medium text-base">/{tasks.total}</span>
+            {tasks.completed}
+            <span className="text-[#584237]/50 font-medium text-base">
+              /{tasks.total}
+            </span>
           </span>
         }
         subtext={`${tasks.total - tasks.completed} remaining`}

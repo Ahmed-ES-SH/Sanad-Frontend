@@ -8,7 +8,6 @@ import {
   updateProject,
 } from "@/app/actions/portfolioActions";
 import type { Project } from "@/app/types/project";
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
 import {
   FiInfo,
   FiImage,
@@ -52,7 +51,9 @@ export default function EditProjectPage() {
   const [newTech, setNewTech] = useState("");
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set(["basic"]));
+  const [openSections, setOpenSections] = useState<Set<string>>(
+    new Set(["basic"]),
+  );
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -105,13 +106,15 @@ export default function EditProjectPage() {
   const validateField = (name: string, value: string) => {
     switch (name) {
       case "title":
-        return value.trim().length === 0 ? "Project title is required" : undefined;
+        return value.trim().length === 0
+          ? "Project title is required"
+          : undefined;
       case "shortDesc":
         return value.trim().length === 0
           ? "A short description is required"
           : value.length > 150
-          ? `Short description must be under 150 characters (currently ${value.length})`
-          : undefined;
+            ? `Short description must be under 150 characters (currently ${value.length})`
+            : undefined;
       case "longDesc":
         return value.trim().length < 20 && value.trim().length > 0
           ? "Description is too short — add at least 20 characters"
@@ -161,7 +164,9 @@ export default function EditProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched(new Set(["title", "shortDesc", "longDesc", "liveUrl", "repoUrl"]));
+    setTouched(
+      new Set(["title", "shortDesc", "longDesc", "liveUrl", "repoUrl"]),
+    );
     const allErrors = validateAll();
     setErrors(allErrors);
 
@@ -211,7 +216,6 @@ export default function EditProjectPage() {
   if (loading) {
     return (
       <>
-        <TopNavBar />
         <main className="flex-1 overflow-y-auto p-6 md:p-8 flex items-center justify-center min-h-[60vh]">
           <FiLoader className="animate-spin text-stone-400" size={32} />
         </main>
@@ -222,7 +226,6 @@ export default function EditProjectPage() {
   if (!project) {
     return (
       <>
-        <TopNavBar />
         <main className="flex-1 overflow-y-auto p-6 md:p-8 flex items-center justify-center min-h-[60vh]">
           <p className="text-lg text-stone-500">Project not found</p>
         </main>
@@ -232,7 +235,6 @@ export default function EditProjectPage() {
 
   return (
     <>
-      <TopNavBar />
       <main className="flex-1 overflow-y-auto">
         <div className="ml-64 rtl:mr-64 rtl:ml-0 pt-24 pb-12 px-8">
           {/* Header */}
@@ -259,12 +261,20 @@ export default function EditProjectPage() {
 
           {/* Error Summary */}
           {submitErrors.length > 0 && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8" role="alert">
+            <div
+              className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8"
+              role="alert"
+            >
               <div className="flex items-start gap-3">
-                <FiAlertCircle className="text-red-500 shrink-0 mt-0.5" size={20} />
+                <FiAlertCircle
+                  className="text-red-500 shrink-0 mt-0.5"
+                  size={20}
+                />
                 <div>
                   <h4 className="text-sm font-bold text-red-800">
-                    {submitErrors.length} {submitErrors.length === 1 ? "issue" : "issues"} need to be fixed
+                    {submitErrors.length}{" "}
+                    {submitErrors.length === 1 ? "issue" : "issues"} need to be
+                    fixed
                   </h4>
                   <ul className="mt-2 text-xs text-red-700 space-y-1">
                     {submitErrors.map((err) => (
@@ -293,7 +303,10 @@ export default function EditProjectPage() {
                 {openSections.has("basic") ? (
                   <FiChevronUp size={20} className="text-stone-400 shrink-0" />
                 ) : (
-                  <FiChevronDown size={20} className="text-stone-400 shrink-0" />
+                  <FiChevronDown
+                    size={20}
+                    className="text-stone-400 shrink-0"
+                  />
                 )}
               </button>
               {openSections.has("basic") && (
@@ -306,10 +319,15 @@ export default function EditProjectPage() {
                     <input
                       type="text"
                       value={title}
-                      onChange={(e) => { setTitle(e.target.value); handleFieldChange("title", e.target.value); }}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        handleFieldChange("title", e.target.value);
+                      }}
                       onBlur={() => markTouched("title")}
                       className={`w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 ${
-                        touched.has("title") && errors.title ? "ring-2 ring-red-400/40" : ""
+                        touched.has("title") && errors.title
+                          ? "ring-2 ring-red-400/40"
+                          : ""
                       }`}
                       placeholder="e.g. Modern E-commerce Platform"
                     />
@@ -328,11 +346,16 @@ export default function EditProjectPage() {
                     <input
                       type="text"
                       value={shortDesc}
-                      onChange={(e) => { setShortDesc(e.target.value); handleFieldChange("shortDesc", e.target.value); }}
+                      onChange={(e) => {
+                        setShortDesc(e.target.value);
+                        handleFieldChange("shortDesc", e.target.value);
+                      }}
                       onBlur={() => markTouched("shortDesc")}
                       maxLength={150}
                       className={`w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 ${
-                        touched.has("shortDesc") && errors.shortDesc ? "ring-2 ring-red-400/40" : ""
+                        touched.has("shortDesc") && errors.shortDesc
+                          ? "ring-2 ring-red-400/40"
+                          : ""
                       }`}
                       placeholder="Brief summary for list views (max 150 characters)"
                     />
@@ -341,8 +364,12 @@ export default function EditProjectPage() {
                         <p className="text-xs text-red-500 flex items-center gap-1">
                           <FiAlertCircle size={12} /> {errors.shortDesc}
                         </p>
-                      ) : <span />}
-                      <span className={`text-[11px] ${shortDesc.length > 140 ? "text-amber-500 font-bold" : "text-stone-400"}`}>
+                      ) : (
+                        <span />
+                      )}
+                      <span
+                        className={`text-[11px] ${shortDesc.length > 140 ? "text-amber-500 font-bold" : "text-stone-400"}`}
+                      >
                         {shortDesc.length}/150
                       </span>
                     </div>
@@ -355,7 +382,10 @@ export default function EditProjectPage() {
                     </label>
                     <textarea
                       value={longDesc}
-                      onChange={(e) => { setLongDesc(e.target.value); handleFieldChange("longDesc", e.target.value); }}
+                      onChange={(e) => {
+                        setLongDesc(e.target.value);
+                        handleFieldChange("longDesc", e.target.value);
+                      }}
                       onBlur={() => markTouched("longDesc")}
                       className="w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 min-h-[200px] resize-none"
                       placeholder="Describe the project scope, challenges, and solutions in detail..."
@@ -386,7 +416,10 @@ export default function EditProjectPage() {
                 {openSections.has("technical") ? (
                   <FiChevronUp size={20} className="text-stone-400 shrink-0" />
                 ) : (
-                  <FiChevronDown size={20} className="text-stone-400 shrink-0" />
+                  <FiChevronDown
+                    size={20}
+                    className="text-stone-400 shrink-0"
+                  />
                 )}
               </button>
               {openSections.has("technical") && (
@@ -399,7 +432,8 @@ export default function EditProjectPage() {
                     <div className="w-full bg-stone-50 border-none rounded-lg p-4 flex flex-wrap gap-2 focus-within:ring-2 focus-within:ring-orange-500/50">
                       {techStack.length === 0 && (
                         <span className="text-stone-400 text-sm">
-                          No technologies added yet. Type one below and press Enter.
+                          No technologies added yet. Type one below and press
+                          Enter.
                         </span>
                       )}
                       {techStack.map((tech) => (
@@ -434,14 +468,21 @@ export default function EditProjectPage() {
                       <label className="text-xs font-bold uppercase tracking-widest text-stone-400">
                         Live URL
                       </label>
-                      <div className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
-                        touched.has("liveUrl") && errors.liveUrl ? "ring-2 ring-red-400/40" : ""
-                      }`}>
+                      <div
+                        className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
+                          touched.has("liveUrl") && errors.liveUrl
+                            ? "ring-2 ring-red-400/40"
+                            : ""
+                        }`}
+                      >
                         <FiLink className="ml-4 text-stone-400" size={16} />
                         <input
                           type="url"
                           value={liveUrl}
-                          onChange={(e) => { setLiveUrl(e.target.value); handleFieldChange("liveUrl", e.target.value); }}
+                          onChange={(e) => {
+                            setLiveUrl(e.target.value);
+                            handleFieldChange("liveUrl", e.target.value);
+                          }}
                           onBlur={() => markTouched("liveUrl")}
                           className="w-full bg-transparent border-none p-4 text-sm focus:ring-0 placeholder:text-stone-400"
                           placeholder="https://project.com"
@@ -458,14 +499,21 @@ export default function EditProjectPage() {
                       <label className="text-xs font-bold uppercase tracking-widest text-stone-400">
                         Repository URL
                       </label>
-                      <div className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
-                        touched.has("repoUrl") && errors.repoUrl ? "ring-2 ring-red-400/40" : ""
-                      }`}>
+                      <div
+                        className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
+                          touched.has("repoUrl") && errors.repoUrl
+                            ? "ring-2 ring-red-400/40"
+                            : ""
+                        }`}
+                      >
                         <FiTerminal className="ml-4 text-stone-400" size={16} />
                         <input
                           type="url"
                           value={repoUrl}
-                          onChange={(e) => { setRepoUrl(e.target.value); handleFieldChange("repoUrl", e.target.value); }}
+                          onChange={(e) => {
+                            setRepoUrl(e.target.value);
+                            handleFieldChange("repoUrl", e.target.value);
+                          }}
                           onBlur={() => markTouched("repoUrl")}
                           className="w-full bg-transparent border-none p-4 text-sm focus:ring-0 placeholder:text-stone-400"
                           placeholder="https://github.com/..."

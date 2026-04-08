@@ -1,9 +1,6 @@
 // Project / Portfolio Type Definitions
 
-export interface Category {
-  id: string;
-  name: string;
-}
+import { Category } from "./blog";
 
 export interface Project {
   id: string;
@@ -47,7 +44,7 @@ export interface ProjectFormData {
   title: string;
   shortDescription: string;
   longDescription?: string;
-  coverImageUrl?: string;
+  coverImage?: string;
   images?: string[];
   techStack?: string[];
   categoryId?: string;
@@ -94,6 +91,6 @@ export interface PortfolioQueryParams {
 export interface AdminPortfolioQueryParams {
   page?: number;
   limit?: number;
-  sortBy?: 'createdAt' | 'updatedAt' | 'title';
-  order?: 'ASC' | 'DESC';
+  sortBy?: "createdAt" | "updatedAt" | "title";
+  order?: "ASC" | "DESC";
 }

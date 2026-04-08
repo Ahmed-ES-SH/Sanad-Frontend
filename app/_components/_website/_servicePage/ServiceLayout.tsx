@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { servicesData } from "@/app/constants/servicesData";
-import { useSearchParams } from "next/navigation";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
@@ -12,17 +11,34 @@ import ServiceProcess from "./ServiceProcess";
 import ServiceFAQ from "./ServiceFAQ";
 import ServiceOrderCTA from "./ServiceOrderCTA";
 import RelatedServices from "./RelatedServices";
-import { projectsData } from "@/app/constants/projects";
+import { Service } from "@/app/types/service";
+import { ServiceData } from "@/app/constants/servicesData";
 
-export default function ServiceLayout() {
+interface ServiceLayoutProps {
+  service?: Service | null;
+}
+
+function mapBackendToStatic(backendService: Service, local: string): ServiceData {
+  const staticService = servicesData[0];
+  return {
+    ...staticService,
+    id: parseInt(backendService.id.replace(/-/g, '').slice(0, 8), 16) || 1,
+    title: { en: backendService.title, ar: backendService.title },
+    smallDesc: { en: backendService.shortDescription, ar: backendService.shortDescription },
+    description: { en: backendService.longDescription || '', ar: backendService.longDescription || '' },
+    category: (backendService.category?.slug as ServiceData['category']) || 'development',
+  };
+}
+
+export default function ServiceLayout({ service: backendService }: ServiceLayoutProps) {
   const { local } = useVariables();
   const { ProjectPage, servicePage } = getTranslations(local);
   const isArabic = local === "ar";
-  const searchParams = useSearchParams();
-  const serviceId = searchParams.get("serviceId");
-  const service =
-    servicesData.find((service) => service.id === Number(serviceId)) ||
-    servicesData[0];
+
+  const staticService = servicesData[0];
+  const service = backendService 
+    ? mapBackendToStatic(backendService, local) 
+    : staticService;
 
   return (
     <div dir={directionMap[local]} className="min-h-screen mt-12 max-md:mt-20">
@@ -59,7 +75,7 @@ export default function ServiceLayout() {
 
       <RelatedServices
         currentServiceId={service.id}
-        currentCategory={service.category}
+        currentCategory={service.category || 'development'}
       />
 
       <motion.div

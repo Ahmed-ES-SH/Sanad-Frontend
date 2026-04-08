@@ -342,6 +342,7 @@
   },
   "userMenu": {
     "profile": "الملف الشخصي",
+    "dashboard": "لوحة التحكم",
     "payments": "المدفوعات",
     "logout": "تسجيل الخروج",
     "loggingOut": "جاري تسجيل الخروج..."
@@ -894,6 +895,8 @@
       "currencyUSD": "العملة: دولار"
     },
     "TransactionTable": {
+      "invoiceId": "رقم الفاتورة",
+      "actions": "الإجراءات",
       "recentTransactions": "المعاملات الأخيرة",
       "liveFeed": "تغذية مباشرة لنشاط المدفوعات",
       "viewAll": "عرض الكل",
@@ -1069,5 +1072,73 @@
       "title": "إعادة تعيين كلمة المرور - سند",
       "description": "اختر كلمة مرور جديدة لحسابك في سند."
     }
+  },
+  "cart": {
+    "myCart": "ملف مشروعك",
+    "items": "عناصر",
+    "subtotal": "المجموع الفرعي",
+    "technicalFee": "رسوم المنصة",
+    "technicalFeeTooltip": "تغطي أمان المنصة والدعم التقني",
+    "vat": "ضريبة القيمة المضافة (5%)",
+    "total": "إجمالي الاستثمار",
+    "includesTaxes": "شامل جميع الضرائب",
+    "paymentMethod": "طريقة الدفع",
+    "creditCard": "بطاقة ائتمان",
+    "bankTransfer": "تحويل بنكي",
+    "secureCheckout": "اعتماد والمتابعة",
+    "secureCheckoutDesc": "بت الموافقة على هذا الملف، أنت توافق على اتفاقية الخدمات الرئيسية من سند وشروط التسليم التقنية.",
+    "remove": "إزالة",
+    "saveForLater": "حفظ لاحقاً",
+    "secureCheckoutTitle": "مراجعة واعتماد",
+    "breadcrumbs": "الخدمات",
+    "promoCode": "رمز ترويجي",
+    "promoCodePlaceholder": "أدخل الرمز الترويجي",
+    "applyPromo": "تطبيق",
+    "promoApplied": "تم تطبيق الرمز!",
+    "promoInvalid": "رمز غير صالح",
+    "trustIndicators": {
+      "sectionTitle": "لماذا تثق في سند",
+      "secureCheckout": "دفع آمن",
+      "encryption": "تشفير 256-bit",
+      "verifiedPartner": "شريك موثق",
+      "standards": "معايير مهنية",
+      "support": "دعم أول على مدار الساعة",
+      "assistance": "مساعدة تقنية"
+    },
+    "premium": {
+      "title": "سند بريموم",
+      "description": "قم بالترقية الآن لتوفير 10% على تقييمات مشاريعك الثلاث القادمة.",
+      "learnMore": "اعرف المزيد"
+    },
+    "emptyCartTitle": "ملف مشروعك فارغ",
+    "emptyCartDescription": "لنبني شيئاً رائعاً. استكشف خدماتنا لبدء تشكيل تحولك الرقمي.",
+    "browseServices": "استكشف الخدمات",
+    "featuredServices": "خدمات مميزة",
+    "popularCategories": "فئات شائعة",
+    "undoRemoveMessage": "تمت إزالة العنصر",
+    "undoSaveMessage": "تم حفظ العنصر لاحقاً",
+    "undo": "تراجع",
+    "dismiss": "إغلاق",
+    "scope": "النطاق",
+    "deliverables": "المخرجات",
+    "investment": "الاستثمار"
+  },
+
+  "PaymentFailedPage": {
+    "title": "فشل عملية الدفع",
+    "description": "لم نتمكن من معالجة معاملتك. يرجى مراجعة التفاصيل أدناه والمحاولة مرة أخرى أو التواصل مع مؤسستك المالية.",
+    "reasonLabel": "سبب الفشل",
+    "errorCodeLabel": "رمز الخطأ",
+    "insufficientFunds": "أموال غير كافية",
+    "amountLabel": "المبلغ",
+    "referenceLabel": "رقم المرجع",
+    "tryAgainBtn": "حاول مرة أخرى",
+    "contactSupportBtn": "تواصل مع الدعم",
+    "returnDashboard": "العودة للوحة التحكم",
+    "notCharged": "لم يتم خصم أي مبلغ من بطاقتك",
+    "securePayment": "بروتوكول دفع آمن",
+    "pciCompliant": "متوافق مع معايير PCI DSS",
+    "tryAgainHint": "إذا كان رصيدك منخفضاً، جرب طريقة دفع مختلفة",
+    "errorReference": "رمز المرجع للخطأ"
   }
 }

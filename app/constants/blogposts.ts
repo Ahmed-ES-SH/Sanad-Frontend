@@ -11,14 +11,6 @@ export interface BlogPost {
   featured?: boolean;
 }
 
-export interface Category {
-  name: {
-    en: string;
-    ar: string;
-  };
-  count: number;
-}
-
 // Sample data - 20 articles
 export const blogPosts: BlogPost[] = [
   {
@@ -286,7 +278,7 @@ export const blogPosts: BlogPost[] = [
   },
 ];
 
-export const categories: Category[] = [
+export const categories = [
   {
     name: { en: "Design and Branding", ar: "التصميم والعلامة التجارية" },
     count: 6,

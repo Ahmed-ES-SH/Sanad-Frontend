@@ -1,48 +1,53 @@
 "use client";
 
-import { FiUsers, FiZap, FiStar, FiTrendingUp } from "react-icons/fi";
+import { FiUsers, FiShield, FiCheck, FiClock } from "react-icons/fi";
+import { User, UserRole } from "@/app/types/user";
 
-//////////////////////////////////////////////////////
-///////  User stat card data with translation keys for labels
-//////////////////////////////////////////////////////
-interface UserStatItem {
-  labelKey: string;
-  value: string;
-  changeKey: string;
-  isPositive: boolean | null;
-  icon: React.ComponentType<{ size: number }>;
-  iconBg: string;
-  iconColor: string;
+// ============================================================================
+// USER STATS - Displays real-time statistics from backend user data
+// Calculates total users, admins, verified users, and pending (unverified)
+// ============================================================================
+
+interface UserStatsProps {
+  users: User[];
 }
 
-export default function UserStats() {
-  const stats: UserStatItem[] = [
+export default function UserStats({ users }: UserStatsProps) {
+  // ============================================================================
+  // Calculate stats from real backend data
+  // ============================================================================
+  const totalUsers = users.length;
+  const adminCount = users.filter((u) => u.role === "admin").length;
+  const verifiedCount = users.filter((u) => u.isEmailVerified).length;
+  const pendingCount = users.filter((u) => !u.isEmailVerified).length;
+
+  const stats = [
     {
-      labelKey: "totalUsers",
-      value: "1,284",
-      changeKey: "onboardingTargets",
-      isPositive: true,
+      label: "Total Users",
+      value: totalUsers.toString(),
+      change: `${adminCount} admin${adminCount !== 1 ? "s" : ""}`,
+      isPositive: null as boolean | null,
       icon: FiUsers,
       iconBg: "bg-orange-100",
       iconColor: "text-orange-600",
     },
     {
-      labelKey: "activeNow",
-      value: "42",
-      changeKey: "realtimeTracking",
-      isPositive: null,
-      icon: FiZap,
+      label: "Administrators",
+      value: adminCount.toString(),
+      change: `${((adminCount / Math.max(totalUsers, 1)) * 100).toFixed(0)}% of total`,
+      isPositive: null as boolean | null,
+      icon: FiShield,
       iconBg: "bg-sky-100",
       iconColor: "text-sky-600",
     },
     {
-      labelKey: "newThisMonth",
-      value: "+12%",
-      changeKey: "onboardingTargets",
-      isPositive: true,
-      icon: FiStar,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      label: "Verified",
+      value: verifiedCount.toString(),
+      change: `${pendingCount} pending verification`,
+      isPositive: pendingCount === 0,
+      icon: FiCheck,
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
     },
   ];
 
@@ -57,7 +62,7 @@ export default function UserStats() {
           >
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1">
-                {stat.labelKey}
+                {stat.label}
               </p>
               <h3 className="text-3xl font-extrabold text-stone-900">
                 {stat.value}
@@ -67,12 +72,12 @@ export default function UserStats() {
                   stat.isPositive === true
                     ? "text-green-600"
                     : stat.isPositive === false
-                      ? "text-red-600"
+                      ? "text-amber-600"
                       : "text-stone-500"
                 }`}
               >
-                {stat.isPositive && <FiTrendingUp className="text-sm" />}
-                {stat.changeKey}
+                {stat.isPositive === false && <FiClock className="text-sm" />}
+                {stat.change}
               </p>
             </div>
             <div

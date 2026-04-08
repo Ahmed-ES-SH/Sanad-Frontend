@@ -50,6 +50,7 @@ export async function loginAction(
       return {
         success: false,
         message: error.message,
+        statusCode: error.statusCode,
       };
     }
     return {

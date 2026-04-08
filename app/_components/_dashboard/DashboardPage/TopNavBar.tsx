@@ -1,6 +1,6 @@
 "use client";
 
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiMenu } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
@@ -10,7 +10,7 @@ import DropdownNotifications from "./DropdownNotifications";
 import DropdownSettings from "./DropdownSettings";
 
 const routeLabels: Record<string, string> = {
-  dashboard: "Dashboard",
+  dashboard: "Overview",
   projects: "Projects",
   "projects/add": "Add New Project",
   services: "Services",
@@ -23,7 +23,7 @@ const routeLabels: Record<string, string> = {
   contactus: "Contact Submissions",
 };
 
-function buildBreadcrumb(pathname: string) {
+function buildBreadcrumb(pathname: string, local: string) {
   const segments = pathname.split("/").filter(Boolean);
   const crumbLabels: { label: string; href: string }[] = [];
   let href = "";
@@ -31,7 +31,7 @@ function buildBreadcrumb(pathname: string) {
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
     // Skip locale segment
-    if (i === 0 && /^[a-z]{2}$/.test(segment)) continue;
+    if (i === 0 && segment === local) continue;
     href += `/${segment}`;
 
     // Check if this segment + next is a known compound route
@@ -51,33 +51,49 @@ function buildBreadcrumb(pathname: string) {
 }
 
 export default function TopNavBar() {
-  const { local } = useVariables();
+  const { local, setIsSidebarOpen } = useVariables();
   const { DashboardPage } = getTranslations(local);
   const t = DashboardPage.TopNavBar;
   const pathname = usePathname();
-  const crumbs = buildBreadcrumb(pathname);
+  const crumbs = buildBreadcrumb(pathname, local);
+  const isRTL = local === "ar";
+
+  if (!pathname.includes(`/${local}/dashboard`)) {
+    return null;
+  }
 
   return (
-    <header className="fixed top-0 left-0 z-999 bg-stone-100 flex justify-between items-center w-full px-8 py-3 shrink-0 border-b border-stone-200">
-      {/* Breadcrumb */}
-      <div className="flex items-center truncate gap-4">
+    <header className="sticky  top-0 left-0  z-30 bg-white/80 backdrop-blur-md flex justify-between items-center w-full px-4 sm:px-8 py-4 shrink-0 border-b border-stone-200/60 shadow-sm">
+      <div className="flex items-center gap-4">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="md:hidden p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-600 border border-stone-200/50 shadow-sm"
+          aria-label="Open Sidebar"
+        >
+          <FiMenu size={20} />
+        </button>
+
+        {/* Breadcrumb */}
         <nav
-          className="flex items-center gap-2 text-stone-500 text-sm font-medium"
+          className="flex items-center gap-2 text-stone-400 text-xs sm:text-sm font-semibold tracking-wide"
           aria-label="Breadcrumb"
         >
           {crumbs.map((crumb, idx) => {
             const isLast = idx === crumbs.length - 1;
             return (
               <span key={crumb.href} className="flex items-center gap-2">
-                {idx > 0 && <span className="text-stone-400">/</span>}
+                {idx > 0 && (
+                  <span className="text-stone-300 font-normal">/</span>
+                )}
                 {isLast ? (
-                  <span className="text-orange-700 font-bold">
+                  <span className="text-stone-800 font-bold truncate max-w-[120px] sm:max-w-none">
                     {crumb.label}
                   </span>
                 ) : (
                   <LocaleLink
                     href={crumb.href}
-                    className="hover:text-stone-700 transition-colors"
+                    className="hover:text-orange-600 transition-colors hidden sm:inline"
                   >
                     {crumb.label}
                   </LocaleLink>
@@ -89,15 +105,15 @@ export default function TopNavBar() {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-6">
         {/* Search */}
-        <div className="relative hidden xl:block">
+        <div className="relative hidden lg:block">
           <FiSearch
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
-            size={18}
+            className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-stone-400`}
+            size={16}
           />
           <input
-            className="pl-10 pr-4 py-2 bg-stone-200/50 border-none rounded-lg text-sm focus:ring-2 focus:ring-orange-500 w-64"
+            className={`${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"} py-2 bg-stone-100 border-stone-200/50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all w-48 xl:w-64 placeholder:text-stone-400`}
             placeholder={t.searchPlaceholder}
             type="text"
             aria-label={t.searchPlaceholder}
@@ -105,9 +121,11 @@ export default function TopNavBar() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3">
-          <DropdownNotifications />
-          <DropdownSettings />
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2 mr-1 sm:mr-3 border-r border-stone-200/60 pr-1 sm:pr-3">
+            <DropdownNotifications />
+            <DropdownSettings />
+          </div>
 
           {/* User Button */}
           <UserButton />

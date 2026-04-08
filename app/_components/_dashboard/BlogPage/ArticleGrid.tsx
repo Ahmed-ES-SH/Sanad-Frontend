@@ -6,7 +6,7 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { Article } from "@/app/types/blog";
 import LocalLink from "../../_global/LocalLink";
-import { deleteArticle, togglePublishStatus } from "@/app/actions/blogActions";
+import { HiOutlinePencilAlt, HiOutlineTrash, HiOutlineEye, HiOutlineClock, HiOutlinePlus, HiOutlineExclamation, HiOutlineDocumentText } from "react-icons/hi";
 
 interface ArticleGridProps {
   initialArticles: Article[];
@@ -25,6 +25,7 @@ function ArticleSkeleton() {
         </div>
         <div className="h-5 bg-stone-200 rounded w-3/4" />
         <div className="h-5 bg-stone-200 rounded w-1/2" />
+        <div className="h-10 bg-stone-100 rounded w-full mt-4" />
         <div className="flex items-center gap-2 mt-4">
           <div className="w-6 h-6 bg-stone-200 rounded-full" />
           <div className="h-3 w-24 bg-stone-200 rounded" />
@@ -42,9 +43,7 @@ function EmptyState({ t }: { t: any }) {
       className="col-span-full flex flex-col items-center justify-center py-16 px-4"
     >
       <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6">
-        <span className="material-symbols-outlined text-4xl text-orange-400">
-          article
-        </span>
+        <HiOutlineDocumentText className="text-4xl text-orange-400" />
       </div>
       <h3 className="text-xl font-bold text-stone-900 mb-2">
         {t.noArticlesTitle}
@@ -53,7 +52,7 @@ function EmptyState({ t }: { t: any }) {
         {t.noArticlesDesc}
       </p>
       <LocalLink href="/dashboard/blog/create" className="flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
-        <span className="material-symbols-outlined">add</span>
+        <HiOutlinePlus className="text-xl" />
         {t.createFirstPost}
       </LocalLink>
     </motion.div>
@@ -88,9 +87,7 @@ function DeleteConfirmDialog({
       >
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-red-600">
-              warning
-            </span>
+            <HiOutlineExclamation className="text-2xl text-red-600" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-stone-900">
@@ -219,7 +216,7 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                 viewport={{ once: true }}
                 variants={articleVariants}
                 whileHover={{ y: -4 }}
-                className="bg-white rounded-2xl shadow-sm border border-stone-200/50 overflow-hidden group cursor-pointer"
+                className="bg-white rounded-2xl shadow-sm border border-stone-200/50 overflow-hidden group cursor-pointer flex flex-col h-full"
               >
                 <LocalLink href={`/dashboard/blog/${article.id}`}>
                   <div className="h-48 overflow-hidden relative">
@@ -240,9 +237,9 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                     </div>
                   </div>
                 </LocalLink>
-                <div className="p-5">
+                <div className="p-5 flex flex-col flex-grow">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-bold text-orange-600 tracking-widest uppercase">
+                    <p className="text-[10px] font-bold text-orange-600 tracking-widest uppercase bg-orange-50 px-2 py-0.5 rounded">
                       {article.category?.name || 'Uncategorized'}
                     </p>
                     <p className="text-xs text-stone-500 font-medium">
@@ -250,48 +247,60 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                     </p>
                   </div>
                   <LocalLink href={`/dashboard/blog/${article.id}`}>
-                    <h4 className="font-bold text-lg text-stone-900 leading-snug mb-4 group-hover:text-orange-600 transition-colors line-clamp-2">
+                    <h4 className="font-bold text-lg text-stone-900 leading-tight mb-2 group-hover:text-orange-600 transition-colors line-clamp-1">
                       {article.title}
                     </h4>
                   </LocalLink>
-                  <div className="flex items-center justify-between">
+                  <p className="text-xs text-stone-500 mb-4 line-clamp-2 leading-relaxed flex-grow">
+                    {article.excerpt || "No summary provided for this article..."}
+                  </p>
+                  
+                  {/* Article Metadata Details */}
+                  <div className="flex items-center gap-4 mb-4 pt-4 border-t border-stone-100">
+                    <div className="flex items-center gap-1 text-stone-400">
+                      <HiOutlineEye className="text-sm" />
+                      <span className="text-[10px] font-semibold">{article.viewsCount || 0} views</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-stone-400">
+                      <HiOutlineClock className="text-sm" />
+                      <span className="text-[10px] font-semibold">{article.readTimeMinutes || 0} min read</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                        <span className="text-xs text-orange-600 font-bold">A</span>
+                      <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center border border-orange-200">
+                        <span className="text-[10px] text-orange-600 font-bold uppercase">
+                          {article.title.charAt(0)}
+                        </span>
                       </div>
                       <span className="text-xs font-semibold text-stone-600 truncate max-w-[100px]">
                         Admin
                       </span>
                     </div>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 1 }}
+                    <div
                       className="flex items-center gap-1"
                     >
                       <LocalLink href={`/dashboard/blog/${article.id}`}>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="p-2 hover:bg-orange-50 text-stone-400 hover:text-orange-600 rounded-lg transition-colors"
+                          className="p-2 bg-stone-50 text-stone-400 hover:text-orange-600 rounded-lg transition-colors border border-stone-100 opacity-70 hover:opacity-100"
                           aria-label={t.editArticle}
                         >
-                          <span className="material-symbols-outlined text-lg">
-                            edit
-                          </span>
+                          <HiOutlinePencilAlt className="text-lg" />
                         </motion.button>
                       </LocalLink>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleDeleteClick(article.id)}
-                        className="p-2 hover:bg-red-50 text-stone-400 hover:text-red-600 rounded-lg transition-colors"
+                        className="p-2 bg-stone-50 text-stone-400 hover:text-red-600 rounded-lg transition-colors border border-stone-100 opacity-70 hover:opacity-100"
                         aria-label={t.deleteArticleLabel}
                       >
-                        <span className="material-symbols-outlined text-lg">
-                          delete
-                        </span>
+                        <HiOutlineTrash className="text-lg" />
                       </motion.button>
-                    </motion.div>
+                    </div>
                   </div>
                 </div>
               </motion.article>

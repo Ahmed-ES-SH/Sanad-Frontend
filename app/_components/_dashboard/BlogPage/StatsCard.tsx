@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { IconType } from "react-icons";
 
 interface StatsCardProps {
-  icon: string;
+  icon: IconType;
   iconBg: string;
   iconColor: string;
   changeValue: string;
@@ -16,7 +17,7 @@ interface StatsCardProps {
 }
 
 export function StatsCard({
-  icon,
+  icon: Icon,
   iconBg,
   iconColor,
   changeValue,
@@ -35,12 +36,12 @@ export function StatsCard({
       className={`bg-white p-6 rounded-2xl shadow-sm border border-stone-200/50 ${borderColor}`}
     >
       <div className="flex items-center justify-between mb-4">
-        <motion.span
+        <motion.div
           whileHover={{ scale: 1.1 }}
-          className={`material-symbols-outlined p-2 ${iconBg} ${iconColor} rounded-lg cursor-default`}
+          className={`p-2 ${iconBg} ${iconColor} rounded-lg cursor-default`}
         >
-          {icon}
-        </motion.span>
+          <Icon className="text-xl" />
+        </motion.div>
         <span className={`text-xs font-bold ${changeBg} ${changeText} px-2 py-1 rounded-full`}>
           {changeValue}
         </span>

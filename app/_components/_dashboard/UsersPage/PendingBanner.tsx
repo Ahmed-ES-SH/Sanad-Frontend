@@ -1,13 +1,24 @@
 "use client";
 
-import { useVariables } from "@/app/context/VariablesContext";
-import { getTranslations } from "@/app/helpers/helpers";
 import { FiInfo } from "react-icons/fi";
+import { User } from "@/app/types/user";
 
-export default function PendingBanner() {
-  const { local } = useVariables();
-  const { UsersPage } = getTranslations(local);
-  const t = UsersPage.PendingBanner;
+// ============================================================================
+// PENDING BANNER - Shows count of users awaiting email verification
+// Only displays when there are unverified users in the system
+// ============================================================================
+
+interface PendingBannerProps {
+  users: User[];
+}
+
+export default function PendingBanner({ users }: PendingBannerProps) {
+  const pendingUsers = users.filter((u) => !u.isEmailVerified);
+
+  // Don't render if no pending users
+  if (pendingUsers.length === 0) {
+    return null;
+  }
 
   return (
     <div className="bg-sky-50 text-sky-800 p-4 rounded-xl flex items-center gap-4">
@@ -15,12 +26,12 @@ export default function PendingBanner() {
         <FiInfo size={20} className="text-sky-600" />
       </div>
       <p className="text-sm font-medium">
-        {t.message}{" "}
+        {pendingUsers.length} {pendingUsers.length === 1 ? "user is" : "users are"} pending email verification.{" "}
         <a
           className="underline font-bold text-sky-700 hover:text-sky-900"
-          href="#"
+          href="/dashboard/users?status=unverified"
         >
-          {t.reviewLink}
+          Review pending users
         </a>
       </p>
     </div>

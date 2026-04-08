@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiFilter } from "react-icons/fi";
-import { Project } from "./ProjectsPortfolio";
+import { LocalProject } from "./ProjectsPortfolio";
 import { FaTimes } from "react-icons/fa";
 import { useVariables } from "@/app/context/VariablesContext";
 

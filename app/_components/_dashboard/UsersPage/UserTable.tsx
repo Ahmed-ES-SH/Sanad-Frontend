@@ -1,71 +1,123 @@
 "use client";
 
-import { useVariables } from "@/app/context/VariablesContext";
-import { getTranslations } from "@/app/helpers/helpers";
-import {
-  FiEdit2,
-  FiTrash2,
-  FiChevronLeft,
-  FiChevronRight,
-} from "react-icons/fi";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@/app/types/user";
+import { adminDeleteUser } from "@/app/actions/userActions";
+import { FiEdit2, FiTrash2, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { toast } from "sonner";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: "Active" | "Inactive";
-  lastActive: string;
-  avatar?: string;
-  initials?: string;
+// ============================================================================
+// USER TABLE - Displays users in a responsive table with actions
+// Supports edit, delete, and shows user verification status
+// ============================================================================
+
+interface UserTableProps {
+  users: User[];
+  error?: string | null;
 }
 
-const users: User[] = [
-  {
-    id: 1,
-    name: "Hassan Al-Fahad",
-    email: "hassan.f@sanad.tech",
-    role: "Manager",
-    status: "Active",
-    lastActive: "Today, 09:42 AM",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-  },
-  {
-    id: 2,
-    name: "Layla Rashid",
-    email: "l.rashid@client.com",
-    role: "Client",
-    status: "Active",
-    lastActive: "Yesterday, 11:20 PM",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-  },
-  {
-    id: 3,
-    name: "Zaid Amari",
-    email: "z.amari@contractor.io",
-    role: "Manager",
-    status: "Inactive",
-    lastActive: "14 Oct, 2023",
-    initials: "ZA",
-  },
-  {
-    id: 4,
-    name: "Omar Farooq",
-    email: "omar.admin@sanad.tech",
-    role: "Admin",
-    status: "Active",
-    lastActive: "Just now",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
-  },
-];
+const ITEMS_PER_PAGE = 10;
 
-export default function UserTable() {
-  const { local } = useVariables();
-  const { UsersPage } = getTranslations(local);
-  const t = UsersPage.UserTable;
+export default function UserTable({ users, error }: UserTableProps) {
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  // ============================================================================
+  // Handle user deletion with confirmation
+  // ============================================================================
+  const handleDelete = async (user: User) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${user.name || user.email}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(user.id);
+
+    try {
+      const result = await adminDeleteUser(user.id);
+
+      if (result.success) {
+        toast.success(result.message);
+        router.refresh(); // Refresh the page data
+      } else {
+        toast.error(result.message);
+      }
+    } catch (err) {
+      toast.error("Failed to delete user");
+      console.error("[UserTable] Delete error:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // ============================================================================
+  // Pagination logic
+  // ============================================================================
+  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentUsers = users.slice(startIndex, endIndex);
+
+  // Reset to page 1 if users change
+  useState(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  });
+
+  // ============================================================================
+  // Error state
+  // ============================================================================
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+        <div className="text-red-500 text-sm font-medium">
+          Failed to load users: {error}
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // Empty state
+  // ============================================================================
+  if (users.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+        <div className="text-stone-400 text-sm">
+          No users found. Create your first user to get started.
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // Generate initials for avatar fallback
+  // ============================================================================
+  const getInitials = (name: string | null): string => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // ============================================================================
+  // Format date for display
+  // ============================================================================
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -74,87 +126,110 @@ export default function UserTable() {
           <thead>
             <tr className="bg-stone-50 text-stone-500">
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">
-                {t.user}
+                User
               </th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">
-                {t.role}
+                Role
               </th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">
-                {t.status}
+                Verified
               </th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">
-                {t.lastActive}
+                Created
               </th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">
-                {t.actions}
+                Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {users.map((user) => (
+            {currentUsers.map((user) => (
               <tr key={user.id} className="hover:bg-stone-50 transition-colors">
+                {/* User Info */}
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-3">
                     {user.avatar ? (
                       <img
-                        alt={user.name}
+                        alt={user.name || "User"}
                         className="w-10 h-10 rounded-full object-cover"
                         src={user.avatar}
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 font-bold text-sm">
-                        {user.initials}
+                        {getInitials(user.name)}
                       </div>
                     )}
                     <div>
                       <p className="text-sm font-bold text-stone-900">
-                        {user.name}
+                        {user.name || "Unnamed User"}
                       </p>
                       <p className="text-xs text-stone-400">{user.email}</p>
                     </div>
                   </div>
                 </td>
+
+                {/* Role Badge */}
                 <td className="px-6 py-5">
                   <span
                     className={`px-3 py-1 rounded-full text-[11px] font-bold ${
-                      user.role === "Admin"
+                      user.role === "admin"
                         ? "bg-orange-100 text-orange-700"
-                        : user.role === "Manager"
-                          ? "bg-stone-100 text-stone-600"
-                          : "bg-sky-100 text-sky-700"
+                        : "bg-sky-100 text-sky-700"
                     }`}
                   >
-                    {user.role}
+                    {user.role === "admin" ? "Admin" : "User"}
                   </span>
                 </td>
+
+                {/* Verification Status */}
                 <td className="px-6 py-5">
                   <div
                     className={`flex items-center gap-1.5 font-bold text-xs uppercase tracking-tight ${
-                      user.status === "Active"
+                      user.isEmailVerified
                         ? "text-green-600"
-                        : "text-stone-400"
+                        : "text-amber-600"
                     }`}
                   >
                     <div
                       className={`w-1.5 h-1.5 rounded-full ${
-                        user.status === "Active"
+                        user.isEmailVerified
                           ? "bg-green-500"
-                          : "bg-stone-400"
+                          : "bg-amber-500"
                       }`}
                     ></div>
-                    {user.status}
+                    {user.isEmailVerified ? "Verified" : "Pending"}
                   </div>
                 </td>
+
+                {/* Created Date */}
                 <td className="px-6 py-5 text-sm text-stone-500">
-                  {user.lastActive}
+                  {formatDate(user.createdAt)}
                 </td>
+
+                {/* Actions */}
                 <td className="px-6 py-5 text-right">
                   <div className="flex justify-end gap-2">
-                    <button className="p-2 text-stone-400 hover:text-orange-600 transition-colors rounded-lg hover:bg-orange-50">
+                    <button
+                      onClick={() => router.push(`/dashboard/users/${user.id}`)}
+                      className="p-2 text-stone-400 hover:text-orange-600 transition-colors rounded-lg hover:bg-orange-50"
+                      title="Edit user"
+                    >
                       <FiEdit2 size={18} />
                     </button>
-                    <button className="p-2 text-stone-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50">
-                      <FiTrash2 size={18} />
+                    <button
+                      onClick={() => handleDelete(user)}
+                      disabled={deletingId === user.id}
+                      className="p-2 text-stone-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Delete user"
+                    >
+                      {deletingId === user.id ? (
+                        <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <FiTrash2 size={18} />
+                      )}
                     </button>
                   </div>
                 </td>
@@ -165,33 +240,69 @@ export default function UserTable() {
       </div>
 
       {/* Pagination */}
-      <div className="px-6 py-4 bg-stone-50 flex items-center justify-between">
-        <p className="text-xs text-stone-500 font-medium">{t.showingText}</p>
-        <div className="flex items-center gap-2">
-          <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200 transition-colors disabled:opacity-30"
-            disabled
-          >
-            <FiChevronLeft size={18} />
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-500 text-white text-xs font-bold shadow-md shadow-orange-500/20">
-            1
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-500 hover:bg-stone-200 transition-colors text-xs font-bold">
-            2
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-500 hover:bg-stone-200 transition-colors text-xs font-bold">
-            3
-          </button>
-          <span className="text-stone-400 mx-1">...</span>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-500 hover:bg-stone-200 transition-colors text-xs font-bold">
-            128
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200 transition-colors">
-            <FiChevronRight size={18} />
-          </button>
+      {totalPages > 1 && (
+        <div className="px-6 py-4 bg-stone-50 flex items-center justify-between">
+          <p className="text-xs text-stone-500 font-medium">
+            Showing {startIndex + 1}-{Math.min(endIndex, users.length)} of {users.length} users
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <FiChevronLeft size={18} />
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let page: number;
+              if (totalPages <= 5) {
+                page = i + 1;
+              } else if (currentPage <= 3) {
+                page = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                page = totalPages - 4 + i;
+              } else {
+                page = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-colors ${
+                    currentPage === page
+                      ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                      : "text-stone-500 hover:bg-stone-200"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            {totalPages > 5 && currentPage < totalPages - 2 && (
+              <>
+                <span className="text-stone-400 mx-1">...</span>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-500 hover:bg-stone-200 transition-colors text-xs font-bold"
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <FiChevronRight size={18} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

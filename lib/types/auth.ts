@@ -3,7 +3,7 @@ export interface User {
   email: string;
   name?: string;
   avatar?: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
   isEmailVerified: boolean;
   googleId?: string;
   createdAt: string;
@@ -42,6 +42,7 @@ export interface ApiResponse<T = unknown> {
 export interface AuthResponse {
   success: boolean;
   message: string;
+  statusCode?: number;
   data?: {
     user?: User;
     access_token?: string;

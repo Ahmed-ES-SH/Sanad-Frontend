@@ -1,4 +1,3 @@
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
 import HeroWelcome from "@/app/_components/_dashboard/DashboardPage/HeroWelcome";
 import KeyMetrics from "@/app/_components/_dashboard/DashboardPage/KeyMetrics";
 import ActiveProjectsTable from "@/app/_components/_dashboard/DashboardPage/ActiveProjectsTable";
@@ -8,7 +7,6 @@ import RecentActivity from "@/app/_components/_dashboard/DashboardPage/RecentAct
 export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <TopNavBar />
       <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-stone-50">
         <HeroWelcome />
         <KeyMetrics />

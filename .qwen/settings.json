@@ -6,7 +6,8 @@
       "Bash(npm run *)",
       "Bash(npx *)",
       "Bash(findstr *)",
-      "Bash(rmdir *)"
+      "Bash(rmdir *)",
+      "Bash(taskkill *)"
     ]
   },
   "agents": {

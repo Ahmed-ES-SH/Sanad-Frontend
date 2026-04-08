@@ -389,6 +389,7 @@
   },
   "userMenu": {
     "profile": "Profile",
+    "dashboard": "Dashboard",
     "payments": "Payments",
     "logout": "Logout",
     "loggingOut": "Logging out..."
@@ -941,6 +942,8 @@
       "currencyUSD": "Currency: USD"
     },
     "TransactionTable": {
+      "invoiceId": "Invoice ID",
+      "actions": "Actions",
       "recentTransactions": "Recent Transactions",
       "liveFeed": "Live feed of payment activity",
       "viewAll": "View All",
@@ -1116,5 +1119,73 @@
       "title": "Reset Password - Sanad",
       "description": "Choose a new password for your Sanad account."
     }
+  },
+  "cart": {
+    "myCart": "Your Brief",
+    "items": "Items",
+    "subtotal": "Subtotal",
+    "technicalFee": "Platform Fee",
+    "technicalFeeTooltip": "Covers platform security & technical support",
+    "vat": "VAT (5%)",
+    "total": "Total Investment",
+    "includesTaxes": "Includes all taxes",
+    "paymentMethod": "Payment Method",
+    "creditCard": "Credit Card",
+    "bankTransfer": "Bank Transfer",
+    "secureCheckout": "Approve & Proceed",
+    "secureCheckoutDesc": "By approving this brief, you agree to the Sanad Services Master Agreement and technical delivery terms.",
+    "remove": "Remove",
+    "saveForLater": "Save for later",
+    "secureCheckoutTitle": "Review & Approve",
+    "breadcrumbs": "Services",
+    "promoCode": "Promo Code",
+    "promoCodePlaceholder": "Enter promo code",
+    "applyPromo": "Apply",
+    "promoApplied": "Promo applied!",
+    "promoInvalid": "Invalid code",
+    "trustIndicators": {
+      "sectionTitle": "Why trust Sanad",
+      "secureCheckout": "Secure Checkout",
+      "encryption": "256-bit encryption",
+      "verifiedPartner": "Verified Partner",
+      "standards": "Professional Standards",
+      "support": "24/7 Priority Support",
+      "assistance": "Technical assistance"
+    },
+    "premium": {
+      "title": "Sanad Premium",
+      "description": "Upgrade now to save 10% on your next 3 project assessments.",
+      "learnMore": "Learn more"
+    },
+    "emptyCartTitle": "Your project brief is empty",
+    "emptyCartDescription": "Let's build something great. Explore our services to start shaping your digital transformation.",
+    "browseServices": "Explore Services",
+    "featuredServices": "Featured Services",
+    "popularCategories": "Popular Categories",
+    "undoRemoveMessage": "Item removed",
+    "undoSaveMessage": "Item saved for later",
+    "undo": "Undo",
+    "dismiss": "Dismiss",
+    "scope": "Scope",
+    "deliverables": "Deliverables",
+    "investment": "Investment"
+  },
+
+  "PaymentFailedPage": {
+    "title": "Payment Failed",
+    "description": "We were unable to process your transaction. Please review the details below and try again or contact your financial institution.",
+    "reasonLabel": "Reason for failure",
+    "errorCodeLabel": "Error reference",
+    "insufficientFunds": "Insufficient Funds",
+    "amountLabel": "Amount",
+    "referenceLabel": "Reference ID",
+    "tryAgainBtn": "Try Again",
+    "contactSupportBtn": "Contact Support",
+    "returnDashboard": "Return to Dashboard",
+    "notCharged": "Your card was not charged",
+    "securePayment": "Secure Payment Protocol",
+    "pciCompliant": "PCI DSS Compliant",
+    "tryAgainHint": "If your balance is low, try a different payment method",
+    "errorReference": "Error reference"
   }
 }

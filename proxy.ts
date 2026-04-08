@@ -46,12 +46,16 @@ export function proxy(request: NextRequest) {
 
   // Check if this is a public route
   const isPublicRoute = publicRoutes.some(
-    (route) => pathname === `/${locale}${route}` || pathname.startsWith(`/${locale}${route}/`)
+    (route) =>
+      pathname === `/${locale}${route}` ||
+      pathname.startsWith(`/${locale}${route}/`),
   );
 
   // Check if this is an auth route (signin/signup)
   const isAuthRoute = authRoutes.some(
-    (route) => pathname === `/${locale}${route}` || pathname.startsWith(`/${locale}${route}/`)
+    (route) =>
+      pathname === `/${locale}${route}` ||
+      pathname.startsWith(`/${locale}${route}/`),
   );
 
   // Check for auth token cookie
@@ -60,7 +64,7 @@ export function proxy(request: NextRequest) {
   // If user is authenticated and trying to access signin/signup, redirect to dashboard
   if (isAuthRoute && hasAuthToken) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${locale}/dashboard`;
+    url.pathname = `/${locale}/userdashboard`;
     return NextResponse.redirect(url);
   }
 

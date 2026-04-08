@@ -5,9 +5,16 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import LocalLink from "./LocalLink";
-import { FiUser, FiCreditCard, FiLogOut, FiLoader, FiChevronDown } from "react-icons/fi";
+import {
+  FiUser,
+  FiCreditCard,
+  FiLogOut,
+  FiLoader,
+  FiChevronDown,
+} from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import Img from "./Img";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 /**
  * UserButton component for the Sanad platform.
@@ -24,7 +31,10 @@ export default function UserButton() {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -73,11 +83,11 @@ export default function UserButton() {
           )}
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
         </div>
-        
+
         <span className="hidden md:block text-sm font-medium text-surface-700 group-hover:text-primary transition-colors">
           {displayName.split(" ")[0]}
         </span>
-        
+
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3, ease: "circOut" }}
@@ -111,8 +121,20 @@ export default function UserButton() {
 
             {/* Menu Links */}
             <div className="space-y-0.5">
+              {user?.role == "admin" && (
+                <LocalLink
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-surface-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-200"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center text-surface-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                    <LuLayoutDashboard size={18} />
+                  </div>
+                  <span>{userMenu.dashboard}</span>
+                </LocalLink>
+              )}
               <LocalLink
-                href="/dashboard"
+                href="/userdashboard"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-surface-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-200"
               >
@@ -148,9 +170,7 @@ export default function UserButton() {
                     <FiLogOut size={18} />
                   )}
                 </div>
-                <span>
-                  {isLoading ? userMenu.loggingOut : userMenu.logout}
-                </span>
+                <span>{isLoading ? userMenu.loggingOut : userMenu.logout}</span>
               </button>
             </div>
           </motion.div>

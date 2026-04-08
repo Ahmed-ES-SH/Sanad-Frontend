@@ -6,18 +6,23 @@ import { FiExternalLink, FiCopy, FiX } from "react-icons/fi";
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from "react-icons/fa";
 
 interface ShareButtonProps {
-  projectId: number;
+  projectId: string;
   projectTitle: string;
   local: "en" | "ar";
 }
 
-export default function ShareButton({ projectId, projectTitle, local }: ShareButtonProps) {
+export default function ShareButton({
+  projectId,
+  projectTitle,
+  local,
+}: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/${local}/portfolio/${encodeURIComponent(projectTitle)}?projectId=${projectId}`
-    : "";
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/${local}/portfolio/${encodeURIComponent(projectTitle)}?projectId=${projectId}`
+      : "";
 
   const handleCopy = async () => {
     try {
@@ -56,7 +61,10 @@ export default function ShareButton({ projectId, projectTitle, local }: ShareBut
               <h3 className="font-semibold text-gray-800">
                 Share this project
               </h3>
-              <button onClick={() => setIsOpen(false)} aria-label="Close share menu">
+              <button
+                onClick={() => setIsOpen(false)}
+                aria-label="Close share menu"
+              >
                 <FiX className="text-gray-500 hover:text-red-500" />
               </button>
             </div>
@@ -80,7 +88,7 @@ export default function ShareButton({ projectId, projectTitle, local }: ShareBut
             <div className="flex justify-around mt-4 text-xl text-white">
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                  shareUrl
+                  shareUrl,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -91,7 +99,7 @@ export default function ShareButton({ projectId, projectTitle, local }: ShareBut
               </a>
               <a
                 href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                  shareUrl
+                  shareUrl,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -111,7 +119,7 @@ export default function ShareButton({ projectId, projectTitle, local }: ShareBut
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                  shareUrl
+                  shareUrl,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

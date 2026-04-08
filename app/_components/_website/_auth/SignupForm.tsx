@@ -67,7 +67,9 @@ function SignupForm() {
 
       if (response.success) {
         toast.success(response.message);
-        router.push(`/${local}/verify-email?email=${encodeURIComponent(formData.email)}`);
+        router.push(
+          `/${local}/verify-email?email=${encodeURIComponent(formData.email)}`,
+        );
       } else {
         toast.error(response.message);
       }
@@ -79,7 +81,7 @@ function SignupForm() {
   };
 
   const signInWithGoogle = () => {
-    window.location.href = AUTH_ENDPOINTS.GOOGLE_LOGIN;
+    window.location.href = "/api/auth/google";
   };
 
   const isFormValid =
@@ -294,7 +296,7 @@ function SignupForm() {
         {signUpPage.alreadyHave}{" "}
         <LocalLink
           href="/signin"
-          className="font-semibold transition-colors duration-150"
+          className="font-bold underline text-primary transition-colors duration-150"
         >
           {signUpPage.signIn}
         </LocalLink>

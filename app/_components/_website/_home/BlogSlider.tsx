@@ -9,39 +9,16 @@ import { getTranslations } from "@/app/helpers/helpers";
 import { directionMap } from "@/app/constants/constants";
 import LocalLink from "../../_global/LocalLink";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Article } from "@/app/types/blog";
 
-export default function BlogSlider() {
+interface BlogSliderProps {
+  articles: Article[];
+}
+
+export default function BlogSlider({ articles }: BlogSliderProps) {
   const { local } = useVariables();
   const { blogSection } = getTranslations(local);
   const isRTL = local === "ar";
-
-  const slides = [
-    {
-      image: "/portfoliosection/2.jpg",
-      date: "Jan 09, 2021",
-      title:
-        "Facebook is creating a news section in Watch to feature breaking news",
-      desc: "Facebook launched the Watch platform in August",
-    },
-    {
-      image: "/portfoliosection/3.jpg",
-      date: "May 30, 2021",
-      title: "What CFR (Conversations, Feedback, Recognition) really is about",
-      desc: "For a lot of people these days, Measure What Matters.",
-    },
-    {
-      image: "/portfoliosection/4.jpg",
-      date: "Jul 12, 2021",
-      title: "Twitter is testing new monetization features for creators",
-      desc: "New tipping and super follow options are coming soon.",
-    },
-    {
-      image: "/portfoliosection/5.jpg",
-      date: "Aug 25, 2021",
-      title: "LinkedIn adds new tools for job seekers and recruiters",
-      desc: "Better communication and more transparency in hiring.",
-    },
-  ];
 
   return (
     <div
@@ -72,14 +49,14 @@ export default function BlogSlider() {
           <button
             id="slider-button-left"
             aria-label="Previous slide"
-            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50"
+            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50 rtl:rotate-180"
           >
             <FiChevronLeft size={24} />
           </button>
           <button
             id="slider-button-right"
             aria-label="Next slide"
-            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50"
+            className="surface-card-subtle w-12 h-12 flex justify-center items-center rounded-full hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50 rtl:rotate-180"
           >
             <FiChevronRight size={24} />
           </button>
@@ -103,47 +80,50 @@ export default function BlogSlider() {
           modules={[Navigation, Autoplay]}
           className="w-full"
         >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <LocalLink
-                className="group relative block rounded-2xl focus:outline-none overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-[500px]"
-                href="#"
-              >
-                <div className="relative size-full before:absolute before:inset-0 before:z-[1] before:bg-gradient-to-t before:from-surface-900/80 before:to-transparent">
-                  <Img
-                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    src={slide.image}
-                  />
-                </div>
+          {articles &&
+            articles.map((article, index) => (
+              <SwiperSlide key={index}>
+                <LocalLink
+                  className="group relative block rounded-2xl focus:outline-none overflow-hidden aspect-4/3 lg:aspect-auto lg:h-[500px]"
+                  href={`/blog/${article.slug}`}
+                >
+                  <div className="relative size-full before:absolute before:inset-0 before:z-1 before:bg-linear-to-t before:from-surface-900/80 before:to-transparent">
+                    <Img
+                      className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      src={article.coverImageUrl}
+                    />
+                  </div>
 
-                <div className="absolute top-0 inset-x-0 z-10 p-6">
-                  <div className="flex items-center">
-                    <div className="shrink-0 bg-white/20 backdrop-blur-md p-1 rounded-full border border-white/30 shadow-lg">
-                      <Img
-                        className="size-10 rounded-full"
-                        src="/sanad-logo.png"
-                      />
-                    </div>
-                    <div className="mx-3">
-                      <h4 className="text-sm font-semibold text-white drop-shadow-md">
-                        Admin
-                      </h4>
-                      <p className="text-[10px] text-white/70">{slide.date}</p>
+                  <div className="absolute top-0 inset-x-0 z-10 p-6">
+                    <div className="flex items-center">
+                      <div className="shrink-0 bg-white/20 backdrop-blur-md p-1 rounded-full border border-white/30 shadow-lg">
+                        <Img
+                          className="size-10 rounded-full"
+                          src="/sanad-logo.png"
+                        />
+                      </div>
+                      <div className="mx-3">
+                        <h4 className="text-sm font-semibold text-white drop-shadow-md">
+                          Admin
+                        </h4>
+                        <p className="text-[10px] text-white/70">
+                          {article.createdAt}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="absolute bottom-0 inset-x-0 z-10 p-6 lg:p-10">
-                  <h3 className="text-xl lg:text-3xl font-bold text-white mb-3 group-hover:text-white/90 transition-colors leading-tight">
-                    {slide.title}
-                  </h3>
-                  <p className="text-sm lg:text-base text-white/80 line-clamp-2 leading-relaxed max-w-2xl">
-                    {slide.desc}
-                  </p>
-                </div>
-              </LocalLink>
-            </SwiperSlide>
-          ))}
+                  <div className="absolute bottom-0 inset-x-0 z-10 p-6 lg:p-10">
+                    <h3 className="text-xl lg:text-3xl font-bold text-white mb-3 group-hover:text-white/90 transition-colors leading-tight">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm lg:text-base text-white/80 line-clamp-2 leading-relaxed max-w-2xl">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                </LocalLink>
+              </SwiperSlide>
+            ))}
         </Swiper>
       </div>
     </div>

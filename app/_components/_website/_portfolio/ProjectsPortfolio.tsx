@@ -11,7 +11,7 @@ import ServicesSlider from "./ServicesSlider";
 import { directionMap } from "@/app/constants/constants";
 import { projectsData } from "@/app/constants/projects";
 
-export interface Project {
+export interface LocalProject {
   id: number;
   imgSrc: string;
   title: {
@@ -44,7 +44,7 @@ export default function ProjectsPortfolio() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const projectsPerPage = 6;
 
-  const projects = useMemo<Project[]>(() => projectsData, []);
+  const projects = useMemo<LocalProject[]>(() => projectsData, []);
 
   const filteredProjects = useMemo(() => {
     if (selectedCategory === allLabel) return projects;
@@ -189,7 +189,7 @@ export default function ProjectsPortfolio() {
                       key={project.id}
                       local={local}
                       index={index}
-                      project={project}
+                      project={project as any}
                     />
                   ))}
                 </AnimatePresence>

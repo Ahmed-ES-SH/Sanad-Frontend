@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiEye } from "react-icons/fi";
-import { Project } from "./ProjectsPortfolio";
 import { useRouter } from "next/navigation";
 import { formatTitle } from "@/app/helpers/helpers";
 import ShareButton from "./ShareButton";
 import ProjectThumbnail from "./ProjectThumbnail";
+import { Project } from "@/app/types/project";
 
 interface props {
   project: Project;
@@ -20,9 +20,9 @@ export default function ProjectCard({ project, local, index }: props) {
 
   const goToProject = () => {
     router.push(
-      `/${local}/portfolio/${formatTitle(project.title[local])}?projectId=${
+      `/${local}/portfolio/${formatTitle(project.title)}?projectId=${
         project.id
-      }`
+      }`,
     );
   };
 
@@ -40,41 +40,44 @@ export default function ProjectCard({ project, local, index }: props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ 
+      transition={{
         opacity: { duration: 0.3, delay: index * 0.05 },
         y: { duration: 0.3, delay: index * 0.05 },
         scale: { duration: 0.3 },
-        layout: { type: "spring", stiffness: 350, damping: 30 }
+        layout: { type: "spring", stiffness: 350, damping: 30 },
       }}
       role="button"
       tabIndex={0}
-      aria-label={`View project: ${project.title[local]}`}
+      aria-label={`View project: ${project.title}`}
       className="group cursor-pointer overflow-hidden rounded-xl border bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       style={{ borderColor: "var(--surface-200)" }}
       onClick={goToProject}
       onKeyDown={handleKeyDown}
     >
       {/* Project Image / Branded Thumbnail */}
-      <div className="relative overflow-hidden" style={{ backgroundColor: "var(--surface-100)" }}>
-        {project.imgSrc ? (
+      <div
+        className="relative overflow-hidden"
+        style={{ backgroundColor: "var(--surface-100)" }}
+      >
+        {project.coverImageUrl ? (
           imageError ? (
             <ProjectThumbnail
-              title={project.title[local]}
-              category={project.category[local]}
+              title={project.title}
+              category={project.category?.name as string}
               local={local}
             />
           ) : (
             <img
-              src={project.imgSrc}
-              alt={project.title[local]}
+              src={project.coverImageUrl}
+              alt={project.title}
               className="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
               onError={() => setImageError(true)}
             />
           )
         ) : (
           <ProjectThumbnail
-            title={project.title[local]}
-            category={project.category[local]}
+            title={project.title}
+            category={project.category?.name ?? "category"}
             local={local}
           />
         )}
@@ -96,7 +99,7 @@ export default function ProjectCard({ project, local, index }: props) {
           <div onClick={(e) => e.stopPropagation()}>
             <ShareButton
               projectId={project.id}
-              projectTitle={project.title[local]}
+              projectTitle={project.title}
               local={local}
             />
           </div>
@@ -106,36 +109,54 @@ export default function ProjectCard({ project, local, index }: props) {
       {/* Project Content */}
       <div className="p-5 flex flex-col grow">
         <div className="flex items-center mb-3">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider" style={{ backgroundColor: "var(--primary-100)", color: "var(--primary)" }}>
-            {project.category[local]}
+          <span
+            className="px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider"
+            style={{
+              backgroundColor: "var(--primary-100)",
+              color: "var(--primary)",
+            }}
+          >
+            {project.category?.name}
           </span>
         </div>
 
-        <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-1" style={{ color: "var(--surface-900)" }}>
-          {project.title[local]}
+        <h3
+          className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-1"
+          style={{ color: "var(--surface-900)" }}
+        >
+          {project.title}
         </h3>
 
-        <p className="text-sm mb-4 line-clamp-2 leading-relaxed grow" style={{ color: "var(--surface-500)" }}>
-          {project.description[local]}
+        <p
+          className="text-sm mb-4 line-clamp-2 leading-relaxed grow"
+          style={{ color: "var(--surface-500)" }}
+        >
+          {project.shortDescription}
         </p>
 
         {/* Skills Tags */}
         <div className="flex flex-wrap gap-1.5">
-          {project.skills.slice(0, 3).map((skill) => (
+          {project.techStack?.slice(0, 3).map((skill) => (
             <span
               key={skill}
               className="px-2 py-0.5 rounded text-xs font-medium"
-              style={{ backgroundColor: "var(--surface-100)", color: "var(--surface-500)" }}
+              style={{
+                backgroundColor: "var(--surface-100)",
+                color: "var(--surface-500)",
+              }}
             >
               {skill}
             </span>
           ))}
-          {project.skills.length > 3 && (
+          {project.techStack.length > 3 && (
             <span
               className="px-2 py-0.5 rounded text-xs font-medium"
-              style={{ backgroundColor: "var(--surface-100)", color: "var(--surface-500)" }}
+              style={{
+                backgroundColor: "var(--surface-100)",
+                color: "var(--surface-500)",
+              }}
             >
-              +{project.skills.length - 3}
+              +{project.techStack.length - 3}
             </span>
           )}
         </div>

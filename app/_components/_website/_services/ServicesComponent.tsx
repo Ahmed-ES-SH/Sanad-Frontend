@@ -8,6 +8,11 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { formatTitle, getTranslations } from "@/app/helpers/helpers";
 import LocalLink from "../../_global/LocalLink";
 import { servicesData, ServiceData } from "@/app/constants/servicesData";
+import { Service } from "@/app/types/service";
+
+interface ServicesComponentProps {
+  services?: Service[];
+}
 
 type CategoryValue = Exclude<ServiceData["category"], undefined>;
 type FilterCategory = "all" | CategoryValue;
@@ -28,15 +33,33 @@ const categoryOrder: FilterCategory[] = [
   "data-security",
 ];
 
-export default function ServicesComponent() {
+export default function ServicesComponent({ services = [] }: ServicesComponentProps) {
   const { local } = useVariables();
   const { servicesPage } = getTranslations(local);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>("all");
 
+  const backendServices = services.map((service) => ({
+    id: service.id,
+    title: { en: service.title, ar: service.title },
+    category: (service.category?.slug || "all") as CategoryValue,
+    smallDesc: { en: service.shortDescription, ar: service.shortDescription },
+    imgsrc: service.iconUrl || "",
+    slug: service.slug,
+  }));
+
+  const displayServices = backendServices.length > 0 ? backendServices : servicesData;
+
   const filteredServices =
     activeFilter === "all"
-      ? servicesData
-      : servicesData.filter((s) => s.category === activeFilter);
+      ? displayServices
+      : displayServices.filter((s) => s.category === activeFilter);
+
+  const getServiceUrl = (service: typeof displayServices[0]) => {
+    if ('slug' in service && service.slug) {
+      return `/services/${service.slug}`;
+    }
+    return `/services/${formatTitle(service.title[local])}?serviceId=${service.id}`;
+  };
 
   return (
     <section dir={directionMap[local]} className="py-24 bg-surface-50" id="services">
@@ -103,7 +126,7 @@ export default function ServicesComponent() {
                 transition={{ duration: 0.25, ease: "circOut" }}
               >
                 <LocalLink
-                  href={`/services/${formatTitle(service.title[local])}?serviceId=${service.id}`}
+                  href={getServiceUrl(service)}
                   className="surface-card group relative flex flex-col h-full p-8 transition-all duration-500 overflow-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                 >
                   {/* Subtle Accent Line */}

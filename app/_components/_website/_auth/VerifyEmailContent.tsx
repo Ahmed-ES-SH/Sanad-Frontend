@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
@@ -12,10 +12,11 @@ import {
 } from "react-icons/fi";
 import LocalLink from "../../_global/LocalLink";
 import { directionMap } from "@/app/constants/constants";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { verifyEmailAction } from "@/app/actions/authActions";
 import { toast } from "sonner";
 import { Suspense } from "react";
+import CheckYourInbox from "./CheckYourInbox";
 
 export default function VerifyEmailContent() {
   return (
@@ -65,8 +66,10 @@ function VerifyEmailContentInner() {
       }
     };
 
-    verifyEmail();
+    if (token) verifyEmail();
   }, [token, local]);
+
+  if (!token) return <CheckYourInbox />;
 
   return (
     <motion.div

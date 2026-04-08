@@ -3,6 +3,7 @@
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { StatsCard } from "./StatsCard";
+import { HiOutlineDocumentText, HiOutlineEye, HiOutlineClock, HiOutlineChatAlt } from "react-icons/hi";
 
 export function StatsCards() {
   const { local } = useVariables();
@@ -12,7 +13,7 @@ export function StatsCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
       <StatsCard
-        icon="description"
+        icon={HiOutlineDocumentText}
         iconBg="bg-orange-50"
         iconColor="text-orange-600"
         changeValue="+12%"
@@ -24,7 +25,7 @@ export function StatsCards() {
         delay={0}
       />
       <StatsCard
-        icon="visibility"
+        icon={HiOutlineEye}
         iconBg="bg-orange-50"
         iconColor="text-orange-600"
         changeValue="+24%"
@@ -36,7 +37,7 @@ export function StatsCards() {
         delay={0.1}
       />
       <StatsCard
-        icon="timer"
+        icon={HiOutlineClock}
         iconBg="bg-amber-50"
         iconColor="text-amber-600"
         changeValue="-2%"
@@ -48,7 +49,7 @@ export function StatsCards() {
         delay={0.2}
       />
       <StatsCard
-        icon="chat_bubble"
+        icon={HiOutlineChatAlt}
         iconBg="bg-amber-50"
         iconColor="text-amber-600"
         changeValue="New"

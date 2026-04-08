@@ -1,12 +1,12 @@
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
 import AddNewProject from "@/app/_components/_dashboard/ProjectsPage/AddNewProject";
+import { getCategories } from "@/app/actions/blogActions";
 
-export default function AddNewProjectPage() {
+export default async function AddNewProjectPage() {
+  const categories = await getCategories();
   return (
     <>
-      <TopNavBar />
       <main className="flex-1 overflow-y-auto">
-        <AddNewProject />
+        <AddNewProject categories={categories} />
       </main>
     </>
   );

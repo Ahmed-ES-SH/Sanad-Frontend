@@ -1,4 +1,9 @@
 import { FiCheckCircle, FiCircle } from "react-icons/fi";
+import { Service } from "@/app/types/service";
+
+interface ServiceConfigurationProps {
+  service?: Service | null;
+}
 
 interface ConfigItem {
   name: string;
@@ -7,14 +12,37 @@ interface ConfigItem {
   details?: string;
 }
 
-const configItems: ConfigItem[] = [
-  { name: "Automatic Scaling", enabled: true, version: "v2.4" },
-  { name: "Daily Backups", enabled: true, details: "AWS S3" },
-  { name: "WAF Protection", enabled: true, details: "Cloudflare" },
-  { name: "Multi-Cloud Bridge", enabled: false, details: "OPTIONAL" },
+const defaultConfigItems: ConfigItem[] = [
+  { name: "Icon", enabled: false },
+  { name: "Cover Image", enabled: false },
+  { name: "Category", enabled: false },
+  { name: "Long Description", enabled: false },
 ];
 
-export default function ServiceConfiguration() {
+export default function ServiceConfiguration({ service }: ServiceConfigurationProps) {
+  const configItems: ConfigItem[] = [
+    { 
+      name: "Icon", 
+      enabled: !!service?.iconUrl,
+      details: service?.iconUrl ? "Uploaded" : "Not set"
+    },
+    { 
+      name: "Cover Image", 
+      enabled: !!service?.coverImageUrl,
+      details: service?.coverImageUrl ? "Uploaded" : "Not set"
+    },
+    { 
+      name: "Category", 
+      enabled: !!service?.categoryId,
+      details: service?.category?.name || "Not set"
+    },
+    { 
+      name: "Long Description", 
+      enabled: !!service?.longDescription,
+      details: service?.longDescription ? "Added" : "Not set"
+    },
+  ];
+
   return (
     <div className="surface-card p-6">
       <h3 className="font-bold text-lg mb-6 flex items-center gap-2 font-display">
@@ -38,7 +66,7 @@ export default function ServiceConfiguration() {
               <span className="text-sm font-medium text-surface-900">{item.name}</span>
             </div>
             <span className="text-[10px] font-bold text-surface-400">
-              {item.version || item.details}
+              {item.details}
             </span>
           </div>
         ))}

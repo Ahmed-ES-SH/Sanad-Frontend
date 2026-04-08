@@ -78,11 +78,18 @@ export default function TechnicalDetailsSection({
                 {t?.technicalDetails?.techStack || "Tech Stack"}{" "}
                 <span className="text-red-500">*</span>
               </label>
-              <div className={`w-full bg-stone-50 border-none rounded-lg p-4 flex flex-wrap gap-2 focus-within:ring-2 focus-within:ring-orange-500/50 ${
-                techStack.length === 0 ? "ring-1 ring-stone-200" : ""
-              }`}>
+              <div 
+                className={`w-full bg-stone-50 border-none rounded-lg p-4 flex flex-wrap gap-2 focus-within:ring-2 focus-within:ring-orange-500/50 ${
+                  techStack.length === 0 ? "ring-1 ring-stone-200" : ""
+                }`}
+                onClick={(e) => {
+                  // Focus the input when clicking the container
+                  const input = (e.currentTarget as HTMLElement).querySelector('input');
+                  input?.focus();
+                }}
+              >
                 {techStack.length === 0 && (
-                  <span className="text-stone-400 text-sm">
+                  <span className="text-stone-400 text-sm pointer-events-none">
                     {t?.technicalDetails?.techStackEmpty || "No technologies added yet. Type one below and press Enter."}
                   </span>
                 )}
@@ -94,7 +101,10 @@ export default function TechnicalDetailsSection({
                     {tech}
                     <button
                       type="button"
-                      onClick={() => removeTech(tech)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeTech(tech);
+                      }}
                       className="hover:text-red-600 transition-colors"
                       aria-label={`Remove ${tech}`}
                     >
@@ -106,8 +116,14 @@ export default function TechnicalDetailsSection({
                   type="text"
                   value={newTech}
                   onChange={(e) => setNewTech(e.target.value)}
-                  onKeyDown={addTech}
-                  className="bg-transparent border-none focus:ring-0 text-sm p-0 flex-1 min-w-[120px] placeholder:text-stone-400"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addTech(e);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-transparent border-none outline-none focus:ring-0 text-sm p-0 flex-1 min-w-[120px] placeholder:text-stone-400"
                   placeholder={
                     t?.technicalDetails?.addTechnology || "Add technology..."
                   }

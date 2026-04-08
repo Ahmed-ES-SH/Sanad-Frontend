@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
 import UserOverview from "./_components/_userProfile/UserOverview";
 import UserStats from "./_components/_userProfile/UserStats";
 import ProfileTabs from "./_components/_userProfile/ProfileTabs";
@@ -12,24 +11,24 @@ import UserActions from "./_components/_userProfile/UserActions";
 
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
-  }
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
 };
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
-export default function UserProfilePage({ 
-  userData 
-}: { 
+export default function UserProfilePage({
+  userData,
+}: {
   userData: {
     id: string;
     name: string;
@@ -41,19 +40,18 @@ export default function UserProfilePage({
     avatarUrl: string;
     isVerified: boolean;
     status: string;
-  } 
+  };
 }) {
   return (
     <>
-      <TopNavBar />
-      <motion.main 
+      <motion.main
         className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8"
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
         {/* Header Section */}
-        <motion.div 
+        <motion.div
           variants={fadeInUp}
           className="flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
@@ -73,7 +71,7 @@ export default function UserProfilePage({
         </motion.div>
 
         {/* Overview & Stats Layout */}
-        <motion.div 
+        <motion.div
           variants={fadeInUp}
           className="grid grid-cols-12 gap-6 mt-8"
         >
@@ -91,7 +89,7 @@ export default function UserProfilePage({
         </motion.div>
 
         {/* Bottom Grid: Activity & Projects */}
-        <motion.div 
+        <motion.div
           variants={fadeInUp}
           className="grid grid-cols-12 gap-6 mt-8"
         >

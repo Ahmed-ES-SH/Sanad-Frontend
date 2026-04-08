@@ -10,8 +10,15 @@ import {
   toggleFeatureStatus,
 } from "@/app/actions/portfolioActions";
 import type { Project } from "@/app/types/project";
-import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
-import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiStar, FiLoader } from "react-icons/fi";
+import {
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiEye,
+  FiEyeOff,
+  FiStar,
+  FiLoader,
+} from "react-icons/fi";
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -71,8 +78,8 @@ export default function ProjectsPage() {
         toast.success(result.message);
         setProjects((prev) =>
           prev.map((p) =>
-            p.id === id ? { ...p, isPublished: !p.isPublished } : p
-          )
+            p.id === id ? { ...p, isPublished: !p.isPublished } : p,
+          ),
         );
       } else {
         toast.error(result.message);
@@ -92,8 +99,8 @@ export default function ProjectsPage() {
         toast.success(result.message);
         setProjects((prev) =>
           prev.map((p) =>
-            p.id === id ? { ...p, isFeatured: !p.isFeatured } : p
-          )
+            p.id === id ? { ...p, isFeatured: !p.isFeatured } : p,
+          ),
         );
       } else {
         toast.error(result.message);
@@ -116,7 +123,6 @@ export default function ProjectsPage() {
   if (loading) {
     return (
       <>
-        <TopNavBar />
         <main className="flex-1 overflow-y-auto p-6 md:p-8 flex items-center justify-center min-h-[60vh]">
           <FiLoader className="animate-spin text-stone-400" size={32} />
         </main>
@@ -126,7 +132,6 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <TopNavBar />
       <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -254,9 +259,7 @@ export default function ProjectsPage() {
                               onClick={() => handleTogglePublish(project.id)}
                               disabled={actionLoading === project.id}
                               title={
-                                project.isPublished
-                                  ? "Unpublish"
-                                  : "Publish"
+                                project.isPublished ? "Unpublish" : "Publish"
                               }
                               className="p-2 rounded-md text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
                             >
@@ -325,7 +328,7 @@ export default function ProjectsPage() {
                             {pageNum}
                           </button>
                         );
-                      }
+                      },
                     )}
                     <button
                       onClick={() =>

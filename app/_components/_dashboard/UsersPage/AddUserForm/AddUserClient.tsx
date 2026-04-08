@@ -1,22 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AvatarUpload from "./AvatarUpload";
+import { adminCreateUser } from "@/app/actions/userActions";
+import { UserFormData, UserRole } from "@/app/types/user";
+import { toast } from "sonner";
 
-type FormData = {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role: "user" | "admin";
-};
+// ============================================================================
+// ADD USER CLIENT - Admin form for creating new users
+// Validates input and submits to server action for backend creation
+// ============================================================================
 
 type FormState = "idle" | "submitting" | "success";
 
-const rolePermissions: Record<
-  "user" | "admin",
-  { title: string; items: string[] }
-> = {
+const rolePermissions: Record<UserRole, { title: string; items: string[] }> = {
   user: {
     title: "Standard User Permissions",
     items: [
@@ -36,33 +34,43 @@ const rolePermissions: Record<
   },
 };
 
-const FIELDS = [
-  "email",
-  "name",
-  "password",
-  "confirmPassword",
-] as (keyof FormData)[];
-
 const FORM_KEY = "add-user-draft";
 
+interface DraftFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: UserRole;
+  avatar: string;
+}
+
 export default function AddUserClient() {
-  const [form, setForm] = useState<FormData>({
+  const router = useRouter();
+
+  // ============================================================================
+  // Form state - matches backend DTO structure
+  // ============================================================================
+  const [form, setForm] = useState<DraftFormData>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
     role: "user",
+    avatar: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [formState, setFormState] = useState<FormState>("idle");
 
-  // Restore draft on mount
+  // ============================================================================
+  // Restore draft on mount from localStorage
+  // ============================================================================
   useEffect(() => {
     try {
       const saved = localStorage.getItem(FORM_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as Partial<FormData>;
+        const parsed = JSON.parse(saved) as Partial<DraftFormData>;
         setForm((prev) => ({ ...prev, ...parsed }));
       }
     } catch {
@@ -70,7 +78,9 @@ export default function AddUserClient() {
     }
   }, []);
 
-  // Persist draft on change
+  // ============================================================================
+  // Persist draft on change to localStorage
+  // ============================================================================
   useEffect(() => {
     try {
       localStorage.setItem(FORM_KEY, JSON.stringify(form));
@@ -83,12 +93,15 @@ export default function AddUserClient() {
     localStorage.removeItem(FORM_KEY);
   };
 
+  // ============================================================================
+  // Handle field changes with error clearing
+  // ============================================================================
   const handleChange =
-    (field: keyof FormData) =>
+    (field: keyof DraftFormData) =>
     (
       e:
         | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLSelectElement>
+        | React.ChangeEvent<HTMLSelectElement>,
     ) => {
       setForm({ ...form, [field]: e.target.value });
       if (errors[field]) {
@@ -96,25 +109,31 @@ export default function AddUserClient() {
       }
     };
 
-  const handleRoleChange = (role: "user" | "admin") => {
+  const handleRoleChange = (role: UserRole) => {
     setForm({ ...form, role });
   };
 
+  // ============================================================================
+  // Validation - matches backend requirements
+  // ============================================================================
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof FormData, string>> = {};
+    const newErrors: Partial<Record<string, string>> = {};
 
+    // Email validation
     if (!form.email) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Please enter a valid email address";
     }
 
+    // Password validation (min 6 per backend plan, using 8 for security)
     if (!form.password) {
       newErrors.password = "Password is required";
     } else if (form.password.length < 8) {
       newErrors.password = "Must be at least 8 characters";
     }
 
+    // Confirm password match
     if (form.password !== form.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
@@ -123,29 +142,46 @@ export default function AddUserClient() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ============================================================================
+  // Form submission - calls server action
+  // ============================================================================
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setFormState("submitting");
 
-    // Simulate API call — replace with real call
-    setTimeout(() => {
-      setFormState("success");
-      clearDraft();
+    try {
+      // Build form data matching backend DTO
+      const userData: UserFormData = {
+        email: form.email,
+        password: form.password,
+        name: form.name || "",
+        avatar: form.avatar || "",
+        role: form.role,
+        isEmailVerified: false, // Default for new users
+      };
 
-      // Reset after showing success
-      setTimeout(() => {
-        setForm({
-          name: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          role: "user",
-        });
+      const result = await adminCreateUser(userData);
+
+      if (result.success) {
+        setFormState("success");
+        clearDraft();
+        toast.success(result.message);
+
+        // Redirect after success
+        setTimeout(() => {
+          router.push("/dashboard/users");
+        }, 1500);
+      } else {
+        toast.error(result.message);
         setFormState("idle");
-      }, 2000);
-    }, 800);
+      }
+    } catch (err) {
+      toast.error("Failed to create user");
+      console.error("[AddUserClient] Create error:", err);
+      setFormState("idle");
+    }
   };
 
   const handleDiscard = () => {
@@ -156,6 +192,7 @@ export default function AddUserClient() {
       password: "",
       confirmPassword: "",
       role: "user",
+      avatar: "",
     });
     setErrors({});
   };
@@ -167,9 +204,7 @@ export default function AddUserClient() {
     <div dir={isRTL ? "rtl" : "ltr"}>
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-stone-900">
-          Add New User
-        </h1>
+        <h1 className="text-2xl font-semibold text-stone-900">Add New User</h1>
         <p className="text-stone-500 mt-1">Add a new user to Sanad.</p>
       </div>
 
@@ -195,12 +230,15 @@ export default function AddUserClient() {
             User Created Successfully
           </h2>
           <p className="text-stone-500 mt-1 text-sm">
-            The form has been submitted. You can add another user below.
+            Redirecting to users list...
           </p>
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className={formState === "success" ? "mt-8" : ""}>
+      <form
+        onSubmit={handleSubmit}
+        className={formState === "success" ? "mt-8" : ""}
+      >
         <div className="grid grid-cols-12 gap-8">
           {/* Main Form Column */}
           <div className="col-span-12 lg:col-span-8 space-y-6">
@@ -210,7 +248,9 @@ export default function AddUserClient() {
                 Basic Information
               </h2>
               <div className="space-y-6">
-                <AvatarUpload />
+                <AvatarUpload
+                  onAvatarChange={(url) => setForm({ ...form, avatar: url })}
+                />
                 <div className="space-y-5">
                   {/* Email — required, first */}
                   <div className="space-y-1.5">
@@ -452,7 +492,7 @@ export default function AddUserClient() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                     />
                   </svg>
-                  Saving...
+                  Creating...
                 </span>
               ) : (
                 "Create User"

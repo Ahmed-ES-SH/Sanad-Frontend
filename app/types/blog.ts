@@ -4,22 +4,28 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  description: string;
+  color: string;
+  icon: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Article {
   id: string;
   title: string;
   slug: string;
-  excerpt: string | null;
+  excerpt: string;
   content: string;
-  coverImageUrl: string | null;
-  tags: string[];
-  categoryId: string | null;
-  category: Category | null;
+  coverImageUrl: string;
   isPublished: boolean;
-  publishedAt: string | null;
+  publishedAt: string;
   readTimeMinutes: number;
   viewsCount: number;
+  tags: string[];
+  categoryId: string;
+  category: Category; // العلاقة المتداخلة
   createdAt: string;
   updatedAt: string;
 }

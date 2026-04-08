@@ -15,6 +15,8 @@ interface VariablesType {
   local: "en" | "ar";
   showLangDrop: boolean;
   setShowLangDrop: Dispatch<SetStateAction<boolean>>;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 interface props {
@@ -29,6 +31,7 @@ export default function VariablesProvider({ children }: props) {
 
   const [width, setWidth] = useState(0);
   const [showLangDrop, setShowLangDrop] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +51,16 @@ export default function VariablesProvider({ children }: props) {
   }, []);
 
   return (
-    <Variables.Provider value={{ width, local, showLangDrop, setShowLangDrop }}>
+    <Variables.Provider
+      value={{
+        width,
+        local,
+        showLangDrop,
+        setShowLangDrop,
+        isSidebarOpen,
+        setIsSidebarOpen,
+      }}
+    >
       {children}
     </Variables.Provider>
   );

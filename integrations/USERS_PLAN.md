@@ -35,7 +35,7 @@ interface User {
 
 ---
 
-## 3. Backend API Endpoints (`/user`)
+## 3. Backend API Endpoints (`/users`)
 
 All endpoints are protected by the global `AuthGuard`. A valid JWT token must be included in the `Authorization: Bearer <token>` header. The guard verifies:
 - Token is present and valid
@@ -44,7 +44,7 @@ All endpoints are protected by the global `AuthGuard`. A valid JWT token must be
 
 ---
 
-#### `GET /user`
+#### `GET /users`
 
 Fetches the complete list of all registered users. No pagination — returns all users.
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { getTranslations } from "@/app/helpers/helpers";
 import { useVariables } from "@/app/context/VariablesContext";
+import { getTranslations } from "@/app/helpers/helpers";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { HiOutlineSearch, HiOutlineAdjustments } from "react-icons/hi";
 
 export function Filters() {
   const { local } = useVariables();
@@ -23,12 +24,10 @@ export function Filters() {
         <label htmlFor="article-search" className="sr-only">
           Search articles
         </label>
-        <span
-          className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-stone-400"
+        <HiOutlineSearch
+          className="absolute start-3 top-1/2 -translate-y-1/2 text-stone-400 text-lg"
           aria-hidden="true"
-        >
-          search
-        </span>
+        />
         <input
           id="article-search"
           className="w-full border border-stone-200 rounded-xl px-4 py-2 ps-10 pe-4 text-sm focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none"
@@ -80,14 +79,12 @@ export function Filters() {
           }}
           aria-expanded={showMoreFilters}
           aria-controls="more-filters"
-          className={`p-2 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-orange-500/50 ${showMoreFilters ? "bg-orange-500 text-white" : "bg-stone-100 text-stone-600"}`}
+          className={`p-2 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex items-center justify-center ${showMoreFilters ? "bg-orange-500 text-white" : "bg-stone-100 text-stone-600"}`}
         >
-          <span
-            className="material-symbols-outlined text-sm"
+          <HiOutlineAdjustments
+            className="text-lg"
             aria-hidden="true"
-          >
-            tune
-          </span>
+          />
         </motion.button>
       </div>
 

@@ -4,6 +4,7 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { HiOutlinePencilAlt, HiOutlineCollection, HiOutlineCalendar } from "react-icons/hi";
 
 export function QuickActions() {
   const { local } = useVariables();
@@ -26,7 +27,7 @@ export function QuickActions() {
             whileHover={{ rotate: 15 }}
             className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-md hover:shadow-lg transition-all"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">edit_note</span>
+            <HiOutlinePencilAlt className="text-xl" />
           </motion.div>
           <div>
             <p className="font-bold text-stone-900">{t.createNewPost}</p>
@@ -47,7 +48,7 @@ export function QuickActions() {
           whileHover={{ rotate: 15 }}
           className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-amber-100 group-hover:text-amber-600 transition-all"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">category</span>
+          <HiOutlineCollection className="text-xl" />
         </motion.div>
         <div>
           <p className="font-bold text-stone-900">{t.manageCategories}</p>
@@ -67,7 +68,7 @@ export function QuickActions() {
           whileHover={{ rotate: 15 }}
           className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-amber-100 group-hover:text-amber-600 transition-all"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+          <HiOutlineCalendar className="text-xl" />
         </motion.div>
         <div>
           <p className="font-bold text-stone-900">{t.viewScheduled}</p>
