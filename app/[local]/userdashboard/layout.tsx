@@ -1,5 +1,5 @@
-import Sidebar from "@/app/_components/_dashboard/DashboardPage/Sidebar";
 import TopNavBar from "@/app/_components/_dashboard/DashboardPage/TopNavBar";
+import { SideNavBar } from "@/app/_components/_services/add/SideNavBar";
 import { getAuthCookie } from "@/lib/session";
 import { redirect } from "next/navigation";
 
@@ -19,9 +19,7 @@ export default async function UserDashboardLayout({
 
   return (
     <div className="flex min-h-screen relative">
-      <Sidebar />
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        <TopNavBar />
         {children}
       </div>
     </div>

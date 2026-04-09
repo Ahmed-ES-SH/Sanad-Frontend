@@ -1,8 +1,9 @@
 "use client";
 
 import { FiSearch, FiBell, FiHelpCircle } from "react-icons/fi";
-
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 
@@ -11,16 +12,42 @@ export default function UserDashboardHeader() {
   const { UserDashboard } = getTranslations(local);
   const t = UserDashboard.Header;
 
+  const pathname = usePathname();
+
   return (
-    <header className="sticky top-0 z-40 bg-surface-50 border-b border-surface-200 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <span className="text-2xl font-bold tracking-tighter text-primary">
+    <header className="sticky top-0 z-40 bg-surface-50 border-b border-surface-200 flex items-center justify-between px-6 h-16">
+      <div className="flex items-center gap-8">
+        <span className="text-2xl font-bold tracking-tighter text-primary font-display">
           Sanad
         </span>
+        
+        <nav className="hidden md:flex gap-6">
+          {[
+            { key: "dashboard", href: "/userdashboard" },
+            { key: "orders", href: "/userdashboard/orders" },
+            { key: "support", href: "/contact" }
+          ].map((item) => {
+            const isActive = pathname === `/${local}${item.href}`;
+            return (
+              <Link
+                key={item.key}
+                href={`/${local}${item.href}`}
+                className={`text-sm font-semibold transition-all duration-200 px-2 py-1 rounded-md ${
+                  isActive
+                    ? "text-primary border-b-2 border-primary rounded-none"
+                    : "text-surface-600 hover:text-primary hover:bg-surface-100"
+                }`}
+              >
+                {t.nav[item.key as keyof typeof t.nav]}
+              </Link>
+            );
+          })}
+        </nav>
+
         <div className="hidden sm:flex items-center bg-surface-100 px-3 py-1.5 rounded-full gap-2 text-surface-400">
           <FiSearch className="text-lg" size={18} />
           <input
-            className="bg-transparent border-none focus:ring-0 text-sm w-48"
+            className="bg-transparent border-none focus:ring-0 text-sm w-48 font-body"
             placeholder={t.searchPlaceholder}
             type="text"
             aria-label={t.searchPlaceholder}

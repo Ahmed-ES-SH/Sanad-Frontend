@@ -7,7 +7,10 @@
       "Bash(npx *)",
       "Bash(findstr *)",
       "Bash(rmdir *)",
-      "Bash(taskkill *)"
+      "Bash(taskkill *)",
+      "Bash(mkdir *)",
+      "Bash(npm *)",
+      "Bash(select-object *)"
     ]
   },
   "agents": {

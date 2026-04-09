@@ -391,8 +391,48 @@
     "profile": "Profile",
     "dashboard": "Dashboard",
     "payments": "Payments",
+    "notifications": "Notifications",
+    "notificationSettings": "Notification Settings",
     "logout": "Logout",
     "loggingOut": "Logging out..."
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "emptyDescription": "You're all caught up! We'll notify you when something arrives.",
+    "markAllRead": "Mark all as read",
+    "loadMore": "Load more notifications",
+    "showing": "Showing",
+    "of": "of",
+    "new": "new",
+    "justNow": "Just now",
+    "viewDetails": "View details",
+    "read": "Read",
+    "delete": "Delete",
+    "preferences": {
+      "title": "Notification Preferences",
+      "subtitle": "Customize how and when you receive notifications",
+      "types": "Notification Types",
+      "typesDescription": "Choose which types of notifications you want to receive",
+      "delivery": "Delivery Methods",
+      "deliveryDescription": "Choose how you want to receive notifications",
+      "orderUpdates": "Order Updates",
+      "orderUpdatesDesc": "Notifications about your order status changes and updates",
+      "paymentNotifications": "Payment Notifications",
+      "paymentNotificationsDesc": "Notifications about successful or failed payments",
+      "systemNotifications": "System Notifications",
+      "systemNotificationsDesc": "Important system updates, maintenance notices, and announcements",
+      "pushNotifications": "Push Notifications",
+      "pushNotificationsDesc": "Receive real-time push notifications in your browser",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive notification summaries via email",
+      "saveChanges": "Save Changes",
+      "unsavedChanges": "You have unsaved changes",
+      "allSaved": "All changes saved",
+      "savedSuccess": "Preferences saved successfully",
+      "saveError": "Failed to save preferences. Please try again."
+    }
   },
 
   "signUpPage": {
@@ -974,7 +1014,12 @@
       "searchPlaceholder": "Search platform...",
       "notifications": "Notifications",
       "help": "Help",
-      "userAvatar": "User profile avatar"
+      "userAvatar": "User profile avatar",
+      "nav": {
+        "dashboard": "Dashboard",
+        "orders": "Orders",
+        "support": "Support"
+      }
     },
     "ProfileHeader": {
       "avatarAlt": "User avatar large",
@@ -1187,5 +1232,35 @@
     "pciCompliant": "PCI DSS Compliant",
     "tryAgainHint": "If your balance is low, try a different payment method",
     "errorReference": "Error reference"
+  },
+  "UserOrders": {
+    "title": "My Orders",
+    "description": "Track, manage, and review your ongoing service requests and historical technical service orders.",
+    "searchPlaceholder": "Search by Order ID or Service...",
+    "filters": {
+      "all": "All Orders",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "pending": "Pending",
+      "more": "More"
+    },
+    "card": {
+      "orderId": "Order ID",
+      "datePlaced": "Date Placed",
+      "amount": "Amount",
+      "viewDetails": "View Details",
+      "viewHistory": "View History"
+    },
+    "newService": {
+      "title": "Request a New Service",
+      "description": "Browse our technical catalog for specialized business solutions."
+    },
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    }
   }
 }

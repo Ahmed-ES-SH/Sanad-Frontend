@@ -344,8 +344,48 @@
     "profile": "الملف الشخصي",
     "dashboard": "لوحة التحكم",
     "payments": "المدفوعات",
+    "notifications": "الإشعارات",
+    "notificationSettings": "إعدادات الإشعارات",
     "logout": "تسجيل الخروج",
     "loggingOut": "جاري تسجيل الخروج..."
+  },
+
+  "notifications": {
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات",
+    "emptyDescription": "أنت على اطلاع! سنخطرك عند وصول أي شيء جديد.",
+    "markAllRead": "تحديد الكل كمقروء",
+    "loadMore": "تحميل المزيد من الإشعارات",
+    "showing": "عرض",
+    "of": "من",
+    "new": "جديد",
+    "justNow": "الآن",
+    "viewDetails": "عرض التفاصيل",
+    "read": "مقروء",
+    "delete": "حذف",
+    "preferences": {
+      "title": "تفضيلات الإشعارات",
+      "subtitle": "تخصيص كيفية ومتى تتلقى الإشعارات",
+      "types": "أنواع الإشعارات",
+      "typesDescription": "اختر أنواع الإشعارات التي تريد تلقيها",
+      "delivery": "طرق التسليم",
+      "deliveryDescription": "اختر كيف تريد تلقي الإشعارات",
+      "orderUpdates": "تحديثات الطلبات",
+      "orderUpdatesDesc": "إشعارات حول تغييرات حالة طلبك وتحديثاته",
+      "paymentNotifications": "إشعارات الدفع",
+      "paymentNotificationsDesc": "إشعارات حول عمليات الدفع الناجحة أو الفاشلة",
+      "systemNotifications": "إشعارات النظام",
+      "systemNotificationsDesc": "تحديثات النظام المهمة، إشعارات الصيانة، والإعلانات",
+      "pushNotifications": "الإشعارات الفورية",
+      "pushNotificationsDesc": "استلام إشعارات فورية في المتصفح",
+      "emailNotifications": "إشعارات البريد الإلكتروني",
+      "emailNotificationsDesc": "استلام ملخصات الإشعارات عبر البريد الإلكتروني",
+      "saveChanges": "حفظ التغييرات",
+      "unsavedChanges": "لديك تغييرات غير محفوظة",
+      "allSaved": "تم حفظ جميع التغييرات",
+      "savedSuccess": "تم حفظ التفضيلات بنجاح",
+      "saveError": "فشل حفظ التفضيلات. يرجى المحاولة مرة أخرى."
+    }
   },
 
   "signUpPage": {
@@ -927,7 +967,12 @@
       "searchPlaceholder": "البحث في المنصة...",
       "notifications": "الإشعارات",
       "help": "مساعدة",
-      "userAvatar": "صورة الملف الشخصي للمستخدم"
+      "userAvatar": "صورة الملف الشخصي للمستخدم",
+      "nav": {
+        "dashboard": "لوحة التحكم",
+        "orders": "الطلبات",
+        "support": "الدعم"
+      }
     },
     "ProfileHeader": {
       "avatarAlt": "صورة المستخدم الكبيرة",
@@ -1140,5 +1185,35 @@
     "pciCompliant": "متوافق مع معايير PCI DSS",
     "tryAgainHint": "إذا كان رصيدك منخفضاً، جرب طريقة دفع مختلفة",
     "errorReference": "رمز المرجع للخطأ"
+  },
+  "UserOrders": {
+    "title": "طلباتي",
+    "description": "تتبع وإدارة ومراجعة طلبات الخدمة الحالية وسجل طلبات الخدمات التقنية.",
+    "searchPlaceholder": "البحث برقم الطلب أو الخدمة...",
+    "filters": {
+      "all": "جميع الطلبات",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "pending": "معلق",
+      "more": "المزيد"
+    },
+    "card": {
+      "orderId": "رقم الطلب",
+      "datePlaced": "تاريخ الطلب",
+      "amount": "المبلغ",
+      "viewDetails": "عرض التفاصيل",
+      "viewHistory": "عرض السجل"
+    },
+    "newService": {
+      "title": "طلب خدمة جديدة",
+      "description": "تصفح كتالوجنا التقني للحصول على حلول أعمال متخصصة."
+    },
+    "status": {
+      "completed": "مكتمل",
+      "inProgress": "قيد التنفيذ",
+      "pending": "معلق",
+      "paid": "تم الدفع",
+      "cancelled": "ملغي"
+    }
   }
 }

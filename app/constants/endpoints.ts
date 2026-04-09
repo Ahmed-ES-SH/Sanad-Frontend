@@ -92,6 +92,64 @@ export const HOME_ENDPOINTS = {
   LIST_PUBLISHED: "/api/home",
 } as const;
 
+export const ORDERS_ENDPOINTS = {
+  // User endpoints
+  CREATE: (serviceId: string, notes?: string) => {
+    const params = new URLSearchParams();
+    params.set("serviceId", serviceId);
+    if (notes) params.set("notes", notes);
+    return `/api/orders?${params.toString()}`;
+  },
+  LIST: (page?: number, limit?: number) => {
+    const params = new URLSearchParams();
+    if (page) params.set("page", String(page));
+    if (limit) params.set("limit", String(limit));
+    return `/api/orders?${params.toString()}`;
+  },
+  GET: (id: string) => `/api/orders/${id}`,
+  PAY: (id: string) => `/api/orders/${id}/pay`,
+
+  // Admin endpoints
+  ADMIN_LIST: (page?: number, limit?: number, status?: string, userId?: number, serviceId?: string) => {
+    const params = new URLSearchParams();
+    if (page) params.set("page", String(page));
+    if (limit) params.set("limit", String(limit));
+    if (status) params.set("status", status);
+    if (userId) params.set("userId", String(userId));
+    if (serviceId) params.set("serviceId", serviceId);
+    return `/api/admin/orders?${params.toString()}`;
+  },
+  ADMIN_GET: (id: string) => `/api/admin/orders/${id}`,
+  ADMIN_UPDATE_STATUS: (id: string) => `/api/admin/orders/${id}/status`,
+  ADMIN_ADD_UPDATE: (id: string) => `/api/admin/orders/${id}/updates`,
+} as const;
+
+export const NOTIFICATIONS_ENDPOINTS = {
+  // User endpoints
+  LIST: (page?: number, limit?: number) => {
+    const params = new URLSearchParams();
+    if (page) params.set("page", String(page));
+    if (limit) params.set("limit", String(limit));
+    return `/api/notifications?${params.toString()}`;
+  },
+  UNREAD_COUNT: "/api/notifications/unread-count",
+  MARK_AS_READ: (id: string) => `/api/notifications/${id}/read`,
+  MARK_ALL_AS_READ: "/api/notifications/read-all",
+  DELETE: (id: string) => `/api/notifications/${id}`,
+  PREFERENCES: "/api/notifications/preferences",
+
+  // Admin endpoints
+  ADMIN_SEND: "/api/admin/notifications/send",
+  ADMIN_BROADCAST: "/api/admin/notifications/broadcast",
+  ADMIN_LIST: (page?: number, limit?: number) => {
+    const params = new URLSearchParams();
+    if (page) params.set("page", String(page));
+    if (limit) params.set("limit", String(limit));
+    return `/api/admin/notifications?${params.toString()}`;
+  },
+  ADMIN_DELETE: (id: string) => `/api/admin/notifications/${id}`,
+} as const;
+
 export const ALL_ENDPOINTS = {
   AUTH: AUTH_ENDPOINTS,
   USER: USER_ENDPOINTS,
@@ -103,4 +161,6 @@ export const ALL_ENDPOINTS = {
   CART: CART_ENDPOINTS,
   STRIPE: STRIPE_ENDPOINTS,
   HOME: HOME_ENDPOINTS,
+  ORDERS: ORDERS_ENDPOINTS,
+  NOTIFICATIONS: NOTIFICATIONS_ENDPOINTS,
 } as const;

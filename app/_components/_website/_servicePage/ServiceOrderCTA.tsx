@@ -1,102 +1,96 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiCheck, FiShoppingCart, FiX, FiLoader } from "react-icons/fi";
-import { ServicePackage } from "@/app/constants/servicesData";
+import { FiCheck, FiX, FiLoader, FiCreditCard } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { useCreateOrder, useInitiatePayment } from "@/lib/hooks/orders";
+import { Service } from "@/app/types/service";
+
+// Format currency
+function formatCurrency(amount: string | number): string {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(numAmount);
+}
 
 interface ServiceOrderCTAProps {
-  packages?: ServicePackage[];
+  service?: Service | null;
   local: "en" | "ar";
   translations: Record<string, string>;
-  serviceTitle: { en: string; ar: string };
 }
 
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  projectDescription: string;
-  image: File | null;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
-  projectDescription?: string;
-}
-
-export default function ServiceOrderCTA({ packages, local, translations, serviceTitle }: ServiceOrderCTAProps) {
+export default function ServiceOrderCTA({ service, local, translations }: ServiceOrderCTAProps) {
   const router = useRouter();
-  const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    phone: "",
-    projectDescription: "",
-    image: null,
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  
+  const createOrderHook = useCreateOrder();
+  const initiatePaymentHook = useInitiatePayment();
 
-  const handleOrderClick = (packageIndex: number) => {
-    setSelectedPackage(packageIndex);
-    setIsModalOpen(true);
-  };
+  // Reset states when modal closes
+  useEffect(() => {
+    if (!isModalOpen) {
+      setOrderSuccess(false);
+      setOrderId(null);
+      setPaymentClientSecret(null);
+      setPaymentError(null);
+      setNotes("");
+    }
+  }, [isModalOpen]);
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    if (!formData.name.trim()) newErrors.name = local === "en" ? "Name is required" : "الاسم مطلوب";
-    if (!formData.email.trim()) newErrors.email = local === "en" ? "Email is required" : "البريد مطلوب";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = local === "en" ? "Invalid email" : "بريد غير صالح";
-    if (!formData.projectDescription.trim()) newErrors.projectDescription = local === "en" ? "Description is required" : "الوصف مطلوب";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!service) return;
+
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setPaymentError(null);
+
+    // Step 1: Create order
+    const orderResult = await createOrderHook.createOrder(
+      service.id,
+      notes.trim() || undefined
+    );
+
+    if (!orderResult.success || !orderResult.data) {
+      setIsSubmitting(false);
+      setPaymentError(orderResult.message || "Failed to create order");
+      return;
+    }
+
+    // Order created successfully - now initiate payment
+    const createdOrderId = orderResult.data.id;
+    setOrderId(createdOrderId);
+
+    // Step 2: Initiate Stripe payment
+    const paymentResult = await initiatePaymentHook.initiatePayment(createdOrderId);
+
     setIsSubmitting(false);
-    setIsSuccess(true);
-    setTimeout(() => {
-      setIsSuccess(false);
-      setIsModalOpen(false);
-      setFormData({ name: "", email: "", phone: "", projectDescription: "", image: null });
-      setErrors({});
-    }, 2500);
+
+    if (!paymentResult.success || !paymentResult.data) {
+      setPaymentError(paymentResult.message || "Failed to initiate payment");
+      return;
+    }
+
+    // Payment initiated - get client secret
+    setPaymentClientSecret(paymentResult.data.clientSecret);
   };
 
-  if (!packages || packages.length === 0) {
-    return (
-      <section id="order-section" className="c-container mx-auto px-4 py-16 md:py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="surface-card-elevated p-12 text-center"
-        >
-          <h2 className="display-sm text-surface-900 font-display mb-4">
-            {translations.orderService}
-          </h2>
-          <p className="body-lg text-surface-500 mb-8">
-            {local === "en" ? "Contact us to discuss your project requirements" : "تواصل معنا لمناقشة متطلبات مشروعك"}
-          </p>
-          <button
-            onClick={() => router.push(`/${local}/contact`)}
-            className="surface-btn-primary inline-flex items-center gap-3"
-          >
-            <FiShoppingCart />
-            <span>{translations.contactbtn}</span>
-          </button>
-        </motion.div>
-      </section>
-    );
+  const handleClose = () => {
+    if (!isSubmitting) {
+      setIsModalOpen(false);
+    }
+  };
+
+  // No service available
+  if (!service) {
+    return null;
   }
 
   return (
@@ -114,79 +108,41 @@ export default function ServiceOrderCTA({ packages, local, translations, service
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-12 bg-gradient-to-r from-primary to-accent-amber" />
             <span className="caption-xs font-semibold text-primary uppercase tracking-wider">
-              {translations.choosePackage}
+              {translations.orderService}
             </span>
             <div className="h-px w-12 bg-gradient-to-l from-primary to-accent-amber" />
           </div>
           <h2 className="display-sm md:display-md text-white font-display mb-4">
-            {local === "en" ? "Choose Your Plan" : "اختر خطتك"}
+            {local === "en" ? "Ready to Get Started?" : "هل أنت مستعد للبدء؟"}
           </h2>
           <p className="body-lg text-surface-400 max-w-2xl mx-auto">
-            {translations.packageDescription}
+            {local === "en" 
+              ? "Order now and take your business to the next level with our professional services."
+              : "اطلب الآن وامنح نفسك竞争优势 من خلال خدماتنا الاحترافية."}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-          {packages.map((pkg, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15, duration: 0.6 }}
-              className={`relative rounded-2xl p-8 transition-all duration-300 ${
-                pkg.isPopular
-                  ? "bg-gradient-primary text-white shadow-2xl scale-105 z-10"
-                  : "surface-card hover:shadow-surface-md"
-              }`}
-            >
-              {pkg.isPopular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1.5 rounded-full bg-surface-900 text-white text-xs font-semibold uppercase tracking-wider">
-                    {translations.popular}
-                  </span>
-                </div>
-              )}
-
-              <h3 className={`heading-lg font-display mb-2 ${pkg.isPopular ? "text-white" : "text-surface-900"}`}>
-                {pkg.name[local]}
-              </h3>
-              <div className="mb-6">
-                <span className={`display-sm font-display ${pkg.isPopular ? "text-white" : "text-primary"}`}>
-                  {pkg.price[local]}
-                </span>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                {pkg.features[local].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      pkg.isPopular ? "bg-white/20" : "bg-primary/10"
-                    }`}>
-                      <FiCheck className={`text-xs ${pkg.isPopular ? "text-white" : "text-primary"}`} />
-                    </div>
-                    <span className={`body-sm ${pkg.isPopular ? "text-white/90" : "text-surface-600"}`}>
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handleOrderClick(index)}
-                className={`w-full py-3.5 rounded-xl font-display transition-all duration-300 ${
-                  pkg.isPopular
-                    ? "bg-white text-primary hover:bg-surface-50"
-                    : "surface-btn-primary"
-                }`}
-              >
-                {translations.getStarted}
-              </button>
-            </motion.div>
-          ))}
-        </div>
+        {/* Simple Order Button - No Plans */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary font-display rounded-xl hover:bg-surface-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+          >
+            <FiCreditCard className="text-xl" />
+            <span className="text-lg">{local === "en" ? "Order Now" : "اطلب الآن"}</span>
+            <span className="ml-2 px-3 py-1 bg-primary/10 rounded-lg text-sm">
+              {formatCurrency(Number(service.basePrice))}
+            </span>
+          </button>
+        </motion.div>
       </div>
 
+      {/* Order Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -194,7 +150,7 @@ export default function ServiceOrderCTA({ packages, local, translations, service
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-surface-900/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
-            onClick={() => !isSubmitting && setIsModalOpen(false)}
+            onClick={handleClose}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -204,120 +160,114 @@ export default function ServiceOrderCTA({ packages, local, translations, service
               className="surface-card-elevated w-full max-w-lg max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              {isSuccess ? (
-                <div className="p-12 text-center">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", damping: 15 }}
-                    className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center mx-auto mb-6"
-                  >
-                    <FiCheck className="text-4xl text-white" />
-                  </motion.div>
-                  <h3 className="heading-lg text-surface-900 font-display mb-2">
-                    {local === "en" ? "Request Submitted!" : "تم إرسال الطلب!"}
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-surface-200">
+                <div>
+                  <h3 className="heading-md text-surface-900 font-display">
+                    {local === "en" ? "Order Service" : "طلب الخدمة"}
                   </h3>
-                  <p className="body-lg text-surface-500">
-                    {local === "en" ? "We'll contact you within 24 hours." : "سنتواصل معك خلال 24 ساعة."}
+                  <p className="body-sm text-primary mt-1">
+                    {service.title} — {formatCurrency(Number(service.basePrice))}
                   </p>
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between p-6 border-b border-surface-200">
-                    <div>
-                      <h3 className="heading-md text-surface-900 font-display">
-                        {local === "en" ? "Order Service" : "طلب الخدمة"}
-                      </h3>
-                      {selectedPackage !== null && (
-                        <p className="body-sm text-primary mt-1">
-                          {packages[selectedPackage]?.name[local]} — {packages[selectedPackage]?.price[local]}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => setIsModalOpen(false)}
-                      className="w-10 h-10 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-surface-200 transition-colors"
+                <button
+                  onClick={handleClose}
+                  disabled={isSubmitting}
+                  className="w-10 h-10 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-surface-200 transition-colors disabled:opacity-50"
+                >
+                  <FiX className="text-surface-500" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                {/* Order Created - Show Payment */}
+                {orderSuccess || paymentClientSecret ? (
+                  <div className="text-center py-8">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", damping: 15 }}
+                      className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6"
                     >
-                      <FiX className="text-surface-500" />
+                      <FiCheck className="text-4xl text-green-600" />
+                    </motion.div>
+                    <h3 className="heading-lg text-surface-900 font-display mb-2">
+                      {local === "en" ? "Order Confirmed!" : "تم تأكيد الطلب!"}
+                    </h3>
+                    <p className="body-lg text-surface-500 mb-6">
+                      {local === "en" 
+                        ? `Order #${orderId?.slice(0, 8)} has been created successfully.`
+                        : `تم إنشاء الطلب #${orderId?.slice(0, 8)} بنجاح.`}
+                    </p>
+                    <button
+                      onClick={handleClose}
+                      className="surface-btn-primary w-full py-4"
+                    >
+                      {local === "en" ? "Done" : "تم"}
                     </button>
                   </div>
-
-                  <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                ) : (
+                  /* Order Form */
+                  <form onSubmit={handleOrderSubmit} className="space-y-5">
                     <div>
                       <label className="block body-sm font-medium text-surface-700 mb-2">
-                        {local === "en" ? "Full Name" : "الاسم الكامل"} <span className="text-accent-rose">*</span>
+                        {local === "en" ? "Order Summary" : "ملخص الطلب"}
                       </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className={`surface-input w-full ${errors.name ? "border-accent-rose" : ""}`}
-                        placeholder={local === "en" ? "Your name" : "اسمك"}
-                      />
-                      {errors.name && <p className="text-accent-rose text-sm mt-1">{errors.name}</p>}
+                      <div className="p-4 bg-surface-50 rounded-xl border border-surface-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-surface-900 font-medium">{service.title}</span>
+                          <span className="text-primary font-semibold">{formatCurrency(Number(service.basePrice))}</span>
+                        </div>
+                        <p className="text-sm text-surface-500">{service.shortDescription}</p>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block body-sm font-medium text-surface-700 mb-2">
-                        {local === "en" ? "Email" : "البريد الإلكتروني"} <span className="text-accent-rose">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className={`surface-input w-full ${errors.email ? "border-accent-rose" : ""}`}
-                        placeholder={local === "en" ? "your@email.com" : "بريدك@الإلكتروني.com"}
-                      />
-                      {errors.email && <p className="text-accent-rose text-sm mt-1">{errors.email}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block body-sm font-medium text-surface-700 mb-2">
-                        {local === "en" ? "Phone (Optional)" : "الهاتف (اختياري)"}
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="surface-input w-full"
-                        placeholder={local === "en" ? "+966 5XX XXX XXX" : "+966 5XX XXX XXX"}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block body-sm font-medium text-surface-700 mb-2">
-                        {local === "en" ? "Project Description" : "وصف المشروع"} <span className="text-accent-rose">*</span>
+                        {local === "en" ? "Notes (Optional)" : "ملاحظات (اختياري)"}
                       </label>
                       <textarea
-                        value={formData.projectDescription}
-                        onChange={(e) => setFormData({ ...formData, projectDescription: e.target.value })}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className={`surface-input w-full resize-none ${errors.projectDescription ? "border-accent-rose" : ""}`}
-                        placeholder={local === "en" ? "Tell us about your project..." : "أخبرنا عن مشروعك..."}
+                        maxLength={1000}
+                        className="surface-input w-full resize-none"
+                        placeholder={local === "en" 
+                          ? "Tell us about your project requirements..." 
+                          : "أخبرنا عن متطلبات مشروعك..."}
                       />
-                      {errors.projectDescription && <p className="text-accent-rose text-sm mt-1">{errors.projectDescription}</p>}
+                      <p className="text-xs text-surface-400 mt-1 text-right">
+                        {notes.length}/1000
+                      </p>
                     </div>
+
+                    {paymentError && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                        <p className="text-sm text-red-600">{paymentError}</p>
+                      </div>
+                    )}
 
                     <button
                       type="submit"
-                      disabled={isSubmitting}
-                      className="surface-btn-primary w-full py-4 gap-3"
+                      disabled={isSubmitting || !service}
+                      className="surface-btn-primary w-full py-4 gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
                         <>
                           <FiLoader className="animate-spin" />
-                          <span>{local === "en" ? "Submitting..." : "جاري الإرسال..."}</span>
+                          <span>{local === "en" ? "Processing..." : "جاري المعالجة..."}</span>
                         </>
                       ) : (
                         <>
-                          <FiShoppingCart />
-                          <span>{translations.getStarted}</span>
+                          <FiCreditCard />
+                          <span>{local === "en" ? "Pay Now" : "ادفع الآن"} — {formatCurrency(Number(service.basePrice))}</span>
                         </>
                       )}
                     </button>
                   </form>
-                </>
-              )}
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

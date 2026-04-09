@@ -67,10 +67,9 @@ export default function ServiceLayout({ service: backendService }: ServiceLayout
       <ServiceFAQ faq={service.faq} local={local} translations={servicePage} />
 
       <ServiceOrderCTA
-        packages={service.packages}
+        service={backendService}
         local={local}
         translations={servicePage}
-        serviceTitle={service.title}
       />
 
       <RelatedServices

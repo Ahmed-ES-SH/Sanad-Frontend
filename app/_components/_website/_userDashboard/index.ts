@@ -6,3 +6,5 @@ export { default as QuickSettings } from "./QuickSettings";
 export { default as RecentActivityTable } from "./RecentActivityTable";
 export { default as UserDashboardHeader } from "./UserDashboardHeader";
 export { default as QuickStartBanner } from "./QuickStartBanner";
+export { default as UserOrdersPage } from "./UserOrdersPage";
+export { default as UserDashboardPage } from "./UserDashboardPage";

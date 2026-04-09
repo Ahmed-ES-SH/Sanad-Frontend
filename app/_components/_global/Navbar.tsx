@@ -9,6 +9,7 @@ import ClientDiv from "./ClientDiv";
 import Joinbtn from "../_website/_navbar/Joinbtn";
 import LocalLink from "./LocalLink";
 import CartButton from "./CartButton";
+import NotificationBell from "./NotificationBell";
 
 /**
  * Navbar component for the Sanad technical services platform.
@@ -63,6 +64,9 @@ export default function Navbar() {
 
           {/* Right: Actions */}
           <div className="flex items-center justify-end gap-3 md:gap-4">
+            {/* notification bell */}
+            <NotificationBell />
+
             {/* cart button */}
             <CartButton />
 
