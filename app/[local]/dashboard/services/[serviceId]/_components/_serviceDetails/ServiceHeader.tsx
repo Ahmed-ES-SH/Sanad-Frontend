@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { FiEdit, FiPower } from "react-icons/fi";
-import DeactivateModal from "./DeactivateModal";
+import PublishToggleModal from "./PublishToggleModal";
 import { Service } from "@/app/types/service";
 import { togglePublishService } from "@/app/actions/servicesActions";
 import { useRouter } from "next/navigation";
 
 interface ServiceHeaderProps {
   service?: Service | null;
+  onEditClick: () => void;
 }
 
-export default function ServiceHeader({ service }: ServiceHeaderProps) {
-  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+export default function ServiceHeader({ service, onEditClick }: ServiceHeaderProps) {
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const router = useRouter();
 
-  const handleDeactivate = async () => {
+  const handleToggleStatus = async () => {
     if (service) {
       try {
         await togglePublishService(service.id);
@@ -25,7 +25,7 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
         console.error("Failed to toggle publish status:", error);
       }
     }
-    setShowDeactivateModal(false);
+    setShowStatusModal(false);
   };
 
   const serviceTitle = service?.title || "Untitled Service";
@@ -43,9 +43,9 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
             <span className={`px-3 py-1 text-xs font-bold rounded-full flex items-center gap-1 border ${
               isPublished 
                 ? "bg-emerald-100 text-emerald-700 border-emerald-200" 
-                : "bg-stone-100 text-stone-600 border-stone-200"
+                : "bg-amber-50 text-amber-700 border-amber-200"
             }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-stone-400"}`}></span>
+              <span className={`w-1.5 h-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-400"}`}></span>
               {isPublished ? "Published" : "Draft"}
             </span>
           </div>
@@ -55,28 +55,33 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href={`/dashboard/services/${serviceId}`}
-            className="px-6 py-2.5 bg-surface-card border border-surface-200 text-surface-700 font-semibold rounded-xl hover:bg-surface-100 hover:border-surface-300 transition-all flex items-center gap-2 shadow-surface-sm"
+          <button
+            onClick={onEditClick}
+            className="px-6 py-2.5 bg-surface-card border border-stone-200 text-stone-700 font-semibold rounded-xl hover:bg-stone-50 hover:border-stone-300 transition-all flex items-center gap-2 shadow-sm"
           >
             <FiEdit className="text-lg" />
             Edit Service
-          </Link>
+          </button>
           <button
-            onClick={() => setShowDeactivateModal(true)}
-            className="px-6 py-2.5 bg-surface-card border border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-2"
+            onClick={() => setShowStatusModal(true)}
+            className={`px-6 py-2.5 border font-semibold rounded-xl transition-all flex items-center gap-2 ${
+              isPublished 
+                ? "bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100 shadow-amber-100/50" 
+                : "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 shadow-emerald-100/50"
+            } shadow-sm`}
           >
             <FiPower className="text-lg" />
-            {isPublished ? "Unpublish" : "Publish"}
+            {isPublished ? "Unpublish Service" : "Publish Service"}
           </button>
         </div>
       </section>
 
-      <DeactivateModal
-        isOpen={showDeactivateModal}
-        onClose={() => setShowDeactivateModal(false)}
-        onConfirm={handleDeactivate}
+      <PublishToggleModal
+        isOpen={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        onConfirm={handleToggleStatus}
         serviceName={serviceTitle}
+        isPublished={isPublished}
       />
     </>
   );

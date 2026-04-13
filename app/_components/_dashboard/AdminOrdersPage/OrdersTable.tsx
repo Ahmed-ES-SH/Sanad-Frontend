@@ -1,37 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { useAllOrders } from '@/lib/hooks/orders';
-import { AdminOrder, OrderStatus, AdminOrderQueryParams } from '@/app/types/order';
+import React from 'react';
+import { AdminOrder, OrderStatus } from '@/app/types/order';
+import GlobalTable, { Column } from '@/app/_components/_global/GlobalTable';
+import { useVariables } from '@/app/context/VariablesContext';
+import { getTranslations } from '@/app/helpers/helpers';
+import { FiEye } from 'react-icons/fi';
 
 // Status badge configuration
-const statusConfig: Record<OrderStatus, { bg: string; text: string; label: string }> = {
+const statusConfig: Record<OrderStatus, { bg: string; text: string; labelKey: string }> = {
   pending: {
     bg: 'bg-yellow-100',
     text: 'text-yellow-700',
-    label: 'Pending',
+    labelKey: 'pending',
   },
   paid: {
     bg: 'bg-blue-100',
     text: 'text-blue-700',
-    label: 'Paid',
+    labelKey: 'paid',
   },
   in_progress: {
     bg: 'bg-orange-100',
     text: 'text-orange-700',
-    label: 'In Progress',
+    labelKey: 'in_progress',
   },
   completed: {
     bg: 'bg-green-100',
     text: 'text-green-700',
-    label: 'Completed',
+    labelKey: 'completed',
   },
   cancelled: {
     bg: 'bg-red-100',
     text: 'text-red-700',
-    label: 'Cancelled',
+    labelKey: 'cancelled',
   },
 };
 
@@ -54,198 +55,119 @@ function formatDate(dateString: string): string {
 
 interface OrdersTableProps {
   onViewOrder?: (orderId: string) => void;
+  statusFilter?: string;
+  userIdFilter?: number;
 }
 
-export function OrdersTable({ onViewOrder }: OrdersTableProps) {
-  const { orders, meta, isLoading, error, fetchOrders } = useAllOrders();
-  const [filters, setFilters] = useState<AdminOrderQueryParams>({
-    page: 1,
-    limit: 10,
-  });
-  const [currentPage, setCurrentPage] = useState(1);
+export function OrdersTable({ onViewOrder, statusFilter, userIdFilter }: OrdersTableProps) {
+  const { local } = useVariables();
+  const translations = getTranslations(local) as any;
+  const t = translations.OrdersPage || {};
 
-  useEffect(() => {
-    fetchOrders(filters);
-  }, [filters, fetchOrders]);
+  const columns: Column<AdminOrder>[] = [
+    {
+      label: t.table?.orderId || 'Order ID',
+      accessor: 'id',
+      render: (order) => (
+        <span className="text-sm font-mono font-bold text-primary">
+          {order.id.slice(0, 8).toUpperCase()}
+        </span>
+      ),
+    },
+    {
+      label: t.table?.user || 'User',
+      render: (order) => (
+        <div className="flex items-center gap-2.5">
+          {order.user.avatar && (
+            <img
+              src={order.user.avatar}
+              alt=""
+              className="w-8 h-8 rounded-full object-cover ring-2 ring-surface-100"
+            />
+          )}
+          <div>
+            <p className="text-sm font-bold text-surface-800">
+              {order.user.name || 'Unknown'}
+            </p>
+            <p className="text-xs text-surface-500">
+              {order.user.email}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label: t.table?.service || 'Service',
+      render: (order) => (
+        <p className="text-sm font-medium text-surface-800">
+          {order.service.title}
+        </p>
+      ),
+    },
+    {
+      label: t.table?.amount || 'Amount',
+      render: (order) => (
+        <span className="text-sm font-bold text-surface-800 tabular-nums">
+          {formatCurrency(order.amount, order.currency)}
+        </span>
+      ),
+    },
+    {
+      label: t.table?.status || 'Status',
+      accessor: 'status',
+      render: (order) => {
+        const config = statusConfig[order.status] || statusConfig.pending;
+        return (
+          <span
+            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${config.bg} ${config.text}`}
+          >
+            {t.status?.[config.labelKey] || config.labelKey.replace('_', ' ')}
+          </span>
+        );
+      },
+    },
+    {
+      label: t.table?.date || 'Date',
+      accessor: 'createdAt',
+      render: (order) => (
+        <span className="text-xs text-surface-500">
+          {formatDate(order.createdAt)}
+        </span>
+      ),
+    },
+  ];
 
-  const handleFilterChange = (key: keyof AdminOrderQueryParams, value: string | number | undefined) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    fetchOrders({ ...filters, page });
-  };
-
-  if (isLoading && orders.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-xl">
-        <p className="text-red-600">{error}</p>
-        <button
-          onClick={() => fetchOrders(filters)}
-          className="mt-4 text-sm text-indigo-600 hover:text-indigo-700"
-        >
-          Try again
-        </button>
-      </div>
-    );
-  }
+  const extraParams = React.useMemo(() => {
+    const params: Record<string, any> = {};
+    if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
+    if (userIdFilter) params.userId = userIdFilter;
+    return params;
+  }, [statusFilter, userIdFilter]);
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-xl">
-        <select
-          value={filters.status || ''}
-          onChange={(e) => handleFilterChange('status', e.target.value || undefined)}
-          className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+    <GlobalTable<AdminOrder>
+      endpoint="/api/admin/orders"
+      queryKey="admin-orders"
+      initialData={[]}
+      columns={columns}
+      rowKey="id"
+      isPaginated={true}
+      extraParams={extraParams}
+      LIMIT={10}
+      emptyMessage={t.table?.empty || 'No orders found'}
+      onRowClick={(order) => onViewOrder?.(order.id)}
+      renderActions={(order) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewOrder?.(order.id);
+          }}
+          className="p-1.5 rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-800 transition-colors"
+          title={t.table?.view || 'View Details'}
         >
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
-          <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-
-        <input
-          type="number"
-          placeholder="User ID"
-          value={filters.userId || ''}
-          onChange={(e) => handleFilterChange('userId', e.target.value ? Number(e.target.value) : undefined)}
-          className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-        />
-      </div>
-
-      {/* Orders Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Order ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Service
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {orders.map((order) => {
-              const status = statusConfig[order.status] || statusConfig.pending;
-              return (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900 font-mono">
-                      {order.id.slice(0, 8)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {order.user.avatar && (
-                        <img
-                          src={order.user.avatar}
-                          alt={order.user.name || ''}
-                          className="w-8 h-8 rounded-full mr-2"
-                        />
-                      )}
-                      <div>
-                        <span className="text-sm text-gray-900">
-                          {order.user.name || 'Unknown'}
-                        </span>
-                        <span className="text-xs text-gray-500 block">
-                          {order.user.email}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">
-                      {order.service.title}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">
-                      {formatCurrency(order.amount, order.currency)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
-                      {status.label}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-500">
-                      {formatDate(order.createdAt)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button
-                      onClick={() => onViewOrder?.(order.id)}
-                      className="text-indigo-600 hover:text-indigo-900 text-sm"
-                    >
-                      View
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {meta && meta.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {meta.totalPages}
-          </span>
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === meta.totalPages}
-            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
+          <FiEye className="w-4 h-4" />
+        </button>
       )}
-    </div>
+    />
   );
 }

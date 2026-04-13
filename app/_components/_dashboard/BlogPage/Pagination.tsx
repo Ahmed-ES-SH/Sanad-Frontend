@@ -3,7 +3,7 @@
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi";
 
 interface PaginationProps {
@@ -14,6 +14,7 @@ interface PaginationProps {
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
   const { local } = useVariables();
   const router = useRouter();
+  const pathname = usePathname();
   const { BlogPage } = getTranslations(local);
   const t = BlogPage.Pagination;
 
@@ -55,8 +56,8 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(window.location.search);
-    params.set('page', page.toString());
-    router.push(`/dashboard/blog?${params.toString()}`);
+    params.set("page", page.toString());
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   if (totalPages <= 1) {

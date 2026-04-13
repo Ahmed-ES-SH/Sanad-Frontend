@@ -1,27 +1,38 @@
-import UserStats from "@/app/_components/_dashboard/UsersPage/UserStats";
-import FilterBar from "@/app/_components/_dashboard/UsersPage/FilterBar";
-import UserTable from "@/app/_components/_dashboard/UsersPage/UserTable";
-import PendingBanner from "@/app/_components/_dashboard/UsersPage/PendingBanner";
-import { adminGetUsers } from "@/app/actions/userActions";
-import { User } from "@/app/types/user";
+import { adminGetUsers, adminGetUsersStats } from "@/app/actions/userActions";
 import { IoMdPersonAdd } from "react-icons/io";
+
+import UserStats from "@/app/_components/_dashboard/UsersPage/UserStats";
 import Link from "next/link";
+import ClientUsers from "@/app/_components/_dashboard/UsersPage/ClientUsers";
+import { StatsResultType } from "@/app/types/user";
 
 // ============================================================================
 // USERS PAGE - Server component that fetches all users from backend
 // Data is passed down to client components for interactivity
 // ============================================================================
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   // Fetch users server-side for security and performance
-  let users: User[] = [];
-  let error: string | null = null;
+  const resolvedSearchParams = await searchParams;
 
-  try {
-    users = await adminGetUsers();
-  } catch (err) {
-    error = err instanceof Error ? err.message : "Failed to load users";
-    console.error("[UsersPage] Error loading users:", error);
+  let error = null;
+
+  const {
+    data: users,
+    perPage,
+    page,
+    lastPage,
+    total,
+  } = await adminGetUsers(resolvedSearchParams);
+
+  const stats = (await adminGetUsersStats()) as StatsResultType;
+
+  if (!users) {
+    error = "Failed to load users";
   }
 
   return (
@@ -48,16 +59,17 @@ export default async function UsersPage() {
         </div>
 
         {/* Stats Cards */}
-        <UserStats users={users} />
+        <UserStats stats={stats} total={total} />
 
-        {/* Filter Bar */}
-        <FilterBar users={users} />
-
-        {/* User Table */}
-        <UserTable users={users} error={error} />
-
-        {/* Pending Banner */}
-        <PendingBanner users={users} />
+        {/* Client Side Users */}
+        <ClientUsers
+          initialData={users}
+          lastPage={lastPage}
+          page={page}
+          perPage={perPage}
+          total={total}
+          pendingUsers={stats?.unverifiedUsersNumber ?? 0}
+        />
       </main>
     </>
   );

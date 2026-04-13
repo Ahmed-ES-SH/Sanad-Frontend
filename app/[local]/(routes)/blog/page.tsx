@@ -18,11 +18,18 @@ export async function generateMetadata({ params }: any) {
   };
 }
 
-export default async function Blog() {
+export default async function Blog({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; categoryId?: string; tag?: string }>;
+}) {
   try {
+    const params = await searchParams;
     const { data: articles, meta } = await getArticles({
-      page: 1,
+      page: params.page ? parseInt(params.page) : 1,
       limit: 8,
+      categoryId: params.categoryId,
+      tag: params.tag,
     });
 
     return (

@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
-import { getTranslations } from "@/app/helpers/helpers";
+import { formatTitle, getTranslations } from "@/app/helpers/helpers";
+import { deleteArticle } from "@/app/actions/blogActions";
 import { Article } from "@/app/types/blog";
 import LocalLink from "../../_global/LocalLink";
-import { HiOutlinePencilAlt, HiOutlineTrash, HiOutlineEye, HiOutlineClock, HiOutlinePlus, HiOutlineExclamation, HiOutlineDocumentText } from "react-icons/hi";
+import {
+  HiOutlinePencilAlt,
+  HiOutlineTrash,
+  HiOutlineEye,
+  HiOutlineClock,
+  HiOutlinePlus,
+  HiOutlineExclamation,
+  HiOutlineDocumentText,
+} from "react-icons/hi";
+import Link from "next/link";
 
 interface ArticleGridProps {
   initialArticles: Article[];
@@ -17,21 +28,71 @@ interface ArticleGridProps {
 function ArticleSkeleton() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-stone-200/50 overflow-hidden animate-pulse">
-      <div className="h-48 bg-stone-200" />
+      <div className="h-48 bg-linear-to-br from-stone-200 to-stone-100 relative">
+        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
+      </div>
       <div className="p-5 space-y-3">
         <div className="flex justify-between">
-          <div className="h-3 w-16 bg-stone-200 rounded" />
-          <div className="h-3 w-20 bg-stone-200 rounded" />
+          <div className="h-3 w-16 bg-stone-200 rounded-full" />
+          <div className="h-3 w-20 bg-stone-200 rounded-full" />
         </div>
-        <div className="h-5 bg-stone-200 rounded w-3/4" />
-        <div className="h-5 bg-stone-200 rounded w-1/2" />
-        <div className="h-10 bg-stone-100 rounded w-full mt-4" />
+        <div className="h-5 bg-stone-200 rounded-lg w-3/4" />
+        <div className="h-5 bg-stone-200 rounded-lg w-1/2" />
+        <div className="h-10 bg-stone-100 rounded-lg w-full mt-4" />
         <div className="flex items-center gap-2 mt-4">
           <div className="w-6 h-6 bg-stone-200 rounded-full" />
-          <div className="h-3 w-24 bg-stone-200 rounded" />
+          <div className="h-3 w-24 bg-stone-200 rounded-full" />
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingOverlay() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="absolute inset-0 bg-linear-to-b from-white/60 to-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl"
+    >
+      <motion.div
+        className="flex flex-col items-center gap-4 px-8 py-6 bg-white/90 rounded-2xl shadow-xl border border-stone-100"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
+        <div className="relative">
+          <div className="w-12 h-12 border-4 border-orange-200 rounded-full" />
+          <motion.div
+            className="absolute inset-0 w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
+        <p className="text-sm font-semibold text-stone-700">
+          Loading articles...
+        </p>
+        <div className="flex gap-1">
+          <motion.div
+            className="w-1.5 h-1.5 bg-orange-500 rounded-full"
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+          />
+          <motion.div
+            className="w-1.5 h-1.5 bg-orange-500 rounded-full"
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+          />
+          <motion.div
+            className="w-1.5 h-1.5 bg-orange-500 rounded-full"
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+          />
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -51,7 +112,10 @@ function EmptyState({ t }: { t: any }) {
       <p className="text-stone-500 text-center mb-6 max-w-md">
         {t.noArticlesDesc}
       </p>
-      <LocalLink href="/dashboard/blog/create" className="flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
+      <LocalLink
+        href="/dashboard/blog/create"
+        className="flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30"
+      >
         <HiOutlinePlus className="text-xl" />
         {t.createFirstPost}
       </LocalLink>
@@ -132,13 +196,35 @@ const articleVariants = {
   }),
 };
 
-export function ArticleGrid({ initialArticles, totalPages, currentPage }: ArticleGridProps) {
+export function ArticleGrid({
+  initialArticles,
+  totalPages,
+  currentPage,
+}: ArticleGridProps) {
   const { local } = useVariables();
   const { BlogPage } = getTranslations(local);
   const t = BlogPage.ArticleGrid;
+  const searchParams = useSearchParams();
+
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Show loading overlay when URL params change (filters applied or pagination)
+  useEffect(() => {
+    setIsLoading(true);
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 400); // Smooth transition timing
+    return () => clearTimeout(timeout);
+  }, [searchParams, currentPage]);
+
+  // Update articles when initialArticles change (server refetch)
+  useEffect(() => {
+    if (initialArticles.length > 0 || articles.length === 0) {
+      setArticles(initialArticles);
+    }
+  }, [initialArticles]);
 
   // Handle delete with confirmation
   const handleDeleteClick = (id: string) => {
@@ -152,7 +238,7 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
         await deleteArticle(deleteId);
         setArticles(articles.filter((a) => a.id !== deleteId));
       } catch (error) {
-        console.error('Failed to delete article:', error);
+        console.error("Failed to delete article:", error);
       } finally {
         setIsLoading(false);
         setDeleteId(null);
@@ -173,32 +259,29 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
   // Get status and color based on isPublished
   const getStatusInfo = (article: Article) => {
     if (article.isPublished) {
-      return { status: 'Published', statusColor: 'bg-green-500' };
+      return { status: "Published", statusColor: "bg-green-500" };
     }
-    return { status: 'Draft', statusColor: 'bg-stone-400' };
+    return { status: "Draft", statusColor: "bg-stone-400" };
   };
 
   // Format date
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Pending';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
+    if (!dateString) return "Pending";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
+  const cardDirection = (article: Article) =>
+    `/dashboard/blog/${formatTitle(article.title)}?articleId=${article.id}`;
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Loading state */}
-        {isLoading && (
-          <>
-            <ArticleSkeleton />
-            <ArticleSkeleton />
-            <ArticleSkeleton />
-          </>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative">
+        {/* Loading overlay when filtering or paginating */}
+        <AnimatePresence>{isLoading && <LoadingOverlay />}</AnimatePresence>
 
         {/* Empty state */}
         {!isLoading && articles.length === 0 && <EmptyState t={t} />}
@@ -211,21 +294,17 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
               <motion.article
                 key={article.id}
                 custom={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={articleVariants}
                 whileHover={{ y: -4 }}
                 className="bg-white rounded-2xl shadow-sm border border-stone-200/50 overflow-hidden group cursor-pointer flex flex-col h-full"
               >
-                <LocalLink href={`/dashboard/blog/${article.id}`}>
+                <LocalLink href={cardDirection(article)}>
                   <div className="h-48 overflow-hidden relative">
                     <motion.img
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.5 }}
                       className="w-full h-full object-cover"
                       alt={article.title}
-                      src={article.coverImageUrl || ''}
+                      src={article.coverImageUrl || ""}
                       onError={handleImageError}
                     />
                     <div className="absolute top-4 start-4">
@@ -237,33 +316,38 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                     </div>
                   </div>
                 </LocalLink>
-                <div className="p-5 flex flex-col flex-grow">
+                <div className="p-5 flex flex-col grow">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-[10px] font-bold text-orange-600 tracking-widest uppercase bg-orange-50 px-2 py-0.5 rounded">
-                      {article.category?.name || 'Uncategorized'}
+                      {article.category?.name || "Uncategorized"}
                     </p>
                     <p className="text-xs text-stone-500 font-medium">
                       {formatDate(article.publishedAt || article.createdAt)}
                     </p>
                   </div>
-                  <LocalLink href={`/dashboard/blog/${article.id}`}>
+                  <h2>
                     <h4 className="font-bold text-lg text-stone-900 leading-tight mb-2 group-hover:text-orange-600 transition-colors line-clamp-1">
                       {article.title}
                     </h4>
-                  </LocalLink>
+                  </h2>
                   <p className="text-xs text-stone-500 mb-4 line-clamp-2 leading-relaxed flex-grow">
-                    {article.excerpt || "No summary provided for this article..."}
+                    {article.excerpt ||
+                      "No summary provided for this article..."}
                   </p>
-                  
+
                   {/* Article Metadata Details */}
                   <div className="flex items-center gap-4 mb-4 pt-4 border-t border-stone-100">
                     <div className="flex items-center gap-1 text-stone-400">
                       <HiOutlineEye className="text-sm" />
-                      <span className="text-[10px] font-semibold">{article.viewsCount || 0} views</span>
+                      <span className="text-[10px] font-semibold">
+                        {article.viewsCount || 0} views
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 text-stone-400">
                       <HiOutlineClock className="text-sm" />
-                      <span className="text-[10px] font-semibold">{article.readTimeMinutes || 0} min read</span>
+                      <span className="text-[10px] font-semibold">
+                        {article.readTimeMinutes || 0} min read
+                      </span>
                     </div>
                   </div>
 
@@ -278,10 +362,8 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                         Admin
                       </span>
                     </div>
-                    <div
-                      className="flex items-center gap-1"
-                    >
-                      <LocalLink href={`/dashboard/blog/${article.id}`}>
+                    <div className="flex items-center gap-1">
+                      <Link href={cardDirection(article)}>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
@@ -290,7 +372,7 @@ export function ArticleGrid({ initialArticles, totalPages, currentPage }: Articl
                         >
                           <HiOutlinePencilAlt className="text-lg" />
                         </motion.button>
-                      </LocalLink>
+                      </Link>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}

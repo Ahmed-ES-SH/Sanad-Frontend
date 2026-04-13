@@ -10,7 +10,8 @@
       "Bash(taskkill *)",
       "Bash(mkdir *)",
       "Bash(npm *)",
-      "Bash(select-object *)"
+      "Bash(select-object *)",
+      "Bash(node *)"
     ]
   },
   "agents": {

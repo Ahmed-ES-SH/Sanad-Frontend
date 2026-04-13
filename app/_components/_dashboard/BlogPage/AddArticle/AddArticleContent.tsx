@@ -25,8 +25,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HelpIcon } from "@/app/_components/_dashboard/DashboardPage/Tooltip";
-import { createArticle } from "@/app/actions/blogActions";
+import { createArticle, getCategories } from "@/app/actions/blogActions";
 import { useRouter } from "next/navigation";
+import { Category } from "@/app/types/blog";
+import { useEffect } from "react";
 
 interface FormData {
   title: string;
@@ -51,10 +53,23 @@ export default function AddArticleContent() {
     categoryId: "",
     tags: [],
   });
+  const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
@@ -262,18 +277,11 @@ export default function AddArticleContent() {
                       className="w-full bg-white border border-stone-200 rounded-xl p-3 text-sm font-bold text-stone-700 focus:ring-2 focus:ring-primary/10 focus:border-primary/30 outline-none shadow-sm cursor-pointer"
                     >
                       <option value="">{"Select Category"}</option>
-                      <option value="tech">
-                        {t.categories?.tech || "Technology"}
-                      </option>
-                      <option value="architecture">
-                        {t.categories?.architecture || "Architecture"}
-                      </option>
-                      <option value="economics">
-                        {t.categories?.economics || "Economics"}
-                      </option>
-                      <option value="heritage">
-                        {t.categories?.heritage || "Heritage"}
-                      </option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="space-y-1.5">

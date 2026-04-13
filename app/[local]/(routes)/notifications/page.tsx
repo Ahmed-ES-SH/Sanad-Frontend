@@ -1,30 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiLoader, FiCheck, FiFilter } from 'react-icons/fi';
-import { useNotification } from '@/app/context/NotificationContext';
-import NotificationItem from '@/app/_components/_global/NotificationItem';
-import { NotificationType } from '@/app/types/notification';
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { FiLoader, FiCheck, FiFilter } from "react-icons/fi";
+import { useNotification } from "@/app/context/NotificationContext";
+import { NotificationType } from "@/app/types/notification";
+import NotificationItem from "@/app/_components/_global/NotificationItem";
 
 export default function NotificationsPage() {
-  const {
-    notifications,
-    unreadCount,
-    isLoading,
-    pagination,
-    fetchNotifications,
-    markAllAsRead,
-  } = useNotification();
+  const { notifications, unReadCount, markAllAsRead } = useNotification();
 
-  const [filter, setFilter] = useState<'all' | 'unread'>('all');
-  const [typeFilter, setTypeFilter] = useState<NotificationType | 'all'>('all');
+  const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [typeFilter, setTypeFilter] = useState<NotificationType | "all">("all");
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
-
-  // Fetch notifications on mount
-  useEffect(() => {
-    fetchNotifications(1, 20);
-  }, [fetchNotifications]);
 
   // Handle mark all as read
   const handleMarkAllAsRead = async () => {
@@ -32,51 +20,54 @@ export default function NotificationsPage() {
       setIsMarkingAllRead(true);
       await markAllAsRead();
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      console.error("Failed to mark all as read:", error);
     } finally {
       setIsMarkingAllRead(false);
     }
   };
 
   // Load more notifications
-  const loadMore = () => {
-    if (pagination.page < Math.ceil(pagination.total / pagination.limit)) {
-      fetchNotifications(pagination.page + 1, pagination.limit);
-    }
-  };
+  const loadMore = () => {};
 
   // Filter notifications
   const filteredNotifications = notifications.filter((n) => {
-    if (filter === 'unread' && n.isRead) return false;
-    if (typeFilter !== 'all' && n.type !== typeFilter) return false;
+    if (filter === "unread" && n.isRead) return false;
+    if (typeFilter !== "all" && n.type !== typeFilter) return false;
     return true;
   });
 
-  const notificationTypes: { value: NotificationType | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Types' },
-    { value: 'ORDER_UPDATED', label: 'Orders' },
-    { value: 'PAYMENT_SUCCESS', label: 'Payment Success' },
-    { value: 'PAYMENT_FAILED', label: 'Payment Failed' },
-    { value: 'SYSTEM', label: 'System' },
-    { value: 'BROADCAST', label: 'Broadcast' },
+  const notificationTypes: {
+    value: NotificationType | "all";
+    label: string;
+  }[] = [
+    { value: "all", label: "All Types" },
+    { value: "ORDER_UPDATED", label: "Orders" },
+    { value: "PAYMENT_SUCCESS", label: "Payment Success" },
+    { value: "PAYMENT_FAILED", label: "Payment Failed" },
+    { value: "SYSTEM", label: "System" },
+    { value: "BROADCAST", label: "Broadcast" },
   ];
 
+  const isLoading = false;
+
   return (
-    <div className="min-h-screen bg-surface-50 py-8">
+    <div className="min-h-screen bg-surface-50 mt-16 py-8">
       <div className="c-container max-4xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-surface-200 mb-6">
           <div className="p-6 border-b border-surface-200">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-surface-900">Notifications</h1>
+                <h1 className="text-2xl font-bold text-surface-900">
+                  Notifications
+                </h1>
                 <p className="text-sm text-surface-600 mt-1">
-                  {unreadCount > 0
-                    ? `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
-                    : 'All caught up!'}
+                  {unReadCount > 0
+                    ? `You have ${unReadCount} unread notification${unReadCount > 1 ? "s" : ""}`
+                    : "All caught up!"}
                 </p>
               </div>
-              {unreadCount > 0 && (
+              {unReadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
                   disabled={isMarkingAllRead}
@@ -100,21 +91,21 @@ export default function NotificationsPage() {
               <div className="flex items-center gap-2">
                 <FiFilter className="w-4 h-4 text-surface-500" />
                 <button
-                  onClick={() => setFilter('all')}
+                  onClick={() => setFilter("all")}
                   className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                    filter === 'all'
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-surface-600 hover:bg-surface-100 border border-surface-200'
+                    filter === "all"
+                      ? "bg-primary text-white"
+                      : "bg-white text-surface-600 hover:bg-surface-100 border border-surface-200"
                   }`}
                 >
                   All
                 </button>
                 <button
-                  onClick={() => setFilter('unread')}
+                  onClick={() => setFilter("unread")}
                   className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                    filter === 'unread'
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-surface-600 hover:bg-surface-100 border border-surface-200'
+                    filter === "unread"
+                      ? "bg-primary text-white"
+                      : "bg-white text-surface-600 hover:bg-surface-100 border border-surface-200"
                   }`}
                 >
                   Unread
@@ -124,7 +115,9 @@ export default function NotificationsPage() {
               {/* Type Filter */}
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as NotificationType | 'all')}
+                onChange={(e) =>
+                  setTypeFilter(e.target.value as NotificationType | "all")
+                }
                 className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white border border-surface-200 text-surface-600 hover:bg-surface-100 transition-colors cursor-pointer"
               >
                 {notificationTypes.map((type) => (
@@ -148,11 +141,13 @@ export default function NotificationsPage() {
               <div className="w-20 h-20 mb-4 rounded-full bg-surface-100 flex items-center justify-center">
                 <FiLoader className="w-10 h-10 text-surface-400" />
               </div>
-              <h3 className="text-lg font-bold text-surface-900">No notifications</h3>
+              <h3 className="text-lg font-bold text-surface-900">
+                No notifications
+              </h3>
               <p className="text-sm text-surface-500 mt-2 max-w-sm">
-                {filter === 'unread'
-                  ? 'Great! You have no unread notifications.'
-                  : 'You&apos;re all caught up! We&apos;ll notify you when something arrives.'}
+                {filter === "unread"
+                  ? "Great! You have no unread notifications."
+                  : "You&apos;re all caught up! We&apos;ll notify you when something arrives."}
               </p>
             </div>
           ) : (
@@ -169,8 +164,9 @@ export default function NotificationsPage() {
           )}
 
           {/* Load More */}
-          {filteredNotifications.length > 0 &&
-            pagination.page < Math.ceil(pagination.total / pagination.limit) && (
+          {/* {filteredNotifications.length > 0 &&
+            pagination.page <
+              Math.ceil(pagination.total / pagination.limit) && (
               <div className="p-4 border-t border-surface-200">
                 <button
                   onClick={loadMore}
@@ -179,16 +175,17 @@ export default function NotificationsPage() {
                   Load more notifications
                 </button>
               </div>
-            )}
+            )} */}
 
           {/* Total count */}
-          {filteredNotifications.length > 0 && (
+          {/* {filteredNotifications.length > 0 && (
             <div className="p-4 border-t border-surface-200 bg-surface-50">
               <p className="text-xs text-center text-surface-500">
-                Showing {filteredNotifications.length} of {pagination.total} notifications
+                Showing {filteredNotifications.length} of {pagination.total}{" "}
+                notifications
               </p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

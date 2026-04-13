@@ -1,25 +1,24 @@
-import { ArticleHeader } from "./_components/_articleDetails/ArticleHeader";
-import { ArticleStats } from "./_components/_articleDetails/ArticleStats";
-import { ArticleQuickActions } from "./_components/_articleDetails/ArticleQuickActions";
-import { ArticleContent } from "./_components/_articleDetails/ArticleContent";
-import { SEOMetadata } from "./_components/_articleDetails/SEOMetadata";
-import { CategoriesTags } from "./_components/_articleDetails/CategoriesTags";
-import { SocialSharing } from "./_components/_articleDetails/SocialSharing";
-import { getAdminArticles } from "@/app/actions/blogActions";
+import { ArticleHeader } from "../../../../_components/_dashboard/_articleDetails/ArticleHeader";
+import { ArticleStats } from "../../../../_components/_dashboard/_articleDetails/ArticleStats";
+import { ArticleQuickActions } from "../../../../_components/_dashboard/_articleDetails/ArticleQuickActions";
+import { ArticleContent } from "../../../../_components/_dashboard/_articleDetails/ArticleContent";
+import { SEOMetadata } from "../../../../_components/_dashboard/_articleDetails/SEOMetadata";
+import { CategoriesTags } from "../../../../_components/_dashboard/_articleDetails/CategoriesTags";
+import { SocialSharing } from "../../../../_components/_dashboard/_articleDetails/SocialSharing";
+import { getAdminArticleById } from "@/app/actions/blogActions";
 import { notFound } from "next/navigation";
 
 interface ArticleDetailsPageProps {
-  params: Promise<{ articleId: string }>;
+  searchParams: Promise<{ articleId: string }>;
 }
 
 export default async function ArticleDetailsPage({
-  params,
+  searchParams,
 }: ArticleDetailsPageProps) {
-  const { articleId } = await params;
+  const { articleId } = await searchParams;
 
   try {
-    const { data: articles } = await getAdminArticles({ limit: 100 });
-    const article = articles.find((a) => a.id === articleId);
+    const article = await getAdminArticleById(articleId);
 
     if (!article) {
       notFound();

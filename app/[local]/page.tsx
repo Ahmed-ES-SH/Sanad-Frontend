@@ -27,7 +27,7 @@ export default async function Home() {
       <AboutComponent />
       <ValueSection />
       <ServicesSection services={data.services} />
-      <PortfolioSection projects={data.projects} />
+      <PortfolioSection projects={data.projects} categories={data.categories} />
       <BlogSlider articles={data.articles} />
       <ContactUS />
     </>
