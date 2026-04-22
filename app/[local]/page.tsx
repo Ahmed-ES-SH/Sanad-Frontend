@@ -26,7 +26,7 @@ export default async function Home() {
       <HeroSection />
       <AboutComponent />
       <ValueSection />
-      <ServicesSection services={data.services} />
+      <ServicesSection services={data.services ?? []} />
       <PortfolioSection projects={data.projects} categories={data.categories} />
       <BlogSlider articles={data.articles} />
       <ContactUS />

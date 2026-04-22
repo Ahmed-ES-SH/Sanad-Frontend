@@ -1,10 +1,10 @@
 "use client";
-import { directionMap, servicesSection } from "@/app/constants/constants";
-import Img from "../../_global/Img";
+import { directionMap } from "@/app/constants/constants";
 import { useVariables } from "@/app/context/VariablesContext";
-import { formatTitle, getTranslations } from "@/app/helpers/helpers";
+import { getTranslations } from "@/app/helpers/helpers";
 import LocalLink from "../../_global/LocalLink";
 import { Service } from "@/app/types/service";
+import ServiceCard from "../_services/ServiceCard";
 
 export default function ServicesSection({ services }: { services: Service[] }) {
   const { local } = useVariables();
@@ -32,44 +32,13 @@ export default function ServicesSection({ services }: { services: Service[] }) {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {servicesSection.map((service, index) => (
-            <LocalLink
-              key={index}
-              href={`/services/${formatTitle(
-                service.title[local],
-              )}?serviceId=${service.id}`}
-              className="group bg-white p-10 rounded-4xl shadow-surface-sm hover:shadow-surface-lg transition-all duration-500 hover:-translate-y-2 border border-surface-200/50 relative overflow-hidden"
-            >
-              {/* Numeric Indicator */}
-              <span className="absolute top-8 right-10 text-5xl font-black text-surface-100 group-hover:text-primary/5 transition-colors duration-500 select-none">
-                0{index + 1}
-              </span>
-
-              <div className="mb-8 p-4 rounded-2xl bg-primary/5 w-fit group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
-                <Img
-                  src={service.src}
-                  className="w-10 h-10 object-contain group-hover:brightness-0 group-hover:invert transition-all duration-500"
-                />
-              </div>
-
-              <h3 className="text-[1.5rem] font-bold text-surface-900 group-hover:text-primary transition-colors duration-300 mb-4">
-                {service.title[local]}
-              </h3>
-
-              <p className="text-body text-surface-500 leading-relaxed group-hover:text-surface-600 transition-colors duration-300">
-                {service.smallDesc[local]}
-              </p>
-
-              <div className="mt-8 flex items-center gap-2 text-primary font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                {local === "ar" ? "اكتشف المزيد" : "Learn More"}
-                <span
-                  className={`transition-transform duration-300 ${local === "ar" ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"}`}
-                >
-                  {local === "ar" ? "←" : "→"}
-                </span>
-              </div>
-            </LocalLink>
-          ))}
+          {services &&
+            Array.isArray(services) &&
+            services
+              .slice(0, 6)
+              .map((service) => (
+                <ServiceCard key={service.id} service={service} local={local} />
+              ))}
         </div>
 
         <div className="mt-20 flex justify-center">

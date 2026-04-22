@@ -1,9 +1,8 @@
 "use client";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useVariables } from "@/app/context/VariablesContext";
 import { directionMap } from "@/app/constants/constants";
 import PortfolioHero from "@/app/_components/_website/_portfolio/PortfolioHero";
-import FilterBar from "@/app/_components/_website/_portfolio/FilterBar";
 import PortfolioGrid from "@/app/_components/_website/_portfolio/PortfolioGrid";
 import StatsBar from "@/app/_components/_website/_portfolio/StatsBar";
 import PortfolioCTA from "@/app/_components/_website/_portfolio/PortfolioCTA";
@@ -37,22 +36,11 @@ function mapProjectToLocal(project: Project) {
   };
 }
 
-const STATIC_CATEGORIES = [
-  { en: "All", ar: "الكل" },
-  { en: "Web Development", ar: "تطوير الويب" },
-  { en: "Mobile App", ar: "تطبيقات الجوال" },
-  { en: "Branding", ar: "العلامة التجارية" },
-  { en: "Digital Marketing", ar: "التسويق الرقمي" },
-  { en: "Data & Analytics", ar: "البيانات والتحليلات" },
-  { en: "AI & Automation", ar: "الذكاء الاصطناعي والأتمتة" },
-  { en: "Cloud & DevOps", ar: "السحابة و DevOps" },
-];
-
 export default function ClientPortfolio() {
   const { local } = useVariables();
-  const allLabel = STATIC_CATEGORIES[0][local];
-  const [selectedCategory, setSelectedCategory] = useState(allLabel);
-  const [projects, setProjects] = useState<ReturnType<typeof mapProjectToLocal>[]>([]);
+  const [projects, setProjects] = useState<
+    ReturnType<typeof mapProjectToLocal>[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +58,11 @@ export default function ClientPortfolio() {
         }
       } catch {
         if (!cancelled) {
-          setError(local === "ar" ? "فشل في تحميل المشاريع" : "Failed to load projects");
+          setError(
+            local === "ar"
+              ? "فشل في تحميل المشاريع"
+              : "Failed to load projects",
+          );
         }
       } finally {
         if (!cancelled) {
@@ -84,29 +76,6 @@ export default function ClientPortfolio() {
       cancelled = true;
     };
   }, [local]);
-
-  // Build dynamic categories from actual project data
-  const categories = useMemo(() => {
-    const uniqueCategories = new Set<string>();
-    projects.forEach((p) => uniqueCategories.add(p.category[local]));
-    return [
-      STATIC_CATEGORIES[0],
-      ...STATIC_CATEGORIES.slice(1).filter((cat) =>
-        uniqueCategories.has(cat[local])
-      ),
-    ];
-  }, [projects, local]);
-
-  const filteredProjects = useMemo(() => {
-    if (selectedCategory === allLabel) return projects;
-    return projects.filter(
-      (project) => project.category[local] === selectedCategory
-    );
-  }, [selectedCategory, allLabel, local, projects]);
-
-  const handleCategoryChange = useCallback((category: string) => {
-    setSelectedCategory(category);
-  }, []);
 
   if (loading) {
     return (
@@ -147,13 +116,7 @@ export default function ClientPortfolio() {
       style={{ backgroundColor: "var(--surface-50)" }}
     >
       <PortfolioHero local={local} projectCount={projects.length} />
-      <FilterBar
-        categories={categories}
-        selected={selectedCategory}
-        onSelect={handleCategoryChange}
-        local={local}
-      />
-      <PortfolioGrid projects={filteredProjects} local={local} />
+      <PortfolioGrid projects={projects} local={local} />
       <StatsBar local={local} />
       <PortfolioCTA local={local} />
     </div>

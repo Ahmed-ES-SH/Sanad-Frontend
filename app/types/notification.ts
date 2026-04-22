@@ -118,7 +118,7 @@ export interface NotificationQueryParams {
 // ============================================================================
 
 export interface SendNotificationFormData {
-  userId: string;
+  userId: number;
   type: NotificationType;
   title: string;
   message: string;

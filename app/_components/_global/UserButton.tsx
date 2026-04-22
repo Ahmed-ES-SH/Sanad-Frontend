@@ -62,11 +62,11 @@ export default function UserButton() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative shrink-0" ref={dropdownRef}>
       {/* User Avatar Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 p-1 px-2 rounded-full border border-surface-100 hover:border-surface-200 hover:bg-surface-50 transition-all duration-300 group"
+        className="flex items-center gap-2.5 p-1 px-2 rounded-full md:border border-surface-100 hover:border-surface-200 hover:bg-surface-50 transition-all duration-300 group"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -92,7 +92,7 @@ export default function UserButton() {
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3, ease: "circOut" }}
-          className="text-surface-400 group-hover:text-primary"
+          className="text-surface-400 md:block hidden group-hover:text-primary"
         >
           <FiChevronDown size={14} />
         </motion.div>

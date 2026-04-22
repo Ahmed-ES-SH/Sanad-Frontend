@@ -1,11 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { FaQuoteLeft, FaQuoteRight, FaStar } from "react-icons/fa";
+import { FaQuoteLeft, FaQuoteRight, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { directionMap } from "@/app/constants/constants";
 import { getTranslations } from "@/app/helpers/helpers";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTestimonials } from "./testimonials";
+import { useRef, useState } from "react";
 
 // Swiper components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -44,6 +45,10 @@ function StarRating({ rating }: { rating: number }) {
 export default function TestimonialsSection() {
   const { local } = useVariables();
   const { testimonialsSection } = getTranslations(local);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
 
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -91,7 +96,18 @@ export default function TestimonialsSection() {
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={30}
               slidesPerView={1}
-              navigation
+              onBeforeInit={(swiper) => {
+                // @ts-ignore - Swiper navigation params are sometimes tricky with TS in older versions
+                if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
+                  swiper.params.navigation.prevEl = prevRef.current;
+                  swiper.params.navigation.nextEl = nextRef.current;
+                }
+              }}
+              onInit={() => setIsLoaded(true)}
+              navigation={{
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+              }}
               pagination={{
                 clickable: true,
                 bulletClass: "swiper-pagination-bullet",
@@ -112,7 +128,7 @@ export default function TestimonialsSection() {
                   slidesPerView: 3,
                 },
               }}
-              className="testimonials-swiper"
+              className="testimonials-swiper mb-12"
             >
               {testimonials.map((testimonial) => (
                 <SwiperSlide key={testimonial.id} className="h-auto!">
@@ -163,6 +179,29 @@ export default function TestimonialsSection() {
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* Custom Navigation Buttons */}
+            <div className="flex justify-center items-center gap-6 mt-12 relative z-20">
+              <motion.button
+                ref={prevRef}
+                whileHover={{ scale: 1.1, backgroundColor: "var(--primary)", color: "#fff", borderColor: "var(--primary)" }}
+                whileTap={{ scale: 0.9 }}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center border-2 border-surface-200 text-surface-600 bg-white shadow-surface-md transition-all duration-300 cursor-pointer group disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Previous slide"
+              >
+                <FaChevronLeft className={`text-xl transition-transform duration-300 ${local === 'ar' ? 'rotate-180 group-hover:translate-x-1' : 'group-hover:-translate-x-1'}`} />
+              </motion.button>
+              
+              <motion.button
+                ref={nextRef}
+                whileHover={{ scale: 1.1, backgroundColor: "var(--primary)", color: "#fff", borderColor: "var(--primary)" }}
+                whileTap={{ scale: 0.9 }}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center border-2 border-surface-200 text-surface-600 bg-white shadow-surface-md transition-all duration-300 cursor-pointer group disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Next slide"
+              >
+                <FaChevronRight className={`text-xl transition-transform duration-300 ${local === 'ar' ? 'rotate-180 group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
+              </motion.button>
+            </div>
           </motion.div>
         </div>
       </section>

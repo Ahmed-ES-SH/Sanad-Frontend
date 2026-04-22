@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { formatPrice } from "@/app/helpers/formatPrice";
-import { MdInfoOutline, MdLocalOffer, MdCheckCircle, MdErrorOutline } from "react-icons/md";
+import {
+  MdInfoOutline,
+  MdLocalOffer,
+  MdCheckCircle,
+  MdErrorOutline,
+} from "react-icons/md";
 
 interface OrderSummaryProps {
   subtotal: number;
@@ -13,14 +18,21 @@ interface OrderSummaryProps {
   total: number;
 }
 
-export function OrderSummary({ subtotal, technicalFee, vat, total }: OrderSummaryProps) {
+export function OrderSummary({
+  subtotal,
+  technicalFee,
+  vat,
+  total,
+}: OrderSummaryProps) {
   const { local } = useVariables();
   const { cart: t } = getTranslations(local);
   const isRtl = local === "ar";
 
   const [promoCode, setPromoCode] = useState("");
   const [promoExpanded, setPromoExpanded] = useState(false);
-  const [promoStatus, setPromoStatus] = useState<"idle" | "applied" | "invalid">("idle");
+  const [promoStatus, setPromoStatus] = useState<
+    "idle" | "applied" | "invalid"
+  >("idle");
 
   const handleApplyPromo = () => {
     if (!promoCode.trim()) return;
@@ -36,7 +48,9 @@ export function OrderSummary({ subtotal, technicalFee, vat, total }: OrderSummar
     <div className="surface-card overflow-hidden border-t-[3px] border-t-primary shadow-sm">
       {/* Receipt header */}
       <div className="px-5 py-4 border-b border-(--outline-variant)/10">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-(--on-surface-variant)">{t.total}</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-(--on-surface-variant)">
+          {t.total}
+        </h2>
       </div>
 
       {/* Receipt line items */}
@@ -44,7 +58,9 @@ export function OrderSummary({ subtotal, technicalFee, vat, total }: OrderSummar
         <dl className="space-y-3.5">
           <div className="flex justify-between items-baseline text-sm">
             <dt className="text-(--on-surface-variant)">{t.subtotal}</dt>
-            <dd className="font-semibold text-(--on-surface) tabular-nums">{formatPrice(subtotal, local)}</dd>
+            <dd className="font-semibold text-(--on-surface) tabular-nums">
+              {formatPrice(subtotal, local)}
+            </dd>
           </div>
           <div className="flex justify-between items-baseline text-sm group/tooltip relative">
             <dt className="text-(--on-surface-variant) flex items-center gap-1.5">
@@ -54,11 +70,15 @@ export function OrderSummary({ subtotal, technicalFee, vat, total }: OrderSummar
                 title={t.technicalFeeTooltip}
               />
             </dt>
-            <dd className="font-semibold text-(--on-surface) tabular-nums">{formatPrice(technicalFee, local)}</dd>
+            <dd className="font-semibold text-(--on-surface) tabular-nums">
+              $0.00
+            </dd>
           </div>
           <div className="flex justify-between items-baseline text-sm pb-1">
             <dt className="text-(--on-surface-variant)">{t.vat}</dt>
-            <dd className="font-semibold text-(--on-surface) tabular-nums">{formatPrice(vat, local)}</dd>
+            <dd className="font-semibold text-(--on-surface) tabular-nums">
+              {formatPrice(vat, local)}
+            </dd>
           </div>
         </dl>
 
@@ -67,10 +87,16 @@ export function OrderSummary({ subtotal, technicalFee, vat, total }: OrderSummar
 
         {/* Total */}
         <div className="flex justify-between items-end">
-          <span className="text-base font-bold text-(--on-surface) pb-1">{t.total}</span>
+          <span className="text-base font-bold text-(--on-surface) pb-1">
+            {t.total}
+          </span>
           <div className="text-end">
-            <span className="text-2xl font-black text-primary tabular-nums block leading-none tracking-tight">{formatPrice(total, local)}</span>
-            <p className="text-[10px] text-(--on-surface-variant) font-bold mt-1 uppercase tracking-wide">{t.includesTaxes}</p>
+            <span className="text-2xl font-black text-primary tabular-nums block leading-none tracking-tight">
+              {formatPrice(total, local)}
+            </span>
+            <p className="text-[10px] text-(--on-surface-variant) font-bold mt-1 uppercase tracking-wide">
+              {t.includesTaxes}
+            </p>
           </div>
         </div>
       </div>

@@ -41,3 +41,4 @@ The Sanad brand is defined by three core pillars:
 - Implement RTL support by checking the `dir` or `local` parameter from the layout.
 - Prioritize client-side components for interactive/animated sections while maintaining server-side metadata for SEO.
 - Follow the established solid surface patterns (`.surface-card`) and shadow depths for cards and navigation elements.
+- **API Requests**: `api-client.ts` is STRICTLY for server-side code. For all client-side requests, use `lib/axios.ts` (`axiosInstance`).

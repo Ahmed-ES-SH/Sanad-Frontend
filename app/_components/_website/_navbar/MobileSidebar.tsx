@@ -8,8 +8,10 @@ import LocalLink from "../../_global/LocalLink";
 
 import { getTranslations } from "@/app/helpers/helpers";
 import Img from "../../_global/Img";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function MobileSidebar() {
+  const { isAuthenticated } = useAuth();
   const { width, local } = useVariables();
   const { hero, mobileSidebar } = getTranslations(local);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,7 +29,7 @@ export default function MobileSidebar() {
   return (
     <>
       <div
-        className={`cursor-pointer lg:hidden transition-opacity duration-300 ${
+        className={`cursor-pointer xl:hidden transition-opacity duration-300 ${
           isSidebarOpen ? "opacity-0" : "opacity-100"
         }`}
         onClick={toggleSidebar}
@@ -37,7 +39,7 @@ export default function MobileSidebar() {
 
       {/* Sidebar Overlay */}
       <div
-        className={`fixed inset-0 bg-surface-900/40 backdrop-blur-sm z-9998 transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 bg-surface-900/40 backdrop-blur-sm z-9998 transition-opacity duration-300 xl::hidden ${
           isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleSidebar}
@@ -45,7 +47,7 @@ export default function MobileSidebar() {
 
       {/* Sidebar Content */}
       <aside
-        className={`fixed h-screen top-0 ${local === "ar" ? "left-0" : "right-0"} w-80 bg-white z-9999 transform transition-transform duration-500 ease-out lg:hidden flex flex-col shadow-2xl ${
+        className={`fixed h-screen top-0 ${local === "ar" ? "left-0" : "right-0"} w-80 bg-white z-9999 transform transition-transform duration-500 ease-out xl:hidden flex flex-col shadow-2xl ${
           isSidebarOpen
             ? "translate-x-0"
             : local === "ar"
@@ -90,22 +92,24 @@ export default function MobileSidebar() {
           ))}
         </nav>
 
-        <div className="p-6 border-t border-surface-100 bg-surface-50/50">
-          <LocalLink
-            href="/signup"
-            className="surface-btn-primary w-full h-14 text-base"
-          >
-            <span
-              onClick={() => setIsSidebarOpen(false)}
-              className="w-full block"
+        {!isAuthenticated && (
+          <div className="p-6 border-t border-surface-100 bg-surface-50/50">
+            <LocalLink
+              href="/signup"
+              className="surface-btn-primary w-full h-14 text-base"
             >
-              {hero.join}
-            </span>
-          </LocalLink>
-          <p className="mt-4 text-center text-[10px] text-surface-400 font-medium uppercase tracking-widest">
-            {mobileSidebar.tagline}
-          </p>
-        </div>
+              <span
+                onClick={() => setIsSidebarOpen(false)}
+                className="w-full block"
+              >
+                {hero.join}
+              </span>
+            </LocalLink>
+            <p className="mt-4 text-center text-[10px] text-surface-400 font-medium uppercase tracking-widest">
+              {mobileSidebar.tagline}
+            </p>
+          </div>
+        )}
       </aside>
     </>
   );

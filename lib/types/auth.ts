@@ -49,3 +49,9 @@ export interface AuthResponse {
     userId?: number;
   };
 }
+
+export interface currentUserType {
+  success: boolean;
+  message: string;
+  user?: User;
+}

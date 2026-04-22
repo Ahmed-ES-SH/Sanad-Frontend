@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Inter, Plus_Jakarta_Sans, Oswald, IBM_Plex_Sans } from "next/font/google";
+import {
+  Inter,
+  Plus_Jakarta_Sans,
+  Oswald,
+  IBM_Plex_Sans,
+} from "next/font/google";
 import ClientLayout from "./_components/_global/ClientLayout";
 import { Toaster } from "sonner";
 import { directionMap } from "./constants/constants";
@@ -8,7 +13,7 @@ import { getSharedMetadata } from "./helpers/getSharedMetadata";
 import Navbar from "./_components/_global/Navbar";
 import Footer from "./_components/_global/Footer";
 import FixedButtons from "./_components/_global/FixedButtons";
-import { getCurrentUserAction } from "./actions/authActions";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -49,23 +54,12 @@ export async function generateMetadata({ params }: any) {
 export default async function RootLayout({ params, children }: any) {
   const { local } = await params;
 
-  const authResponse = await getCurrentUserAction();
-  const initialUser = authResponse.success && authResponse.data?.user
-    ? authResponse.data.user
-    : null;
-
   return (
     <html dir={directionMap[local ?? "en"]} lang={local ?? "en"}>
       <body
         className={`${inter.variable} ${plusJakartaSans.variable} ${oswald.variable} ${ibmPlexSans.variable} font-sans antialiased`}
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-1000 focus:px-6 focus:py-3 focus:bg-primary focus:text-white focus:rounded-xl focus:shadow-2xl"
-        >
-          Skip to main content
-        </a>
-        <ClientLayout initialUser={initialUser}>
+        <ClientLayout>
           <Navbar />
           <Toaster richColors position="top-center" />
           <div className="min-h-screen">

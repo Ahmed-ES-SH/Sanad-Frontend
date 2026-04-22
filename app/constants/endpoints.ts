@@ -110,7 +110,13 @@ export const ORDERS_ENDPOINTS = {
   PAY: (id: string) => `/api/orders/${id}/pay`,
 
   // Admin endpoints
-  ADMIN_LIST: (page?: number, limit?: number, status?: string, userId?: number, serviceId?: string) => {
+  ADMIN_LIST: (
+    page?: number,
+    limit?: number,
+    status?: string,
+    userId?: number,
+    serviceId?: string,
+  ) => {
     const params = new URLSearchParams();
     if (page) params.set("page", String(page));
     if (limit) params.set("limit", String(limit));
@@ -126,7 +132,7 @@ export const ORDERS_ENDPOINTS = {
 
 export const NOTIFICATIONS_ENDPOINTS = {
   // User endpoints
-  LIST: (page?: number, limit?: number) => {
+  LIST: (page: number = 1, limit: number = 10) => {
     const params = new URLSearchParams();
     if (page) params.set("page", String(page));
     if (limit) params.set("limit", String(limit));

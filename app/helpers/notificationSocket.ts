@@ -1,7 +1,8 @@
 import { io, Socket } from "socket.io-client";
 import { ServerToClientEvents, ClientToServerEvents } from "@/app/types/notification";
+import { SOCKET_CONFIG } from "@/app/constants/notifications";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://localhost:5000";
 
 /**
  * Creates a Socket.IO connection for real-time notifications.
@@ -13,11 +14,11 @@ export function createNotificationSocket(token: string): Socket<ServerToClientEv
     auth: {
       token,
     },
-    transports: ["websocket"],
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    reconnectionAttempts: 5,
+    transports: SOCKET_CONFIG.TRANSPORTS,
+    reconnection: SOCKET_CONFIG.RECONNECTION,
+    reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
+    reconnectionDelayMax: SOCKET_CONFIG.RECONNECTION_DELAY_MAX,
+    reconnectionAttempts: SOCKET_CONFIG.RECONNECTION_ATTEMPTS,
   });
 }
 

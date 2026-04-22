@@ -124,6 +124,16 @@
   --color-surface-800: var(--surface-800);
   --color-surface-900: var(--surface-900);
 
+  --color-surface-card-border: var(--surface-card-border);
+  --color-surface-card-bg: var(--surface-card-bg);
+  --color-surface-card-border-hover: var(--surface-card-border-hover);
+  --color-surface-card-bg-hover: var(--surface-card-bg-hover);
+
+  --color-surface-input-border: var(--surface-input-border);
+  --color-surface-input-bg: var(--surface-input-bg);
+  --color-surface-input-border-hover: var(--surface-input-border-hover);
+  --color-surface-input-bg-hover: var(--surface-input-bg-hover);
+
   /* Re-add legacy colors for theme compatibility */
   --color-primary-yellow: var(--primary-yellow);
   --color-primary-blue: var(--primary-blue);
@@ -533,5 +543,17 @@ a {
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
   }
 }

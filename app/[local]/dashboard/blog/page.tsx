@@ -3,13 +3,13 @@ import { QuickActions } from "@/app/_components/_dashboard/BlogPage/QuickActions
 import { ChartsPlaceholder } from "@/app/_components/_dashboard/BlogPage/ChartsPlaceholder";
 import { Filters } from "@/app/_components/_dashboard/BlogPage/Filters";
 import { ArticleGrid } from "@/app/_components/_dashboard/BlogPage/ArticleGrid";
-import BlogPagination from "@/app/_components/_dashboard/BlogPage/BlogPagination";
 import { KeyboardShortcutsHelp } from "@/app/_components/_dashboard/BlogPage/KeyboardShortcutsHelp";
 import {
   BlogQueryParams,
   getAdminArticles,
   getCategories,
 } from "@/app/actions/blogActions";
+import BlogPagination from "@/app/_components/_website/_blog/BlogPagination";
 
 interface BlogDashboardPageProps {
   searchParams: Promise<{
@@ -60,9 +60,8 @@ export default async function BlogDashboardPage({
       {/* Pagination */}
       <BlogPagination
         currentPage={currentPage}
-        lastPage={totalPages}
-        total={total}
-        perPage={perPage}
+        totalPages={totalPages}
+        isLoading={false}
       />
 
       {/* Keyboard Shortcuts Help (hidden by default, shown on ?) */}

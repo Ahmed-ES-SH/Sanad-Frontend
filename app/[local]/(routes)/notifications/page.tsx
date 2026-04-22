@@ -8,7 +8,7 @@ import { NotificationType } from "@/app/types/notification";
 import NotificationItem from "@/app/_components/_global/NotificationItem";
 
 export default function NotificationsPage() {
-  const { notifications, unReadCount, markAllAsRead } = useNotification();
+  const { notifications, unreadCount, markAllAsRead, isLoading, pagination, fetchNotifications } = useNotification();
 
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [typeFilter, setTypeFilter] = useState<NotificationType | "all">("all");
@@ -27,7 +27,11 @@ export default function NotificationsPage() {
   };
 
   // Load more notifications
-  const loadMore = () => {};
+  const loadMore = () => {
+    if (pagination.page * pagination.limit < pagination.total) {
+      fetchNotifications(pagination.page + 1, pagination.limit);
+    }
+  };
 
   // Filter notifications
   const filteredNotifications = notifications.filter((n) => {
@@ -48,8 +52,6 @@ export default function NotificationsPage() {
     { value: "BROADCAST", label: "Broadcast" },
   ];
 
-  const isLoading = false;
-
   return (
     <div className="min-h-screen bg-surface-50 mt-16 py-8">
       <div className="c-container max-4xl mx-auto px-4">
@@ -62,12 +64,12 @@ export default function NotificationsPage() {
                   Notifications
                 </h1>
                 <p className="text-sm text-surface-600 mt-1">
-                  {unReadCount > 0
-                    ? `You have ${unReadCount} unread notification${unReadCount > 1 ? "s" : ""}`
+                  {unreadCount > 0
+                    ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
                     : "All caught up!"}
                 </p>
               </div>
-              {unReadCount > 0 && (
+              {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
                   disabled={isMarkingAllRead}
@@ -164,28 +166,28 @@ export default function NotificationsPage() {
           )}
 
           {/* Load More */}
-          {/* {filteredNotifications.length > 0 &&
-            pagination.page <
-              Math.ceil(pagination.total / pagination.limit) && (
+          {filteredNotifications.length > 0 &&
+            pagination.page * pagination.limit < pagination.total && (
               <div className="p-4 border-t border-surface-200">
                 <button
                   onClick={loadMore}
-                  className="w-full py-3 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-surface-50 rounded-xl hover:bg-surface-100"
+                  disabled={isLoading}
+                  className="w-full py-3 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-surface-50 rounded-xl hover:bg-surface-100 disabled:opacity-50"
                 >
-                  Load more notifications
+                  {isLoading ? 'Loading...' : 'Load more notifications'}
                 </button>
               </div>
-            )} */}
+            )}
 
           {/* Total count */}
-          {/* {filteredNotifications.length > 0 && (
+          {filteredNotifications.length > 0 && (
             <div className="p-4 border-t border-surface-200 bg-surface-50">
               <p className="text-xs text-center text-surface-500">
                 Showing {filteredNotifications.length} of {pagination.total}{" "}
                 notifications
               </p>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

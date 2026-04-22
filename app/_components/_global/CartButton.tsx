@@ -78,9 +78,7 @@ export default function CartButton() {
               className={`p-4 border-b border-gray-100 flex justify-between items-center bg-white ${isRtl ? "flex-row-reverse" : ""}`}
             >
               <h3 className="font-semibold text-(--on-surface) text-base">
-                {isRtl
-                  ? `عربة التسوق (${totalItems})`
-                  : `Cart (${totalItems})`}
+                {isRtl ? `عربة التسوق (${totalItems})` : `Cart (${totalItems})`}
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
@@ -109,10 +107,10 @@ export default function CartButton() {
                       className={`p-4 hover:bg-gray-50 transition-colors flex gap-4 group ${isRtl ? "flex-row-reverse" : ""}`}
                     >
                       {/* Image / Icon */}
-                      {item.serviceIconUrl ? (
+                      {item.serviceImageUrl ? (
                         <div className="w-16 h-16 rounded-xl bg-gray-100 shrink-0 overflow-hidden border border-gray-200/50">
                           <Image
-                            src={item.serviceIconUrl}
+                            src={item.serviceImageUrl}
                             alt={item.serviceTitle || "Cart item"}
                             width={64}
                             height={64}

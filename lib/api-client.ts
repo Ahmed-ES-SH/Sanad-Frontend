@@ -1,12 +1,11 @@
 import { AUTH_ENDPOINTS } from "@/app/constants/endpoints";
-import { getAuthCookie } from "@/lib/session";
 import {
   LoginCredentials,
   RegisterCredentials,
   ResetPasswordCredentials,
 } from "@/lib/types/auth";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = "http://localhost:5000";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -33,23 +32,28 @@ async function apiClient<T>(
   endpoint: string,
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const { method = "GET", body, headers = {}, requiresAuth = false } = options;
-
+  const { method = "GET", body, headers = {} } = options;
   const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
     ...headers,
   };
 
-  if (requiresAuth) {
+  if (typeof window === "undefined") {
+    // We are on the server, dynamically import the cookie getter
+    const { getAuthCookie } = await import("@/lib/session");
     const token = await getAuthCookie();
     if (token) {
-      requestHeaders["Authorization"] = `Bearer ${token}`;
+      requestHeaders["Cookie"] = `sanad_auth_token=${token}`;
     }
+  } else {
+    // We are on the client, let the browser handle HttpOnly cookies automatically via credentials: "include"
+    // OR if we needed to access a non-HttpOnly token, we would read document.cookie here
   }
 
   const config: RequestInit = {
     method,
     headers: requestHeaders,
+    credentials: "include",
   };
 
   if (body) {

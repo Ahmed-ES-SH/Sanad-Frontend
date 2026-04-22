@@ -1,42 +1,21 @@
-'use client';
+"use client";
 
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  useCallback,
-  useRef,
-  ReactNode,
-} from 'react';
-import { useAuth } from './AuthContext';
-import { Socket } from 'socket.io-client';
-import {
-  Notification,
-  NotificationListResponse,
-  NotificationPreferences,
-  NotificationState,
-  NotificationAction,
-  ServerToClientEvents,
-  ClientToServerEvents,
-} from '@/app/types/notification';
-import {
-  fetchNotificationsApi,
-  fetchUnreadCountApi,
-  markAsReadApi,
-  markAllAsReadApi,
-  deleteNotificationApi,
-  fetchPreferencesApi,
-  updatePreferencesApi,
-} from '@/app/actions/notificationActions';
-import {
-  createNotificationSocket,
-  disconnectNotificationSocket,
-} from '@/app/helpers/notificationSocket';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode, useRef } from "react";
+import { NotificationState, NotificationAction, Notification } from "@/app/types/notification";
+import { useAuth } from "./AuthContext";
+import { createNotificationSocket, disconnectNotificationSocket } from "@/app/helpers/notificationSocket";
+import * as api from "@/app/actions/notificationApi";
+import { NOTIFICATION_CONSTANTS } from "@/app/constants/notifications";
+import { Socket } from "socket.io-client";
+import { toast } from "sonner";
 
-// ============================================================================
-// Initial State
-// ============================================================================
+interface NotificationContextType extends NotificationState {
+  fetchNotifications: (page?: number, limit?: number) => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
+  refreshUnreadCount: () => Promise<void>;
+}
 
 const initialState: NotificationState = {
   notifications: [],
@@ -46,354 +25,229 @@ const initialState: NotificationState = {
   isSocketConnected: false,
   error: null,
   pagination: {
-    page: 1,
-    limit: 20,
+    page: NOTIFICATION_CONSTANTS.DEFAULT_PAGE,
+    limit: NOTIFICATION_CONSTANTS.DEFAULT_LIMIT,
     total: 0,
   },
 };
 
-// ============================================================================
-// Reducer
-// ============================================================================
-
-function notificationReducer(
-  state: NotificationState,
-  action: NotificationAction
-): NotificationState {
+function notificationReducer(state: NotificationState, action: NotificationAction): NotificationState {
   switch (action.type) {
-    case 'SET_NOTIFICATIONS': {
-      const { data, total, page, limit } = action.payload;
+    case "SET_NOTIFICATIONS":
       return {
         ...state,
-        notifications: data,
-        pagination: { page, limit, total },
-        isLoading: false,
-        error: null,
+        notifications: action.payload.data,
+        pagination: {
+          page: action.payload.page,
+          limit: action.payload.limit,
+          total: action.payload.total,
+        },
       };
-    }
-
-    case 'ADD_NOTIFICATION': {
-      const newNotification = action.payload;
+    case "ADD_NOTIFICATION":
       return {
         ...state,
-        notifications: [newNotification, ...state.notifications],
+        notifications: [action.payload, ...state.notifications],
         unreadCount: state.unreadCount + 1,
       };
-    }
-
-    case 'MARK_AS_READ': {
-      const notificationId = action.payload;
-      const notification = state.notifications.find((n) => n.id === notificationId);
-      if (!notification || notification.isRead) return state;
-
+    case "MARK_AS_READ":
       return {
         ...state,
         notifications: state.notifications.map((n) =>
-          n.id === notificationId
-            ? { ...n, isRead: true, readAt: new Date().toISOString() }
-            : n
+          n.id === action.payload ? { ...n, isRead: true } : n
         ),
         unreadCount: Math.max(0, state.unreadCount - 1),
       };
-    }
-
-    case 'MARK_ALL_AS_READ': {
+    case "MARK_ALL_AS_READ":
       return {
         ...state,
-        notifications: state.notifications.map((n) => ({
-          ...n,
-          isRead: true,
-          readAt: new Date().toISOString(),
-        })),
+        notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
         unreadCount: 0,
       };
-    }
-
-    case 'DELETE_NOTIFICATION': {
-      const notificationId = action.payload;
-      const notification = state.notifications.find((n) => n.id === notificationId);
-      if (!notification) return state;
-
+    case "DELETE_NOTIFICATION": {
+      const isUnread = state.notifications.find((n) => n.id === action.payload)?.isRead === false;
       return {
         ...state,
-        notifications: state.notifications.filter((n) => n.id !== notificationId),
-        unreadCount: notification.isRead
-          ? state.unreadCount
-          : Math.max(0, state.unreadCount - 1),
+        notifications: state.notifications.filter((n) => n.id !== action.payload),
+        unreadCount: isUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount,
       };
     }
-
-    case 'SET_UNREAD_COUNT': {
+    case "SET_UNREAD_COUNT":
+      return { ...state, unreadCount: action.payload };
+    case "SET_PREFERENCES":
+      return { ...state, preferences: action.payload };
+    case "SET_LOADING":
+      return { ...state, isLoading: action.payload };
+    case "SET_SOCKET_STATUS":
+      return { ...state, isSocketConnected: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "UPDATE_PAGINATION":
       return {
         ...state,
-        unreadCount: action.payload,
+        pagination: { ...state.pagination, ...action.payload },
       };
-    }
-
-    case 'SET_PREFERENCES': {
-      return {
-        ...state,
-        preferences: action.payload,
-        error: null,
-      };
-    }
-
-    case 'SET_LOADING': {
-      return {
-        ...state,
-        isLoading: action.payload,
-      };
-    }
-
-    case 'SET_SOCKET_STATUS': {
-      return {
-        ...state,
-        isSocketConnected: action.payload,
-      };
-    }
-
-    case 'SET_ERROR': {
-      return {
-        ...state,
-        error: action.payload,
-        isLoading: false,
-      };
-    }
-
-    case 'UPDATE_PAGINATION': {
-      return {
-        ...state,
-        pagination: {
-          ...state.pagination,
-          ...action.payload,
-        },
-      };
-    }
-
     default:
       return state;
   }
 }
 
-// ============================================================================
-// Context Type
-// ============================================================================
-
-export interface NotificationContextType {
-  // State
-  notifications: Notification[];
-  unreadCount: number;
-  preferences: NotificationPreferences | null;
-  isLoading: boolean;
-  isSocketConnected: boolean;
-  error: string | null;
-  pagination: { page: number; limit: number; total: number };
-
-  // Data fetching
-  fetchNotifications: (page?: number, limit?: number) => Promise<void>;
-  fetchUnreadCount: () => Promise<void>;
-  fetchPreferences: () => Promise<void>;
-
-  // Actions
-  markAsRead: (notificationId: string) => Promise<void>;
-  markAllAsRead: () => Promise<void>;
-  deleteNotification: (notificationId: string) => Promise<void>;
-  updatePreferences: (prefs: Partial<NotificationPreferences>) => Promise<void>;
-
-  // Socket
-  socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
-}
-
-const NotificationContext = createContext<NotificationContextType | null>(null);
-
-// ============================================================================
-// Notification Provider Component
-// ============================================================================
+const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(notificationReducer, initialState);
-  const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const socketRef = useRef<Socket | null>(null);
 
-  // Initialize Socket.IO connection
-  useEffect(() => {
-    if (!isAuthenticated || !user) {
-      disconnectNotificationSocket(socketRef.current);
-      socketRef.current = null;
-      dispatch({ type: 'SET_SOCKET_STATUS', payload: false });
-      return;
-    }
-
-    // Get token from cookie (client-side)
-    const token = getAuthToken();
-    if (!token) return;
-
-    const socket = createNotificationSocket(token);
-    socketRef.current = socket;
-
-    // Connection events
-    socket.on('connect', () => {
-      dispatch({ type: 'SET_SOCKET_STATUS', payload: true });
-    });
-
-    socket.on('disconnect', () => {
-      dispatch({ type: 'SET_SOCKET_STATUS', payload: false });
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('Notification socket connection error:', error.message);
-      dispatch({ type: 'SET_SOCKET_STATUS', payload: false });
-    });
-
-    // Real-time notification events
-    socket.on('notification:new', (notification) => {
-      dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
-    });
-
-    socket.on('notification:read', ({ notificationId }) => {
-      dispatch({ type: 'MARK_AS_READ', payload: notificationId });
-    });
-
-    socket.on('notification:read_all', () => {
-      dispatch({ type: 'MARK_ALL_AS_READ' });
-    });
-
-    socket.on('notification:count', ({ unreadCount }) => {
-      dispatch({ type: 'SET_UNREAD_COUNT', payload: unreadCount });
-    });
-
-    socket.on('notification:delete', ({ notificationId }) => {
-      dispatch({ type: 'DELETE_NOTIFICATION', payload: notificationId });
-    });
-
-    // Cleanup on unmount or auth change
-    return () => {
-      socket.offAny();
-      disconnectNotificationSocket(socket);
-    };
-  }, [isAuthenticated, user]);
-
-  // Helper function to get auth token from cookie
-  function getAuthToken(): string | null {
-    if (typeof document === 'undefined') return null;
-    const match = document.cookie.match(/(^|;)sanad_auth_token=([^;]*)/);
+  // Helper to get token
+  const getClientToken = useCallback(() => {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(/(^|;)\s*sanad_auth_token=([^;]*)/);
     return match ? decodeURIComponent(match[2]) : null;
-  }
-
-  // Fetch notifications
-  const fetchNotifications = useCallback(
-    async (page = 1, limit = 20) => {
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        const response = await fetchNotificationsApi(page, limit);
-        dispatch({ type: 'SET_NOTIFICATIONS', payload: response as NotificationListResponse });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to fetch notifications';
-        dispatch({ type: 'SET_ERROR', payload: message });
-      }
-    },
-    []
-  );
-
-  // Fetch unread count
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const response = await fetchUnreadCountApi();
-      const { unreadCount } = response as { unreadCount: number };
-      dispatch({ type: 'SET_UNREAD_COUNT', payload: unreadCount });
-    } catch (error) {
-      console.error('Failed to fetch unread count:', error);
-    }
   }, []);
 
-  // Fetch preferences
-  const fetchPreferences = useCallback(async () => {
+  const fetchNotifications = useCallback(async (page?: number, limit?: number) => {
+    if (!isAuthenticated) return;
+    dispatch({ type: "SET_LOADING", payload: true });
+    dispatch({ type: "SET_ERROR", payload: null });
     try {
-      const response = await fetchPreferencesApi();
-      dispatch({ type: 'SET_PREFERENCES', payload: response as NotificationPreferences });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch preferences';
-      dispatch({ type: 'SET_ERROR', payload: message });
+      const p = page || state.pagination.page;
+      const l = limit || state.pagination.limit;
+      const res = await api.fetchNotifications(p, l);
+      dispatch({ type: "SET_NOTIFICATIONS", payload: res });
+    } catch (err: any) {
+      dispatch({ type: "SET_ERROR", payload: err.message || "Failed to fetch notifications" });
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, []);
+  }, [isAuthenticated, state.pagination.page, state.pagination.limit]);
 
-  // Mark as read
-  const markAsRead = useCallback(
-    async (notificationId: string) => {
-      // Optimistic update
-      dispatch({ type: 'MARK_AS_READ', payload: notificationId });
+  const refreshUnreadCount = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await api.fetchUnreadCount();
+      dispatch({ type: "SET_UNREAD_COUNT", payload: res.unreadCount });
+    } catch (err: any) {
+      console.error("Failed to fetch unread count:", err);
+    }
+  }, [isAuthenticated]);
 
-      try {
-        await markAsReadApi(notificationId);
-      } catch (error) {
-        console.error('Failed to mark notification as read:', error);
-        // Rollback could be implemented here
-      }
-    },
-    []
-  );
+  const markAsRead = useCallback(async (id: string) => {
+    // Optimistic UI update
+    dispatch({ type: "MARK_AS_READ", payload: id });
+    try {
+      await api.markAsRead(id);
+    } catch (err: any) {
+      // Revert optimism on error
+      fetchNotifications();
+      refreshUnreadCount();
+      dispatch({ type: "SET_ERROR", payload: err.message || "Failed to mark as read" });
+    }
+  }, [fetchNotifications, refreshUnreadCount]);
 
-  // Mark all as read
   const markAllAsRead = useCallback(async () => {
-    // Optimistic update
-    dispatch({ type: 'MARK_ALL_AS_READ' });
-
+    dispatch({ type: "MARK_ALL_AS_READ" });
     try {
-      await markAllAsReadApi();
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
-      // Rollback could be implemented here
+      await api.markAllAsRead();
+    } catch (err: any) {
+      fetchNotifications();
+      refreshUnreadCount();
+      dispatch({ type: "SET_ERROR", payload: err.message || "Failed to mark all as read" });
     }
-  }, []);
+  }, [fetchNotifications, refreshUnreadCount]);
 
-  // Delete notification
-  const deleteNotification = useCallback(
-    async (notificationId: string) => {
-      // Optimistic update
-      dispatch({ type: 'DELETE_NOTIFICATION', payload: notificationId });
+  const deleteNotification = useCallback(async (id: string) => {
+    dispatch({ type: "DELETE_NOTIFICATION", payload: id });
+    try {
+      await api.deleteNotification(id);
+    } catch (err: any) {
+      fetchNotifications();
+      refreshUnreadCount();
+      dispatch({ type: "SET_ERROR", payload: err.message || "Failed to delete notification" });
+    }
+  }, [fetchNotifications, refreshUnreadCount]);
 
-      try {
-        await deleteNotificationApi(notificationId);
-      } catch (error) {
-        console.error('Failed to delete notification:', error);
-        // Rollback could be implemented here
+  // WebSocket Integration
+  useEffect(() => {
+    if (isAuthenticated) {
+      const token = getClientToken();
+      if (!token) return;
+
+      const socket = createNotificationSocket(token);
+      socketRef.current = socket as unknown as Socket;
+
+      socket.on("connect", () => {
+        dispatch({ type: "SET_SOCKET_STATUS", payload: true });
+        // Fetch on reconnect or initial connect to ensure sync
+        fetchNotifications(1, state.pagination.limit);
+        refreshUnreadCount();
+      });
+
+      socket.on("disconnect", () => {
+        dispatch({ type: "SET_SOCKET_STATUS", payload: false });
+      });
+
+      socket.on("notification:new", (notification: Notification) => {
+        dispatch({ type: "ADD_NOTIFICATION", payload: notification });
+        toast.info(notification.title, {
+          description: notification.message,
+          action: {
+            label: "View",
+            onClick: () => {
+              if (typeof window !== "undefined") {
+                window.location.href = "/en/notifications";
+              }
+            }
+          }
+        });
+      });
+
+      socket.on("notification:read", (data: { notificationId: string }) => {
+        dispatch({ type: "MARK_AS_READ", payload: data.notificationId });
+      });
+
+      socket.on("notification:read_all", () => {
+        dispatch({ type: "MARK_ALL_AS_READ" });
+      });
+
+      socket.on("notification:count", (data: { unreadCount: number }) => {
+        dispatch({ type: "SET_UNREAD_COUNT", payload: data.unreadCount });
+      });
+
+      socket.on("notification:delete", (data: { notificationId: string }) => {
+        dispatch({ type: "DELETE_NOTIFICATION", payload: data.notificationId });
+      });
+
+      return () => {
+        socket.off("connect");
+        socket.off("disconnect");
+        socket.off("notification:new");
+        socket.off("notification:read");
+        socket.off("notification:read_all");
+        socket.off("notification:count");
+        socket.off("notification:delete");
+        disconnectNotificationSocket(socket);
+        socketRef.current = null;
+      };
+    } else {
+      // Disconnect if user logs out
+      if (socketRef.current) {
+        disconnectNotificationSocket(socketRef.current as any);
+        socketRef.current = null;
+        dispatch({ type: "SET_SOCKET_STATUS", payload: false });
+        dispatch({ type: "SET_UNREAD_COUNT", payload: 0 });
       }
-    },
-    []
-  );
-
-  // Update preferences
-  const updatePreferences = useCallback(
-    async (prefs: Partial<NotificationPreferences>) => {
-      try {
-        const response = await updatePreferencesApi(prefs);
-        dispatch({ type: 'SET_PREFERENCES', payload: response as NotificationPreferences });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to update preferences';
-        dispatch({ type: 'SET_ERROR', payload: message });
-      }
-    },
-    []
-  );
+    }
+  }, [isAuthenticated, getClientToken, fetchNotifications, refreshUnreadCount, state.pagination.limit]);
 
   return (
     <NotificationContext.Provider
       value={{
-        notifications: state.notifications,
-        unreadCount: state.unreadCount,
-        preferences: state.preferences,
-        isLoading: state.isLoading,
-        isSocketConnected: state.isSocketConnected,
-        error: state.error,
-        pagination: state.pagination,
+        ...state,
         fetchNotifications,
-        fetchUnreadCount,
-        fetchPreferences,
         markAsRead,
         markAllAsRead,
         deleteNotification,
-        updatePreferences,
-        socket: socketRef.current,
+        refreshUnreadCount,
       }}
     >
       {children}
@@ -401,16 +255,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ============================================================================
-// Notification Hook
-// ============================================================================
-
 export function useNotification() {
   const context = useContext(NotificationContext);
-
-  if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider');
+  if (context === undefined) {
+    throw new Error("useNotification must be used within a NotificationProvider");
   }
-
   return context;
 }

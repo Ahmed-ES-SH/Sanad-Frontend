@@ -1,19 +1,20 @@
+"use client";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 interface props {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
   isLoading: boolean;
+  onPageChange: (page: number) => void;
 }
 
 // Pagination Component
 export default function BlogPagination({
   currentPage,
   totalPages,
-  onPageChange,
   isLoading,
+  onPageChange,
 }: props) {
   const getPageNumbers = () => {
     const pages = [];
@@ -24,8 +25,12 @@ export default function BlogPagination({
         pages.push(i);
       }
     } else {
-      const start = Math.max(1, currentPage - 2);
-      const end = Math.min(totalPages, start + maxVisible - 1);
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(totalPages, start + maxVisible - 1);
+
+      if (end === totalPages) {
+        start = Math.max(1, totalPages - maxVisible + 1);
+      }
 
       for (let i = start; i <= end; i++) {
         pages.push(i);
@@ -45,32 +50,36 @@ export default function BlogPagination({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
-        className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="p-2.5 rounded-xl border border-surface-200 bg-surface-card text-surface-600 hover:text-primary hover:border-primary/30 hover:shadow-surface-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+        aria-label="Previous Page"
       >
-        <FiChevronLeft className="w-4 h-4" />
+        <FiChevronLeft className="w-5 h-5" />
       </button>
 
-      {getPageNumbers().map((page) => (
-        <button
-          key={page}
-          onClick={() => onPageChange(page)}
-          disabled={isLoading}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            page === currentPage
-              ? "bg-blue-600 text-white"
-              : "text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
+      <div className="flex items-center gap-1.5">
+        {getPageNumbers().map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            disabled={isLoading}
+            className={`min-w-[44px] h-[44px] flex items-center justify-center rounded-xl font-bold transition-all duration-300 ${
+              page === currentPage
+                ? "bg-primary text-white shadow-button ring-4 ring-primary/10"
+                : "bg-surface-card border border-surface-200 text-surface-600 hover:text-primary hover:border-primary/30 hover:shadow-surface-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+      </div>
 
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || isLoading}
-        className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="p-2.5 rounded-xl border border-surface-200 bg-surface-card text-surface-600 hover:text-primary hover:border-primary/30 hover:shadow-surface-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+        aria-label="Next Page"
       >
-        <FiChevronRight className="w-4 h-4" />
+        <FiChevronRight className="w-5 h-5" />
       </button>
     </motion.div>
   );

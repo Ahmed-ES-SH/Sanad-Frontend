@@ -14,6 +14,8 @@ interface CheckoutSectionProps {
   technicalFee: number;
   vat: number;
   total: number;
+  onCheckout: () => void;
+  isProcessing: boolean;
 }
 
 export function CheckoutSection({
@@ -21,6 +23,8 @@ export function CheckoutSection({
   technicalFee,
   vat,
   total,
+  onCheckout,
+  isProcessing,
 }: CheckoutSectionProps) {
   const { local } = useVariables();
   const { cart: t } = getTranslations(local);
@@ -39,9 +43,17 @@ export function CheckoutSection({
         <PaymentMethodSelector />
 
         {/* CTA button — solid gradient, no glow, no scale animation on layout */}
-        <button className="w-full py-3.5 bg-primary text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-primary/20">
-          <MdLockOutline className="text-xl" />
-          {t.secureCheckout}
+        <button
+          onClick={onCheckout}
+          disabled={isProcessing}
+          className="w-full py-3.5 max-lg:hidden bg-primary text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <MdLockOutline className="text-xl" />
+          )}
+          {isProcessing ? t.processing || "Processing..." : t.secureCheckout}
         </button>
 
         <div className="mt-5 flex flex-col items-center gap-4">
@@ -49,9 +61,7 @@ export function CheckoutSection({
             {t.secureCheckoutDesc}
           </p>
           {/* Real payment brand icons */}
-          <div
-            className="flex gap-4 items-center text-(--on-surface-variant)/50"
-          >
+          <div className="flex gap-4 items-center text-(--on-surface-variant)/50">
             <FaCcVisa className="h-5 w-auto" />
             <FaCcMastercard className="h-5 w-auto" />
             <FaBuildingColumns className="h-4 w-auto" />

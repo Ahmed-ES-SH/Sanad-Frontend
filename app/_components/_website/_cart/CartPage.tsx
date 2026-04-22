@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { formatPrice } from "@/app/helpers/formatPrice";
@@ -9,39 +8,12 @@ import { TrustIndicators } from "./TrustIndicators";
 import { CheckoutSection } from "./CheckoutSection";
 import { EmptyCartState } from "./EmptyCartState";
 import { MdClose } from "react-icons/md";
-
-interface CartItemType {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image?: string;
-  type: "project" | "service";
-  tags?: string[];
-  category?: string;
-}
-
-// Mock data - in production this would come from cart store/API
-const initialCartItems: CartItemType[] = [
-  {
-    id: "1",
-    title: "E-commerce Platform Refactor",
-    description: "Performance optimization for high-traffic retail.",
-    price: 4500,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBOi9__kW5JIEvYErPT4iAuLdSQrsMKhveIs4Gi2SpUiW8v4oB4RUgWAniJxrgzW-HJOq2AHJ0MyIbrj1dUDfBNLQAnKtj102JtJX6qR1UMc0AcO92jv6HGEUsVFGycKtxOT7jyYjBRUdx3uVRxURzNOF5t61RO08SMEepDgmPKYC0l89P7yWF8tcL1X5v8pHDLvGXMOc3BG6KGb1iLFRTZ6D8QZWaEqSZefm_lbP8UsytwlE_epMdrVuB9z64Y25hCk_h7275PoQxn",
-    type: "project",
-    tags: ["Next.js", "Tailwind", "GraphQL"],
-  },
-  {
-    id: "2",
-    title: "Security Penetration Test",
-    description: "Advanced vulnerability assessment and reporting.",
-    price: 1200,
-    type: "service",
-    category: "Cyber Security",
-  },
-];
+import { useCart, CartItem as CartItemType } from "@/app/context/CartContext";
+import { FiLoader } from "react-icons/fi";
+import { PaymentModal } from "../../_payment/PaymentModal";
+import { toast } from "sonner";
+import { paymentsApi } from "@/lib/api/payments/client";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface UndoToast {
   item: CartItemType;
@@ -50,76 +22,142 @@ interface UndoToast {
 
 export function CartPage() {
   const { local } = useVariables();
+  const { isAuthenticated } = useAuth();
   const { cart: t } = getTranslations(local);
   const isRtl = local === "ar";
 
-  const [cartItems, setCartItems] = useState<CartItemType[]>(initialCartItems);
+  const { items, isLoading, removeItem } = useCart();
   const [undoToast, setUndoToast] = useState<UndoToast | null>(null);
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const technicalFee = subtotal * 0.025; // 2.5%
+  // Checkout states
+  const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState("");
+
+  // Calculate totals (prefer context values if available)
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
+    [items],
+  );
+  const technicalFee = 0;
   const vat = subtotal * 0.05; // 5%
-  const total = subtotal + technicalFee + vat;
+  const total = subtotal + vat;
 
-  // Handle remove with undo functionality
-  const handleRemove = useCallback((item: CartItemType) => {
-    setIsRemoving(item.id);
+  // Handle remove with visual feedback
+  const handleRemove = useCallback(
+    async (item: CartItemType) => {
+      setIsRemoving(item.id);
 
-    // Simulate brief delay for visual feedback
-    setTimeout(() => {
-      setCartItems((prev) => prev.filter((i) => i.id !== item.id));
+      try {
+        // Show undo toast (optimistic)
+        setUndoToast({
+          item,
+          action: "remove",
+        });
 
-      // Show undo toast
+        await removeItem(item.id);
+
+        setIsRemoving(null);
+
+        // Auto-dismiss undo toast after 5 seconds
+        setTimeout(() => {
+          setUndoToast((current) =>
+            current?.item.id === item.id ? null : current,
+          );
+        }, 5000);
+      } catch (error) {
+        console.error("Failed to remove item:", error);
+        setIsRemoving(null);
+        setUndoToast(null);
+      }
+    },
+    [removeItem],
+  );
+
+  // Handle undo action (re-add item)
+  const { addItem } = useCart();
+  const handleUndo = useCallback(async () => {
+    if (undoToast) {
+      const { item } = undoToast;
+      try {
+        await addItem(item.serviceId, item.quantity);
+        setUndoToast(null);
+      } catch (error) {
+        console.error("Failed to undo remove:", error);
+      }
+    }
+  }, [undoToast, addItem]);
+
+  // Handle save for later (simulate for now as context doesn't have it)
+  const handleSaveForLater = useCallback(
+    async (item: CartItemType) => {
+      await handleRemove(item);
       setUndoToast({
         item,
-        action: "remove",
+        action: "save",
       });
-
-      // Auto-dismiss undo toast after 5 seconds
-      setTimeout(() => {
-        setUndoToast((current) =>
-          current?.item.id === item.id ? null : current,
-        );
-      }, 5000);
-    }, 300);
-  }, []);
-
-  // Handle undo action
-  const handleUndo = useCallback(() => {
-    if (undoToast) {
-      setCartItems((prev) =>
-        [...prev, undoToast.item].sort((a, b) => a.id.localeCompare(b.id)),
-      );
-      setUndoToast(null);
-    }
-  }, [undoToast]);
-
-  // Handle save for later
-  const handleSaveForLater = useCallback((item: CartItemType) => {
-    setCartItems((prev) => prev.filter((i) => i.id !== item.id));
-
-    // Show toast
-    setUndoToast({
-      item,
-      action: "save",
-    });
-
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      setUndoToast((current) =>
-        current?.item.id === item.id ? null : current,
-      );
-    }, 5000);
-  }, []);
+    },
+    [handleRemove],
+  );
 
   const handleDismissToast = useCallback(() => {
     setUndoToast(null);
   }, []);
 
+  const handleCheckout = useCallback(async () => {
+    if (items.length === 0) return;
+
+    if (!isAuthenticated) {
+      toast.error(
+        local === "en"
+          ? "You need to login to checkout. Please login or register."
+          : "يجب عليك تسجيل الدخول لإتمام عملية الشراء. يرجى تسجيل الدخول أو إنشاء حساب.",
+      );
+      return;
+    }
+
+    setIsProcessingCheckout(true);
+    try {
+      // Build a description from items
+      const description = `Sanad Services: ${items.map((i) => i.title).join(", ")}`;
+
+      const response = await paymentsApi.createPaymentIntent({
+        amount: total,
+        currency: "usd",
+        description: description.substring(0, 255), // Stripe limit
+      });
+
+      const { clientSecret, paymentId } = response.data;
+      setClientSecret(clientSecret);
+      setOrderId(paymentId);
+      setIsPaymentModalOpen(true);
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error(
+        local === "en"
+          ? "Failed to initialize checkout. Please try again."
+          : "فشل في بدء عملية الدفع. يرجى المحاولة مرة أخرى.",
+      );
+    } finally {
+      setIsProcessingCheckout(false);
+    }
+  }, [items, total, local]);
+
   // Check if cart is empty
-  const isEmpty = cartItems.length === 0;
+  const isEmpty = items.length === 0;
+
+  if (isLoading && items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <FiLoader className="text-4xl text-primary animate-spin" />
+        <p className="text-surface-500">
+          {local === "en" ? "Loading your brief..." : "جاري تحميل موجزك..."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -133,12 +171,11 @@ export function CartPage() {
           <div className="lg:col-span-8 lg:max-h-[80dvh] lg:overflow-y-auto space-y-8 scrollbar-hide">
             {/* Brief Items */}
             <div className="space-y-4 md:space-y-6">
-              {cartItems.map((item) => (
+              {items.map((item) => (
                 <CartItem
                   key={item.id}
-                  item={item}
-                  onRemove={handleRemove}
-                  onSaveForLater={handleSaveForLater}
+                  item={item as any}
+                  onRemove={() => handleRemove(item)}
                   isRemoving={isRemoving === item.id}
                 />
               ))}
@@ -156,6 +193,8 @@ export function CartPage() {
               technicalFee={technicalFee}
               vat={vat}
               total={total}
+              onCheckout={handleCheckout}
+              isProcessing={isProcessingCheckout}
             />
           </div>
         </div>
@@ -173,8 +212,16 @@ export function CartPage() {
                 {formatPrice(total, local)}
               </p>
             </div>
-            <button className="flex-1 max-w-[200px] py-3 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all">
-              {t.secureCheckout}
+            <button
+              onClick={handleCheckout}
+              disabled={isProcessingCheckout}
+              className="flex-1 max-w-[200px] py-3 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all disabled:opacity-70 flex items-center justify-center"
+            >
+              {isProcessingCheckout ? (
+                <FiLoader className="animate-spin text-xl" />
+              ) : (
+                t.secureCheckout
+              )}
             </button>
           </div>
         </div>
@@ -209,6 +256,26 @@ export function CartPage() {
           </button>
         </div>
       )}
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        clientSecret={clientSecret}
+        amount={total}
+        orderId={orderId}
+        onSuccess={() => {
+          toast.success(
+            local === "en" ? "Payment successful!" : "تم الدفع بنجاح!",
+          );
+          setIsPaymentModalOpen(false);
+          // Optional: clear cart here if needed
+        }}
+        onError={(error) => {
+          toast.error(
+            error || (local === "en" ? "Payment failed" : "فشل الدفع"),
+          );
+        }}
+      />
     </>
   );
 }

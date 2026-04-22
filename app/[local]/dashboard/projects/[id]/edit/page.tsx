@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -8,29 +8,19 @@ import {
   updateProject,
 } from "@/app/actions/portfolioActions";
 import type { Project } from "@/app/types/project";
-import {
-  FiInfo,
-  FiImage,
-  FiCode,
-  FiUploadCloud,
-  FiPlus,
-  FiX,
-  FiLink,
-  FiTerminal,
-  FiChevronRight,
-  FiChevronDown,
-  FiChevronUp,
-  FiCheckCircle,
-  FiAlertCircle,
-  FiLoader,
-} from "react-icons/fi";
+import { FiChevronRight, FiAlertCircle, FiLoader } from "react-icons/fi";
+import BasicInfoSection from "@/app/_components/_dashboard/ProjectsPage/_editProject/BasicInfoSection";
+import TechnicalDetailsSection from "@/app/_components/_dashboard/ProjectsPage/_editProject/TechnicalDetailsSection";
+import MediaSection from "@/app/_components/_dashboard/ProjectsPage/_editProject/MediaSection";
 
-interface FieldErrors {
+export interface FieldErrors {
   title?: string;
   shortDesc?: string;
   longDesc?: string;
   liveUrl?: string;
   repoUrl?: string;
+  coverImage?: string;
+  newImage?: string;
 }
 
 export default function EditProjectPage() {
@@ -49,6 +39,12 @@ export default function EditProjectPage() {
   const [liveUrl, setLiveUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [newTech, setNewTech] = useState("");
+
+  // Media states
+  const [coverImage, setCoverImage] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [newImage, setNewImage] = useState("");
+
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<FieldErrors>({});
   const [openSections, setOpenSections] = useState<Set<string>>(
@@ -74,6 +70,8 @@ export default function EditProjectPage() {
         setTechStack(found.techStack || []);
         setLiveUrl(found.liveUrl || "");
         setRepoUrl(found.repoUrl || "");
+        setCoverImage(found.coverImageUrl || "");
+        setImages(found.images || []);
       } catch {
         toast.error("Failed to load project");
         router.push("/en/dashboard/projects");
@@ -99,6 +97,32 @@ export default function EditProjectPage() {
     }
   };
 
+  const removeImage = (url: string) => {
+    setImages(images.filter((img) => img !== url));
+  };
+
+  const addImage = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && newImage.trim()) {
+      e.preventDefault();
+      const err = validateField("newImage", newImage.trim());
+      if (err) {
+        setErrors((prev) => ({ ...prev, newImage: err }));
+        setTouched((prev) => new Set(prev).add("newImage"));
+        return;
+      }
+      if (!images.includes(newImage.trim())) {
+        setImages([...images, newImage.trim()]);
+      }
+      setNewImage("");
+      setErrors((prev) => ({ ...prev, newImage: undefined }));
+      setTouched((prev) => {
+        const next = new Set(prev);
+        next.delete("newImage");
+        return next;
+      });
+    }
+  };
+
   const markTouched = (field: string) => {
     setTouched((prev) => new Set(prev).add(field));
   };
@@ -120,12 +144,11 @@ export default function EditProjectPage() {
           ? "Description is too short — add at least 20 characters"
           : undefined;
       case "liveUrl":
+      case "repoUrl":
+      case "coverImage":
+      case "newImage":
         return value.length > 0 && !/^https?:\/\/.+/.test(value)
           ? "Please enter a valid URL starting with http:// or https://"
-          : undefined;
-      case "repoUrl":
-        return value.length > 0 && !/^https?:\/\/.+/.test(value)
-          ? "Please enter a valid URL"
           : undefined;
       default:
         return undefined;
@@ -150,6 +173,8 @@ export default function EditProjectPage() {
     if (liveErr) allErrors.liveUrl = liveErr;
     const repoErr = validateField("repoUrl", repoUrl);
     if (repoErr) allErrors.repoUrl = repoErr;
+    const coverErr = validateField("coverImage", coverImage);
+    if (coverErr) allErrors.coverImage = coverErr;
     return allErrors;
   };
 
@@ -165,7 +190,14 @@ export default function EditProjectPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(
-      new Set(["title", "shortDesc", "longDesc", "liveUrl", "repoUrl"]),
+      new Set([
+        "title",
+        "shortDesc",
+        "longDesc",
+        "liveUrl",
+        "repoUrl",
+        "coverImage",
+      ]),
     );
     const allErrors = validateAll();
     setErrors(allErrors);
@@ -182,6 +214,9 @@ export default function EditProjectPage() {
       if (allErrors.liveUrl || allErrors.repoUrl) {
         setOpenSections((prev) => new Set(prev).add("technical"));
       }
+      if (allErrors.coverImage) {
+        setOpenSections((prev) => new Set(prev).add("media"));
+      }
       return;
     }
 
@@ -196,6 +231,8 @@ export default function EditProjectPage() {
         techStack: techStack.length > 0 ? techStack : undefined,
         liveUrl: liveUrl.trim() || undefined,
         repoUrl: repoUrl.trim() || undefined,
+        coverImageUrl: coverImage.trim() || undefined,
+        images: images.filter(Boolean),
       });
 
       if (result.success) {
@@ -236,7 +273,7 @@ export default function EditProjectPage() {
   return (
     <>
       <main className="flex-1 overflow-y-auto">
-        <div className="ml-64 rtl:mr-64 rtl:ml-0 pt-24 pb-12 px-8">
+        <div className="rtl:ml-0 pt-12 pb-12 px-8">
           {/* Header */}
           <div className="flex justify-between items-end mb-8">
             <div>
@@ -287,248 +324,56 @@ export default function EditProjectPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-            {/* Basic Info */}
-            <section className="bg-white rounded-xl border border-stone-200/50 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggleSection("basic")}
-                className="w-full flex items-center justify-between p-8 text-left hover:bg-stone-50/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
-                    <FiInfo size={20} />
-                  </div>
-                  <h3 className="text-xl font-bold">Basic Information</h3>
-                </div>
-                {openSections.has("basic") ? (
-                  <FiChevronUp size={20} className="text-stone-400 shrink-0" />
-                ) : (
-                  <FiChevronDown
-                    size={20}
-                    className="text-stone-400 shrink-0"
-                  />
-                )}
-              </button>
-              {openSections.has("basic") && (
-                <div className="px-8 pb-8 space-y-6">
-                  {/* Title */}
-                  <div className="grid gap-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500">
-                      Project Title <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => {
-                        setTitle(e.target.value);
-                        handleFieldChange("title", e.target.value);
-                      }}
-                      onBlur={() => markTouched("title")}
-                      className={`w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 ${
-                        touched.has("title") && errors.title
-                          ? "ring-2 ring-red-400/40"
-                          : ""
-                      }`}
-                      placeholder="e.g. Modern E-commerce Platform"
-                    />
-                    {touched.has("title") && errors.title && (
-                      <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                        <FiAlertCircle size={12} /> {errors.title}
-                      </p>
-                    )}
-                  </div>
+            <BasicInfoSection
+              title={title}
+              setTitle={setTitle}
+              shortDesc={shortDesc}
+              setShortDesc={setShortDesc}
+              longDesc={longDesc}
+              setLongDesc={setLongDesc}
+              touched={touched}
+              errors={errors}
+              handleFieldChange={handleFieldChange}
+              markTouched={markTouched}
+              isOpen={openSections.has("basic")}
+              toggleSection={() => toggleSection("basic")}
+            />
 
-                  {/* Short Description */}
-                  <div className="grid gap-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500">
-                      Short Description <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={shortDesc}
-                      onChange={(e) => {
-                        setShortDesc(e.target.value);
-                        handleFieldChange("shortDesc", e.target.value);
-                      }}
-                      onBlur={() => markTouched("shortDesc")}
-                      maxLength={150}
-                      className={`w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 ${
-                        touched.has("shortDesc") && errors.shortDesc
-                          ? "ring-2 ring-red-400/40"
-                          : ""
-                      }`}
-                      placeholder="Brief summary for list views (max 150 characters)"
-                    />
-                    <div className="flex justify-between items-center">
-                      {touched.has("shortDesc") && errors.shortDesc ? (
-                        <p className="text-xs text-red-500 flex items-center gap-1">
-                          <FiAlertCircle size={12} /> {errors.shortDesc}
-                        </p>
-                      ) : (
-                        <span />
-                      )}
-                      <span
-                        className={`text-[11px] ${shortDesc.length > 140 ? "text-amber-500 font-bold" : "text-stone-400"}`}
-                      >
-                        {shortDesc.length}/150
-                      </span>
-                    </div>
-                  </div>
+            <MediaSection
+              coverImage={coverImage}
+              setCoverImage={setCoverImage}
+              images={images}
+              setImages={setImages}
+              newImage={newImage}
+              setNewImage={setNewImage}
+              addImage={addImage}
+              removeImage={removeImage}
+              touched={touched}
+              errors={errors}
+              handleFieldChange={handleFieldChange}
+              markTouched={markTouched}
+              isOpen={openSections.has("media")}
+              toggleSection={() => toggleSection("media")}
+            />
 
-                  {/* Long Description */}
-                  <div className="grid gap-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-stone-400">
-                      Long Description
-                    </label>
-                    <textarea
-                      value={longDesc}
-                      onChange={(e) => {
-                        setLongDesc(e.target.value);
-                        handleFieldChange("longDesc", e.target.value);
-                      }}
-                      onBlur={() => markTouched("longDesc")}
-                      className="w-full bg-stone-50 border-none rounded-lg p-4 focus:ring-2 focus:ring-orange-500/50 text-stone-800 placeholder:text-stone-400 min-h-[200px] resize-none"
-                      placeholder="Describe the project scope, challenges, and solutions in detail..."
-                    />
-                    {touched.has("longDesc") && errors.longDesc && (
-                      <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                        <FiAlertCircle size={12} /> {errors.longDesc}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </section>
-
-            {/* Technical Details */}
-            <section className="bg-white rounded-xl border border-stone-200/50 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggleSection("technical")}
-                className="w-full flex items-center justify-between p-8 text-left hover:bg-stone-50/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
-                    <FiCode size={20} />
-                  </div>
-                  <h3 className="text-xl font-bold">Technical Details</h3>
-                </div>
-                {openSections.has("technical") ? (
-                  <FiChevronUp size={20} className="text-stone-400 shrink-0" />
-                ) : (
-                  <FiChevronDown
-                    size={20}
-                    className="text-stone-400 shrink-0"
-                  />
-                )}
-              </button>
-              {openSections.has("technical") && (
-                <div className="px-8 pb-8 space-y-6">
-                  {/* Tech Stack */}
-                  <div className="grid gap-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500">
-                      Tech Stack
-                    </label>
-                    <div className="w-full bg-stone-50 border-none rounded-lg p-4 flex flex-wrap gap-2 focus-within:ring-2 focus-within:ring-orange-500/50">
-                      {techStack.length === 0 && (
-                        <span className="text-stone-400 text-sm">
-                          No technologies added yet. Type one below and press
-                          Enter.
-                        </span>
-                      )}
-                      {techStack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="bg-orange-100 text-orange-800 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase tracking-tighter"
-                        >
-                          {tech}
-                          <button
-                            type="button"
-                            onClick={() => removeTech(tech)}
-                            className="hover:text-red-600 transition-colors"
-                          >
-                            <FiX size={12} />
-                          </button>
-                        </span>
-                      ))}
-                      <input
-                        type="text"
-                        value={newTech}
-                        onChange={(e) => setNewTech(e.target.value)}
-                        onKeyDown={addTech}
-                        className="bg-transparent border-none focus:ring-0 text-sm p-0 flex-1 min-w-[120px] placeholder:text-stone-400"
-                        placeholder="Add technology..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* URLs */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="grid gap-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-stone-400">
-                        Live URL
-                      </label>
-                      <div
-                        className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
-                          touched.has("liveUrl") && errors.liveUrl
-                            ? "ring-2 ring-red-400/40"
-                            : ""
-                        }`}
-                      >
-                        <FiLink className="ml-4 text-stone-400" size={16} />
-                        <input
-                          type="url"
-                          value={liveUrl}
-                          onChange={(e) => {
-                            setLiveUrl(e.target.value);
-                            handleFieldChange("liveUrl", e.target.value);
-                          }}
-                          onBlur={() => markTouched("liveUrl")}
-                          className="w-full bg-transparent border-none p-4 text-sm focus:ring-0 placeholder:text-stone-400"
-                          placeholder="https://project.com"
-                        />
-                      </div>
-                      {touched.has("liveUrl") && errors.liveUrl && (
-                        <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                          <FiAlertCircle size={12} /> {errors.liveUrl}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="grid gap-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-stone-400">
-                        Repository URL
-                      </label>
-                      <div
-                        className={`flex items-center bg-stone-50 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/50 ${
-                          touched.has("repoUrl") && errors.repoUrl
-                            ? "ring-2 ring-red-400/40"
-                            : ""
-                        }`}
-                      >
-                        <FiTerminal className="ml-4 text-stone-400" size={16} />
-                        <input
-                          type="url"
-                          value={repoUrl}
-                          onChange={(e) => {
-                            setRepoUrl(e.target.value);
-                            handleFieldChange("repoUrl", e.target.value);
-                          }}
-                          onBlur={() => markTouched("repoUrl")}
-                          className="w-full bg-transparent border-none p-4 text-sm focus:ring-0 placeholder:text-stone-400"
-                          placeholder="https://github.com/..."
-                        />
-                      </div>
-                      {touched.has("repoUrl") && errors.repoUrl && (
-                        <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                          <FiAlertCircle size={12} /> {errors.repoUrl}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </section>
+            <TechnicalDetailsSection
+              techStack={techStack}
+              setTechStack={setTechStack}
+              newTech={newTech}
+              setNewTech={setNewTech}
+              addTech={addTech}
+              removeTech={removeTech}
+              liveUrl={liveUrl}
+              setLiveUrl={setLiveUrl}
+              repoUrl={repoUrl}
+              setRepoUrl={setRepoUrl}
+              touched={touched}
+              errors={errors}
+              handleFieldChange={handleFieldChange}
+              markTouched={markTouched}
+              isOpen={openSections.has("technical")}
+              toggleSection={() => toggleSection("technical")}
+            />
           </form>
         </div>
       </main>

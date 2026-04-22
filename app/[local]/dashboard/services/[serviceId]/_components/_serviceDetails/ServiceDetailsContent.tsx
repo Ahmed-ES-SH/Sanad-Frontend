@@ -9,7 +9,6 @@ import CustomerAdoptionChart from "./CustomerAdoptionChart";
 import ServiceConfiguration from "./ServiceConfiguration";
 import TopCustomers from "./TopCustomers";
 import RelatedServices from "./RelatedServices";
-import EditServiceModal from "./EditServiceModal";
 import { Service } from "@/app/types/service";
 import { Category } from "@/app/types/blog";
 
@@ -28,9 +27,9 @@ export default function ServiceDetailsContent({
     <>
       <main className="overflow-y-auto p-6 md:p-8 space-y-8 flex-1 w-full">
         {/* Service Header */}
-        <ServiceHeader 
-          service={service} 
-          onEditClick={() => setShowEditModal(true)} 
+        <ServiceHeader
+          service={service}
+          onEditClick={() => setShowEditModal(true)}
         />
 
         {/* Stats Grid */}
@@ -55,7 +54,7 @@ export default function ServiceDetailsContent({
       </main>
 
       {/* Contextual FAB - Only for Mobile */}
-      <button 
+      <button
         onClick={() => setShowEditModal(true)}
         className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-surface-xl flex items-center justify-center hover:scale-110 hover:shadow-surface-lg transition-all z-10 lg:hidden"
       >
@@ -63,12 +62,12 @@ export default function ServiceDetailsContent({
       </button>
 
       {/* Edit Modal */}
-      <EditServiceModal
+      {/* <EditServiceModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         service={service}
         categories={categories}
-      />
+      /> */}
     </>
   );
 }

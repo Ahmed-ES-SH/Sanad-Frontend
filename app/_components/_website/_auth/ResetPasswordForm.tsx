@@ -18,7 +18,10 @@ import {
   FiShield,
 } from "react-icons/fi";
 import Img from "../../_global/Img";
-import { resetPasswordAction, verifyResetTokenAction } from "@/app/actions/authActions";
+import {
+  resetPasswordAction,
+  verifyResetTokenAction,
+} from "@/app/actions/authActions";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -38,7 +41,7 @@ function ResetPasswordFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const email = searchParams.get("email");
+  const email = searchParams.get("e");
 
   const [formData, setFormData] = useState({
     password: "",

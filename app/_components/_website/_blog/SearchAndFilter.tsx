@@ -32,9 +32,9 @@ export default function SearchAndFilter({
       transition={{ delay: 0.4 }}
     >
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-surface-600 font-medium">
           {blogPage.showing}{" "}
-          <span className="font-semibold">
+          <span className="font-bold text-surface-900">
             {totalResults} {blogPage.Results}
           </span>
         </span>
@@ -42,13 +42,13 @@ export default function SearchAndFilter({
 
       <div className="flex items-center max-md:flex-col max-md:items-start max-md:w-full gap-4">
         <div className="relative max-md:w-full">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-400" />
           <input
             type="text"
             placeholder="Search articles..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full md:w-[320px] xl:w-[550px] pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="pl-10 w-full md:w-[320px] xl:w-[550px] pr-4 py-2 bg-surface-50 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -57,13 +57,13 @@ export default function SearchAndFilter({
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             disabled={isLoading}
-            className="appearance-none max-md:w-full bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="appearance-none max-md:w-full bg-surface-50 border border-surface-200 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-surface-700"
           >
             <option value="recent">{blogPage.sortBy.recent}</option>
             <option value="popular">{blogPage.sortBy.popular}</option>
             <option value="oldest">{blogPage.sortBy.oldest}</option>
           </select>
-          <FiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-surface-400 pointer-events-none" />
         </div>
       </div>
     </motion.div>

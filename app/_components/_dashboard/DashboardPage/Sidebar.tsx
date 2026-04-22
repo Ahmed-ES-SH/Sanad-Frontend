@@ -18,6 +18,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { IoMdClose } from "react-icons/io";
 import { motion, AnimatePresence, spring } from "framer-motion";
 import Img from "../../_global/Img";
+import LocaleLink from "../../_global/LocaleLink";
 
 const navItems = [
   { labelKey: "overview", href: "/dashboard", icon: FiLayout },
@@ -53,7 +54,10 @@ export default function Sidebar() {
   const asideContent = (
     <>
       {/* Brand Section */}
-      <div className="px-6 py-8 flex items-center gap-3 border-b border-stone-200/50 mb-4">
+      <LocaleLink
+        href="/"
+        className="px-6 py-8 flex items-center gap-3 border-b border-stone-200/50 mb-4"
+      >
         <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
           <Img
             src="/sanad-logo.png"
@@ -80,7 +84,7 @@ export default function Sidebar() {
         >
           <IoMdClose size={20} />
         </button>
-      </div>
+      </LocaleLink>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar">

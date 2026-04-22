@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiBell } from 'react-icons/fi';
-import { useNotification } from '@/app/context/NotificationContext';
-import NotificationPanel from './NotificationPanel';
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiBell } from "react-icons/fi";
+import NotificationPanel from "./NotificationPanel";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,24 +20,24 @@ export default function NotificationBell() {
     }
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
   // Close on Escape key
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsOpen(false);
       }
     }
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
   return (
@@ -46,11 +46,11 @@ export default function NotificationBell() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-surface-600 hover:text-surface-900 hover:bg-surface-100 rounded-xl transition-colors"
-        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <FiBell className="w-5 h-5" />
+        <FiBell className="w-5 h-5 text-primary" />
 
         {/* Unread Count Badge */}
         <AnimatePresence>
@@ -60,8 +60,11 @@ export default function NotificationBell() {
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
               className="absolute -top-1 -right-1 min-w-5 h-5 px-1 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
+              aria-live="polite"
+              aria-atomic="true"
             >
-              {unreadCount > 99 ? '99+' : unreadCount}
+              {unreadCount > 99 ? "99+" : unreadCount}
+              <span className="sr-only">unread notifications</span>
             </motion.span>
           )}
         </AnimatePresence>

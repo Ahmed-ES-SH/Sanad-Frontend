@@ -44,7 +44,7 @@ export interface ProjectFormData {
   title: string;
   shortDescription: string;
   longDescription?: string;
-  coverImage?: string;
+  coverImageUrl?: string;
   images?: string[];
   techStack?: string[];
   categoryId?: string;

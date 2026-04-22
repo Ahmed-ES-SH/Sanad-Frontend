@@ -69,7 +69,12 @@
     "title": "Our Portfolio",
     "description": "Crafted with skill and care to help our clients grow their business through creative, innovative, and results-driven solutions. Each project reflects our commitment to excellence and deep understanding of our clients' unique needs.",
     "showMore": "Show More",
-    "all": "All"
+    "all": "All",
+    "noProjectsFound": "No Projects Found",
+    "noProjectsDescription": "We couldn't find any projects matching your criteria. Try adjusting your filter or view all projects.",
+    "viewAllProjects": "View All Projects",
+    "filtering": "Filtering...",
+    "swipeToFilter": "Swipe to filter"
   },
 
   "services": {
@@ -91,14 +96,16 @@
     "description": "We are here to help and answer any questions you might have. Reach out to us and we'll respond as soon as we can.",
     "messageLabel": "Message",
     "sendMessage": "Send Message",
-    "nameLabel": "Name",
-    "namePlaceholder": "Enter your name",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
     "emailLabel": "Email address",
     "emailPlaceholder": "Enter your email",
     "phoneLabel": "Phone Number",
     "phonePlaceholder": "Enter your phone number",
     "messagePlaceholder": "Your message",
-    "imageAlt": "Contact Background"
+    "imageAlt": "Contact Background",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Enter subject"
   },
 
   "footerLines": {
@@ -1168,6 +1175,8 @@
   "cart": {
     "myCart": "Your Brief",
     "items": "Items",
+    "continueShopping": "Continue Shopping",
+    "processing": "Processing...",
     "subtotal": "Subtotal",
     "technicalFee": "Platform Fee",
     "technicalFeeTooltip": "Covers platform security & technical support",

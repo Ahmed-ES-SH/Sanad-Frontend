@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -7,8 +7,8 @@ import {
   useEffect,
   useCallback,
   ReactNode,
-} from 'react';
-import { useAuth } from './AuthContext';
+} from "react";
+import { useAuth } from "./AuthContext";
 import {
   getCartAction as getCart,
   addToCartAction as addToCart,
@@ -16,12 +16,8 @@ import {
   removeFromCartAction as removeFromCart,
   clearCartAction as clearCart,
   mergeCartAction as mergeCart,
-} from '@/app/actions/cartActions';
-import type {
-  CartDto,
-  CartItemDto,
-  GuestCartItem,
-} from '@/lib/api/cart';
+} from "@/app/actions/cartActions";
+import type { CartDto, CartItemDto, GuestCartItem } from "@/lib/api/cart";
 
 // ============================================================================
 // Cart Context Types
@@ -34,6 +30,7 @@ export interface CartItem extends CartItemDto {
   image?: string;
   title?: string;
   description?: string;
+  serviceImageUrl?: string;
 }
 
 export interface Cart extends CartDto {
@@ -75,14 +72,14 @@ const CartContext = createContext<CartContextType | null>(null);
 // Local Storage Helpers for Guest Cart
 // ============================================================================
 
-const GUEST_CART_STORAGE_KEY = 'sanad_guest_cart';
+const GUEST_CART_STORAGE_KEY = "sanad_guest_cart";
 
 function loadGuestCartFromStorage(): GuestCartItem[] {
   try {
     const cartData = localStorage.getItem(GUEST_CART_STORAGE_KEY);
     return cartData ? JSON.parse(cartData) : [];
   } catch (error) {
-    console.error('Error loading guest cart from storage:', error);
+    console.error("Error loading guest cart from storage:", error);
     return [];
   }
 }
@@ -91,7 +88,7 @@ function saveGuestCartToStorage(items: GuestCartItem[]) {
   try {
     localStorage.setItem(GUEST_CART_STORAGE_KEY, JSON.stringify(items));
   } catch (error) {
-    console.error('Error saving guest cart to storage:', error);
+    console.error("Error saving guest cart to storage:", error);
   }
 }
 
@@ -99,7 +96,7 @@ function clearGuestCartFromStorage() {
   try {
     localStorage.removeItem(GUEST_CART_STORAGE_KEY);
   } catch (error) {
-    console.error('Error clearing guest cart from storage:', error);
+    console.error("Error clearing guest cart from storage:", error);
   }
 }
 
@@ -131,11 +128,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const cartData = await getCart();
       setCart(cartData as Cart);
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to fetch cart';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch cart";
       setError(errorMessage);
-      console.error('Error fetching cart:', err);
+      console.error("Error fetching cart:", err);
     } finally {
       setIsLoading(false);
     }
@@ -147,89 +143,125 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [fetchCart]);
 
   // Add item to cart (syncs with backend)
-  const addItem = useCallback(async (serviceId: string, quantity: number = 1) => {
-    if (!isAuthenticated) {
-      // Guest mode: add to local storage
-      const guestCart = loadGuestCartFromStorage();
-      const existingIndex = guestCart.findIndex(
-        (item) => item.serviceId === serviceId
-      );
+  const addItem = useCallback(
+    async (
+      serviceId: string,
+      quantity: number = 1,
+      serviceInfo?: Partial<CartItem>,
+    ) => {
+      if (!isAuthenticated) {
+        // Guest mode: add to local storage
+        const guestCart = loadGuestCartFromStorage();
+        const existingIndex = guestCart.findIndex(
+          (item) => item.serviceId === serviceId,
+        );
 
-      if (existingIndex >= 0) {
-        guestCart[existingIndex].quantity += quantity;
-      } else {
-        guestCart.push({ serviceId, quantity });
-      }
+        if (existingIndex >= 0) {
+          guestCart[existingIndex].quantity += quantity;
+        } else {
+          const price = serviceInfo?.unitPrice || serviceInfo?.price || 0;
+          guestCart.push({
+            serviceId,
+            quantity,
+            unitPrice: price,
+            serviceTitle: serviceInfo?.serviceTitle || serviceInfo?.title,
+            serviceIconUrl: serviceInfo?.serviceIconUrl || serviceInfo?.image,
+            serviceSlug: serviceInfo?.serviceSlug,
+            description: serviceInfo?.description,
+          });
+        }
 
-      saveGuestCartToStorage(guestCart);
-      
-      // Update local state for UI feedback
-      const guestTotalItems = guestCart.reduce((sum, item) => sum + item.quantity, 0);
-      setCart({
-        id: '',
-        userId: 0,
-        items: guestCart.map((item) => ({
-          id: `guest-${item.serviceId}`,
-          cartId: '',
-          serviceId: item.serviceId,
-          serviceTitle: '',
-          serviceSlug: '',
-          serviceIconUrl: null,
-          quantity: item.quantity,
-          unitPrice: 0,
-          subtotal: 0,
+        saveGuestCartToStorage(guestCart);
+
+        // Update local state for UI feedback
+        const guestTotalItems = guestCart.reduce(
+          (sum, item) => sum + item.quantity,
+          0,
+        );
+        const guestTotalAmount = guestCart.reduce(
+          (sum, item) => sum + (item.unitPrice || 0) * item.quantity,
+          0,
+        );
+
+        setCart({
+          id: "guest",
+          userId: "guest",
+          totalItems: guestTotalItems,
+          totalAmount: guestTotalAmount,
+          items: guestCart.map((item) => ({
+            id: `guest-${item.serviceId}`,
+            cartId: "guest",
+            serviceId: item.serviceId,
+            serviceTitle: item.serviceTitle || "",
+            serviceSlug: item.serviceSlug || "",
+            serviceIconUrl: item.serviceIconUrl || null,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice || 0,
+            subtotal: (item.unitPrice || 0) * item.quantity,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            // Backward compatibility
+            title: item.serviceTitle || "",
+            name: item.serviceTitle || "",
+            price: item.unitPrice || 0,
+            image: item.serviceIconUrl || "",
+            description: item.description || "",
+          })),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          // Backward compatibility
-          title: '',
-          name: '',
-          price: 0,
-          image: '',
-          description: '',
-        })),
-        totalItems: guestTotalItems,
-        totalAmount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      } as Cart);
-      
-      return;
-    }
+        } as Cart);
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      const updatedCart = await addToCart(serviceId, quantity);
-      setCart(updatedCart as Cart);
-    } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to add item to cart';
-      setError(errorMessage);
-      console.error('Error adding to cart:', err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated]);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const updatedCart = await addToCart(serviceId, quantity);
+        setCart(updatedCart as Cart);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to add item to cart";
+        setError(errorMessage);
+        console.error("Error adding to cart:", err);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isAuthenticated],
+  );
 
   // Remove item from cart
   const removeItem = useCallback(async (itemId: string) => {
-    if (itemId.startsWith('guest-')) {
+    if (itemId.startsWith("guest-")) {
       // Guest mode: remove from local storage
-      const serviceId = itemId.replace('guest-', '');
+      const serviceId = itemId.replace("guest-", "");
       const guestCart = loadGuestCartFromStorage().filter(
-        (item) => item.serviceId !== serviceId
+        (item) => item.serviceId !== serviceId,
       );
       saveGuestCartToStorage(guestCart);
 
-      const guestTotalItems = guestCart.reduce((sum, item) => sum + item.quantity, 0);
-      setCart((prev) => prev ? {
-        ...prev,
-        items: prev.items.filter((item) => item.serviceId !== serviceId),
-        totalItems: guestTotalItems,
-      } : null);
-      
+      const guestTotalItems = guestCart.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+      const guestTotalAmount = guestCart.reduce(
+        (sum, item) => sum + (item.unitPrice || 0) * item.quantity,
+        0,
+      );
+
+      setCart((prev) =>
+        prev
+          ? {
+              ...prev,
+              items: prev.items.filter((item) => item.serviceId !== serviceId),
+              totalItems: guestTotalItems,
+              totalAmount: guestTotalAmount,
+            }
+          : null,
+      );
+
       return;
     }
 
@@ -239,11 +271,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const updatedCart = await removeFromCart(itemId);
       setCart(updatedCart as Cart);
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to remove item from cart';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to remove item from cart";
       setError(errorMessage);
-      console.error('Error removing from cart:', err);
+      console.error("Error removing from cart:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -251,79 +282,94 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Update item quantity
-  const updateItemQuantity = useCallback(async (itemId: string, quantity: number) => {
-    if (quantity < 0) return;
+  const updateItemQuantity = useCallback(
+    async (itemId: string, quantity: number) => {
+      if (quantity < 0) return;
 
-    if (quantity === 0) {
-      await removeItem(itemId);
-      return;
-    }
-
-    if (itemId.startsWith('guest-')) {
-      // Guest mode: update local storage
-      const serviceId = itemId.replace('guest-', '');
-      const guestCart = loadGuestCartFromStorage();
-      const itemIndex = guestCart.findIndex(
-        (item) => item.serviceId === serviceId
-      );
-
-      if (itemIndex >= 0) {
-        guestCart[itemIndex].quantity = quantity;
-        saveGuestCartToStorage(guestCart);
-
-        const guestTotalItems = guestCart.reduce((sum, item) => sum + item.quantity, 0);
-        setCart((prev) => prev ? {
-          ...prev,
-          items: prev.items.map((item) =>
-            item.serviceId === serviceId ? { ...item, quantity } : item
-          ),
-          totalItems: guestTotalItems,
-        } : null);
+      if (quantity === 0) {
+        await removeItem(itemId);
+        return;
       }
-      
-      return;
-    }
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      const updatedCart = await updateCartItem(itemId, quantity);
-      setCart(updatedCart as Cart);
-    } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to update cart item';
-      setError(errorMessage);
-      console.error('Error updating cart item:', err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [removeItem]);
+      if (itemId.startsWith("guest-")) {
+        // Guest mode: update local storage
+        const serviceId = itemId.replace("guest-", "");
+        const guestCart = loadGuestCartFromStorage();
+        const itemIndex = guestCart.findIndex(
+          (item) => item.serviceId === serviceId,
+        );
+
+        if (itemIndex >= 0) {
+          guestCart[itemIndex].quantity = quantity;
+          saveGuestCartToStorage(guestCart);
+
+          const guestTotalItems = guestCart.reduce(
+            (sum, item) => sum + item.quantity,
+            0,
+          );
+          setCart((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  items: prev.items.map((item) =>
+                    item.serviceId === serviceId ? { ...item, quantity } : item,
+                  ),
+                  totalItems: guestTotalItems,
+                }
+              : null,
+          );
+        }
+
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const updatedCart = await updateCartItem(itemId, quantity);
+        setCart(updatedCart as Cart);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to update cart item";
+        setError(errorMessage);
+        console.error("Error updating cart item:", err);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [removeItem],
+  );
 
   // Increment item quantity
-  const incrementItemQuantity = useCallback(async (itemId: string) => {
-    const item = items.find((i) => i.id === itemId);
-    if (!item) return;
+  const incrementItemQuantity = useCallback(
+    async (itemId: string) => {
+      const item = items.find((i) => i.id === itemId);
+      if (!item) return;
 
-    // Enforce max quantity of 99
-    if (item.quantity >= 99) return;
+      // Enforce max quantity of 99
+      if (item.quantity >= 99) return;
 
-    await updateItemQuantity(itemId, item.quantity + 1);
-  }, [items, updateItemQuantity]);
+      await updateItemQuantity(itemId, item.quantity + 1);
+    },
+    [items, updateItemQuantity],
+  );
 
   // Decrement item quantity
-  const decrementItemQuantity = useCallback(async (itemId: string) => {
-    const item = items.find((i) => i.id === itemId);
-    if (!item) return;
+  const decrementItemQuantity = useCallback(
+    async (itemId: string) => {
+      const item = items.find((i) => i.id === itemId);
+      if (!item) return;
 
-    if (item.quantity <= 1) {
-      await removeItem(itemId);
-      return;
-    }
+      if (item.quantity <= 1) {
+        await removeItem(itemId);
+        return;
+      }
 
-    await updateItemQuantity(itemId, item.quantity - 1);
-  }, [items, updateItemQuantity, removeItem]);
+      await updateItemQuantity(itemId, item.quantity - 1);
+    },
+    [items, updateItemQuantity, removeItem],
+  );
 
   // Clear entire cart
   const clearCartFn = useCallback(async () => {
@@ -340,11 +386,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await clearCart();
       setCart(null);
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to clear cart';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to clear cart";
       setError(errorMessage);
-      console.error('Error clearing cart:', err);
+      console.error("Error clearing cart:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -366,15 +411,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setError(null);
       const result = await mergeCart(guestCart);
       setCart(result.cart as Cart);
-      
+
       // Clear guest cart from local storage
       clearGuestCartFromStorage();
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to merge guest cart';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to merge guest cart";
       setError(errorMessage);
-      console.error('Error merging guest cart:', err);
+      console.error("Error merging guest cart:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -384,13 +428,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Check if a service is in cart
   const isServiceInCart = useCallback(
     (serviceId: string) => items.some((item) => item.serviceId === serviceId),
-    [items]
+    [items],
   );
 
   // Get item by service ID
   const getItemByServiceId = useCallback(
     (serviceId: string) => items.find((item) => item.serviceId === serviceId),
-    [items]
+    [items],
   );
 
   // Get item quantity by service ID
@@ -399,7 +443,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const item = items.find((i) => i.serviceId === serviceId);
       return item ? item.quantity : 0;
     },
-    [items]
+    [items],
   );
 
   return (
@@ -437,7 +481,7 @@ export function useCart() {
   const context = useContext(CartContext);
 
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
 
   return context;

@@ -6,6 +6,8 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import { FiLoader } from "react-icons/fi";
+import { MdErrorOutline } from "react-icons/md";
 
 interface PaymentFormProps {
   clientSecret: string;
@@ -56,17 +58,25 @@ export function PaymentForm({
       <PaymentElement />
 
       {errorMessage && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{errorMessage}</p>
+        <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
+          <MdErrorOutline className="text-red-500 text-xl shrink-0 mt-0.5" />
+          <p className="text-sm text-red-700 font-medium">{errorMessage}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full px-4 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-3.5 bg-primary text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        {isProcessing ? 'Processing...' : 'Pay Now'}
+        {isProcessing ? (
+          <>
+            <FiLoader className="animate-spin text-xl" />
+            Processing...
+          </>
+        ) : (
+          'Pay Now'
+        )}
       </button>
     </form>
   );

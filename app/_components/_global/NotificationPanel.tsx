@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiCheck, FiX, FiLoader, FiBell } from 'react-icons/fi';
-import { useNotification } from '@/app/context/NotificationContext';
-import NotificationItem from './NotificationItem';
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiCheck, FiX, FiLoader, FiBell } from "react-icons/fi";
+import NotificationItem from "./NotificationItem";
+import { useNotification } from "@/app/context/NotificationContext";
 
 interface NotificationPanelProps {
   onClose: () => void;
@@ -17,25 +17,19 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     isLoading,
     pagination,
     fetchNotifications,
-    fetchUnreadCount,
     markAllAsRead,
+    isSocketConnected,
   } = useNotification();
 
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
-
-  // Fetch notifications on mount
-  useEffect(() => {
-    fetchNotifications(1, 10);
-  }, [fetchNotifications]);
 
   // Handle mark all as read
   const handleMarkAllAsRead = async () => {
     try {
       setIsMarkingAllRead(true);
       await markAllAsRead();
-      await fetchUnreadCount();
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      console.error("Failed to mark all as read:", error);
     } finally {
       setIsMarkingAllRead(false);
     }
@@ -98,9 +92,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             <div className="w-16 h-16 mb-4 rounded-full bg-surface-100 flex items-center justify-center">
               <FiBell className="w-8 h-8 text-surface-400" />
             </div>
-            <h4 className="text-sm font-semibold text-surface-900">No notifications</h4>
+            <h4 className="text-sm font-semibold text-surface-900">
+              No notifications
+            </h4>
             <p className="text-sm text-surface-500 mt-1">
-              You&apos;re all caught up! We&apos;ll notify you when something arrives.
+              You&apos;re all caught up! We&apos;ll notify you when something
+              arrives.
             </p>
           </div>
         ) : (

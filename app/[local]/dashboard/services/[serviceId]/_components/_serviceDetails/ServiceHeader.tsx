@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { FiEdit, FiPower } from "react-icons/fi";
-import PublishToggleModal from "./PublishToggleModal";
 import { Service } from "@/app/types/service";
 import { togglePublishService } from "@/app/actions/servicesActions";
 import { useRouter } from "next/navigation";
@@ -12,7 +11,10 @@ interface ServiceHeaderProps {
   onEditClick: () => void;
 }
 
-export default function ServiceHeader({ service, onEditClick }: ServiceHeaderProps) {
+export default function ServiceHeader({
+  service,
+  onEditClick,
+}: ServiceHeaderProps) {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const router = useRouter();
 
@@ -40,18 +42,26 @@ export default function ServiceHeader({ service, onEditClick }: ServiceHeaderPro
             <h2 className="text-3xl font-extrabold tracking-tight text-surface-900 font-display">
               {serviceTitle}
             </h2>
-            <span className={`px-3 py-1 text-xs font-bold rounded-full flex items-center gap-1 border ${
-              isPublished 
-                ? "bg-emerald-100 text-emerald-700 border-emerald-200" 
-                : "bg-amber-50 text-amber-700 border-amber-200"
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-400"}`}></span>
+            <span
+              className={`px-3 py-1 text-xs font-bold rounded-full flex items-center gap-1 border ${
+                isPublished
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-400"}`}
+              ></span>
               {isPublished ? "Published" : "Draft"}
             </span>
           </div>
           <p className="text-surface-600 font-medium flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wider opacity-60 font-body">Service ID:</span>
-            <code className="bg-surface-100 px-2 py-0.5 rounded text-sm font-mono text-surface-700">{serviceId}</code>
+            <span className="text-xs uppercase tracking-wider opacity-60 font-body">
+              Service ID:
+            </span>
+            <code className="bg-surface-100 px-2 py-0.5 rounded text-sm font-mono text-surface-700">
+              {serviceId}
+            </code>
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -65,8 +75,8 @@ export default function ServiceHeader({ service, onEditClick }: ServiceHeaderPro
           <button
             onClick={() => setShowStatusModal(true)}
             className={`px-6 py-2.5 border font-semibold rounded-xl transition-all flex items-center gap-2 ${
-              isPublished 
-                ? "bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100 shadow-amber-100/50" 
+              isPublished
+                ? "bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100 shadow-amber-100/50"
                 : "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 shadow-emerald-100/50"
             } shadow-sm`}
           >
@@ -76,13 +86,13 @@ export default function ServiceHeader({ service, onEditClick }: ServiceHeaderPro
         </div>
       </section>
 
-      <PublishToggleModal
+      {/* <PublishToggleModal
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
         onConfirm={handleToggleStatus}
         serviceName={serviceTitle}
         isPublished={isPublished}
-      />
+      /> */}
     </>
   );
 }

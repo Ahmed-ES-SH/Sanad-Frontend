@@ -14,7 +14,7 @@ interface props {
 export default function ArticleCard({ article, index }: props) {
   return (
     <motion.article
-      className="bg-white h-[400px] hover:scale-[105%] rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer"
+      className="bg-surface-card h-[420px] border border-surface-200 rounded-xl shadow-surface-sm hover:shadow-surface-md hover:border-primary/30 transition-all duration-500 overflow-hidden group cursor-pointer flex flex-col"
       layout
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -22,34 +22,34 @@ export default function ArticleCard({ article, index }: props) {
       transition={{ delay: index * 0.1 }}
     >
       <LocalLink
-        className="w-full block"
+        className="w-full h-full flex flex-col"
         href={`/blog/${article.slug}?articleId=${article.id}`}
       >
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden aspect-video">
           <Img
             src={article.coverImageUrl || ""}
             alt={article.title}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
           {article.category && (
             <div className="absolute top-4 left-4">
-              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+              <span className="bg-primary/90 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
                 {article.category.name}
               </span>
             </div>
           )}
         </div>
 
-        <div className="p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        <div className="p-6 flex flex-col flex-1">
+          <h3 className="text-xl font-display font-bold text-surface-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300">
             {article.title}
           </h3>
 
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          <p className="text-surface-600 text-sm mb-6 line-clamp-2 leading-relaxed">
             {article.excerpt || ""}
           </p>
 
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="mt-auto pt-4 border-t border-surface-100 flex items-center justify-between text-xs text-surface-500 font-bold uppercase tracking-wider">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <FiCalendar size={12} />

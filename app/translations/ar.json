@@ -69,7 +69,12 @@
     "title": "أعمالنا",
     "description": "تم تنفيذها بمهارة واهتمام لمساعدة عملائنا على تنمية أعمالهم من خلال حلول إبداعية ومبتكرة قائمة على النتائج. كل مشروع يعكس التزامنا بالجودة وفهمنا العميق لاحتياجات عملائنا الفريدة.",
     "showMore": "المزيد",
-    "all": "الكل"
+    "all": "الكل",
+    "noProjectsFound": "لا توجد مشاريع",
+    "noProjectsDescription": "لم نعثر على أي مشاريع تطابق المعايير المحددة. حاول تعديل فلتر البحث أو العودة إلى عرض جميع المشاريع.",
+    "viewAllProjects": "عرض جميع المشاريع",
+    "filtering": "جاري التصفية...",
+    "swipeToFilter": "اسحب للتصفية"
   },
 
   "services": {
@@ -91,14 +96,16 @@
     "description": "نحن هنا لمساعدتك والإجابة على أي استفسارات قد تكون لديك. تواصل معنا وسنرد عليك في أقرب وقت ممكن.",
     "messageLabel": "الرسالة",
     "sendMessage": "إرسال الرسالة",
-    "nameLabel": "الاسم",
-    "namePlaceholder": "أدخل اسمك",
+    "fullNameLabel": "الاسم",
+    "fullNamePlaceholder": "أدخل اسمك",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "أدخل بريدك الإلكتروني",
     "phoneLabel": "رقم الهاتف",
     "phonePlaceholder": "أدخل رقم هاتفك",
     "messagePlaceholder": "رسالتك",
-    "imageAlt": "خلفية الاتصال"
+    "imageAlt": "خلفية الاتصال",
+    "subjectLabel": "الموضوع",
+    "subjectPlaceholder": "أدخل موضوع الرسالة"
   },
 
   "footerLines": {
@@ -1121,6 +1128,8 @@
   "cart": {
     "myCart": "ملف مشروعك",
     "items": "عناصر",
+    "continueShopping": "متابعة التسوق",
+    "processing": "جاري التنفيذ...",
     "subtotal": "المجموع الفرعي",
     "technicalFee": "رسوم المنصة",
     "technicalFeeTooltip": "تغطي أمان المنصة والدعم التقني",

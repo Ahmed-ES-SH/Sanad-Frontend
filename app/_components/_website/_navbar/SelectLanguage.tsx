@@ -35,7 +35,10 @@ export default function SelectLanguage() {
   // Click outside listener
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowLangDrop(false);
       }
     };
@@ -47,21 +50,25 @@ export default function SelectLanguage() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="surface-btn-secondary min-h-[40px] px-4 text-sm"
+        className="surface-btn-secondary max-md:rounded-full min-h-[40px] xl:px-4 px-1 text-sm"
       >
-        <span className="w-[45px]">{selectedLanguage}</span>
-        <IoIosArrowDown className={`transition-transform duration-300 ${showLangDrop ? 'rotate-180' : ''}`} />
+        <span className="w-[30px]">
+          {selectedLanguage.slice(0, 2).toUpperCase()}
+        </span>
+        <IoIosArrowDown
+          className={`hidden md:block transition-transform duration-300 ${showLangDrop ? "rotate-180" : ""}`}
+        />
       </button>
       {showLangDrop && (
         <div className="absolute right-0 mt-3 w-32 surface-card-elevated overflow-hidden border-none shadow-surface-lg p-1">
           <button
-            className={`w-full text-left px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 ${local === 'ar' ? 'bg-primary/10 text-primary' : 'text-surface-600 hover:bg-primary/5 hover:text-primary'}`}
+            className={`w-full text-left px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 ${local === "ar" ? "bg-primary/10 text-primary" : "text-surface-600 hover:bg-primary/5 hover:text-primary"}`}
             onClick={() => handleChangeLanguage("ar")}
           >
             العربية
           </button>
           <button
-            className={`w-full text-left px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 ${local === 'en' ? 'bg-primary/10 text-primary' : 'text-surface-600 hover:bg-primary/5 hover:text-primary'}`}
+            className={`w-full text-left px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 ${local === "en" ? "bg-primary/10 text-primary" : "text-surface-600 hover:bg-primary/5 hover:text-primary"}`}
             onClick={() => handleChangeLanguage("en")}
           >
             English

@@ -88,6 +88,8 @@ export default function SignInForm() {
         password: formData.password,
       });
 
+      console.log("Login response:", response);
+
       if (response.statusCode === 403) {
         toast.error(response.message);
         router.push(`/${local}/verify-email?email=${formData.email}`);

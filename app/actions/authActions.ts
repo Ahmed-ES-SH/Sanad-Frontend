@@ -10,6 +10,7 @@ import {
 } from "@/lib/api-client";
 import {
   AuthResponse,
+  currentUserType,
   LoginCredentials,
   RegisterCredentials,
   ResetPasswordCredentials,
@@ -121,16 +122,14 @@ export async function logoutAction(): Promise<AuthResponse> {
   }
 }
 
-export async function getCurrentUserAction(): Promise<AuthResponse> {
+export async function getCurrentUserAction(): Promise<currentUserType> {
   try {
     const user = await protectedRequest<User>(AUTH_ENDPOINTS.CURRENT_USER);
 
     return {
       success: true,
       message: "User fetched successfully",
-      data: {
-        user,
-      },
+      user: user,
     };
   } catch (error) {
     if (error instanceof ApiError && error.statusCode === 401) {

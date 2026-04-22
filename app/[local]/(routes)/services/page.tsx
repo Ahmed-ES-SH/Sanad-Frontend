@@ -7,6 +7,7 @@ import { getTranslations } from "@/app/helpers/helpers";
 import { getPublishedServices } from "@/app/actions/servicesActions";
 import React from "react";
 import { Service } from "@/app/types/service";
+import { getCategories } from "@/app/actions/blogActions";
 
 export async function generateMetadata({ params }: any) {
   const { local } = await params;
@@ -23,7 +24,9 @@ export async function generateMetadata({ params }: any) {
 
 export default async function ServicesPage() {
   let services: Service[] = [];
-  
+
+  const categories = await getCategories();
+
   try {
     const response = await getPublishedServices();
     services = response.data;
@@ -33,7 +36,7 @@ export default async function ServicesPage() {
 
   return (
     <main id="main-content" className="relative mt-12">
-      <ServicesComponent services={services} />
+      <ServicesComponent services={services} categories={categories ?? []} />
       <HowWeWork />
       <PricingPlans />
     </main>
