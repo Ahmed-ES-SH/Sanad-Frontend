@@ -4,7 +4,7 @@ import { IoMdPersonAdd } from "react-icons/io";
 import UserStats from "@/app/_components/_dashboard/UsersPage/UserStats";
 import Link from "next/link";
 import ClientUsers from "@/app/_components/_dashboard/UsersPage/ClientUsers";
-import { StatsResultType } from "@/app/types/user";
+import { UserStatsResult } from "@/app/types/user";
 
 // ============================================================================
 // USERS PAGE - Server component that fetches all users from backend
@@ -21,17 +21,10 @@ export default async function UsersPage({
 
   let error = null;
 
-  const {
-    data: users,
-    perPage,
-    page,
-    lastPage,
-    total,
-  } = await adminGetUsers(resolvedSearchParams);
+  const usersResponse = await adminGetUsers();
+  const stats = (await adminGetUsersStats()) as UserStatsResult;
 
-  const stats = (await adminGetUsersStats()) as StatsResultType;
-
-  if (!users) {
+  if (!usersResponse) {
     error = "Failed to load users";
   }
 
@@ -59,16 +52,16 @@ export default async function UsersPage({
         </div>
 
         {/* Stats Cards */}
-        <UserStats stats={stats} total={total} />
+        <UserStats stats={stats} total={stats.totalUsers} />
 
         {/* Client Side Users */}
         <ClientUsers
-          initialData={users}
-          lastPage={lastPage}
-          page={page}
-          perPage={perPage}
-          total={total}
-          pendingUsers={stats?.unverifiedUsersNumber ?? 0}
+          initialData={usersResponse.data}
+          total={usersResponse.total}
+          page={usersResponse.page}
+          perPage={usersResponse.perPage}
+          lastPage={usersResponse.lastPage}
+          pendingUsers={stats.unverifiedUsersNumber}
         />
       </main>
     </>

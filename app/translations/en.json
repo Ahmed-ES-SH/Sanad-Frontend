@@ -29,6 +29,11 @@
     "description": "Get in touch with Sanad for inquiries, consultations, or support. We're here to help you bring your digital vision to life."
   },
 
+  "notificationsMeta": {
+    "title": "Notifications - Sanad",
+    "description": "View and manage your notifications"
+  },
+
   "signInMeta": {
     "title": "Sign In - Sanad",
     "description": "Access your Sanad account to manage your projects, track progress, and stay connected with our team of experts."
@@ -37,6 +42,16 @@
   "signUpMeta": {
     "title": "Create Account - Sanad",
     "description": "Join Sanad today and unlock access to innovative tech solutions. Create your account to get started on your digital journey."
+  },
+
+  "verifyEmailMeta": {
+    "title": "Verify Email - Sanad",
+    "description": "Verify your email address to complete your account registration."
+  },
+
+  "cartMeta": {
+    "title": "Your Brief - Sanad",
+    "description": "Review your project brief and proceed to approval."
   },
 
   "hero": {
@@ -397,6 +412,7 @@
   "userMenu": {
     "profile": "Profile",
     "dashboard": "Dashboard",
+    "orders": "Orders",
     "payments": "Payments",
     "notifications": "Notifications",
     "notificationSettings": "Notification Settings",
@@ -408,6 +424,10 @@
     "title": "Notifications",
     "empty": "No notifications",
     "emptyDescription": "You're all caught up! We'll notify you when something arrives.",
+    "emptyUnread": "Great! You have no unread notifications.",
+    "unread": "unread notification",
+    "unreadPlural": "unread notifications",
+    "allCaughtUp": "All caught up!",
     "markAllRead": "Mark all as read",
     "loadMore": "Load more notifications",
     "showing": "Showing",
@@ -417,6 +437,14 @@
     "viewDetails": "View details",
     "read": "Read",
     "delete": "Delete",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "typesAll": "All Types",
+    "typesOrders": "Orders",
+    "typesPaymentSuccess": "Payment Success",
+    "typesPaymentFailed": "Payment Failed",
+    "typesSystem": "System",
+    "typesBroadcast": "Broadcast",
     "preferences": {
       "title": "Notification Preferences",
       "subtitle": "Customize how and when you receive notifications",
@@ -511,6 +539,11 @@
       "contactUs": "Contact Us",
       "payments": "Payments",
       "blog": "Blog",
+      "orders": "Orders",
+      "notifications": "Notifications",
+      "addArticle": "Add Article",
+      "addProject": "Add Project",
+      "addService": "Add Service",
       "logout": "Logout",
       "help": "Help",
       "loggingOut": "Logging out..."
@@ -1038,6 +1071,32 @@
       "editProfile": "Edit Profile",
       "sharePortfolio": "Share Portfolio"
     },
+    "EditProfileModal": {
+      "title": "Edit Profile",
+      "avatarLabel": "Profile Picture",
+      "avatarPlaceholder": "Enter image URL",
+      "avatarPreview": "Preview",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "emailLabel": "Email Address",
+      "emailReadOnly": "You can't edit verified Email",
+      "passwordLabel": "New Password",
+      "passwordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "validation": {
+        "nameRequired": "Name is required",
+        "nameTooShort": "Name must be at least 2 characters",
+        "avatarInvalid": "Please enter a valid URL",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordsNotMatch": "Passwords do not match"
+      },
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
     "StatsRow": {
       "servicesActive": "Services Active",
       "activeProjects": "Active Projects",
@@ -1222,7 +1281,12 @@
     "dismiss": "Dismiss",
     "scope": "Scope",
     "deliverables": "Deliverables",
-    "investment": "Investment"
+    "investment": "Investment",
+    "loadingBrief": "Loading your brief...",
+    "loginRequired": "You need to login to checkout. Please login or register.",
+    "checkoutError": "Failed to initialize checkout. Please try again.",
+    "paymentSuccess": "Payment successful!",
+    "paymentFailed": "Payment failed"
   },
 
   "PaymentFailedPage": {
@@ -1248,10 +1312,11 @@
     "searchPlaceholder": "Search by Order ID or Service...",
     "filters": {
       "all": "All Orders",
-      "inProgress": "In Progress",
-      "completed": "Completed",
       "pending": "Pending",
-      "more": "More"
+      "paid": "Paid",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "card": {
       "orderId": "Order ID",
@@ -1270,6 +1335,109 @@
       "pending": "Pending",
       "paid": "Paid",
       "cancelled": "Cancelled"
+    },
+    "resultsInfo": {
+      "showingAll": "{{count}} orders",
+      "showingFiltered": "{{filtered}} of {{total}} orders",
+      "order": "order",
+      "orders": "orders",
+      "of": "of"
+    },
+    "emptyState": {
+      "title": "No Orders Yet",
+      "description": "You haven't placed any service orders yet. Browse our services to get started."
+    },
+    "noResultsState": {
+      "title": "No Results Found",
+      "description": "Try adjusting your search or filter criteria."
+    },
+    "insights": {
+      "activeOrders": "Active Orders",
+      "pendingReview": "Pending Review",
+      "completedThisMonth": "Completed This Month"
+    },
+    "supportHub": {
+      "needAssistance": "Need Assistance?",
+      "supportDescription": "Our support team is here to help with any questions about your orders or services.",
+      "contactSupport": "Contact Support",
+      "exploreNew": "Explore New Horizons",
+      "exploreDescription": "Discover how we can help you scale your business with our advanced technical services.",
+      "browseServices": "Browse Services"
     }
+  },
+
+  "orderTrackingMeta": {
+    "title": "Order Tracking - Sanad",
+    "description": "Track the progress of your service order in real-time."
+  },
+
+  "orderTracking": {
+    "pageTitle": "Order Tracking",
+    "pageSubtitle": "Stay updated on the progress of your service request.",
+    "backToOrders": "Back to Orders",
+    "orderDetails": "Order Details",
+    "activityLog": "Activity Log",
+    "quickActions": "Quick Actions",
+    "needAssistance": "Need Assistance?",
+    "supportDescription": "Our technical support team is available 24/7 to help with your order or any technical queries.",
+    "contactSupport": "Contact Support",
+    "downloadInvoice": "Download Invoice",
+    "serviceAgreement": "Service Agreement",
+    "whatsNext": "What's Next?",
+    "orderId": "Order ID",
+    "serviceName": "Service Name",
+    "amount": "Amount",
+    "datePlaced": "Date Placed",
+    "orderNotes": "Order Notes",
+    "noNotes": "No notes provided",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "loadingTitle": "Loading order details",
+    "errorTitle": "Oops! Something went wrong",
+    "errorDescription": "We couldn't load your order details. Please try again or contact support if the problem persists.",
+    "tryAgain": "Try Again",
+    "notFoundTitle": "Order Not Found",
+    "notFoundDescription": "The order you're looking for doesn't exist or you don't have permission to view it.",
+    "backToDashboard": "Back to Dashboard"
+  },
+
+  "payments": {
+    "tableTitle": "Transaction History",
+    "searchPlaceholder": "Search description...",
+    "filterLabel": "Filter by status",
+    "dateRangeLabel": "Date Range",
+    "dateFromLabel": "From",
+    "dateToLabel": "To",
+    "resetBtn": "Reset",
+    "applyBtn": "Apply",
+    "clearFiltersLabel": "Clear",
+    "columnDate": "Date",
+    "columnDescription": "Description",
+    "columnAmount": "Amount",
+    "columnStatus": "Status",
+    "columnAction": "Action",
+    "loadingText": "Loading transactions...",
+    "loadFailed": "Failed to load transactions",
+    "tryAgainLater": "Please try again later",
+    "tryAgainLabel": "Try Again",
+    "showingText": "Showing {{count}}",
+    "ofText": "of",
+    "transactionsText": "transactions",
+    "pageText": "Page {{current}} of {{total}}",
+    "previousPageLabel": "Previous page",
+    "nextPageLabel": "Next page",
+    "noResultsMatchFilters": "No transactions match your filters",
+    "noTransactionsFound": "No transactions found",
+    "clearAllFiltersLabel": "Clear all filters",
+    "statusPaid": "Paid",
+    "statusPending": "Pending",
+    "statusFailed": "Failed",
+    "retryBtn": "Retry",
+    "downloadInvoice": "Download Invoice"
   }
 }

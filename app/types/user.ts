@@ -66,6 +66,15 @@ export interface UserListResponse {
   };
 }
 
+// Paginated response from /api/user endpoint
+export interface UsersPaginatedResponse {
+  data: User[];
+  total: number;
+  page: number;
+  perPage: number;
+  lastPage: number;
+}
+
 export interface UserResponse {
   data: User;
 }
@@ -94,6 +103,19 @@ export interface UserActionResult {
 
 export interface UserFilterState {
   role: UserRole | "all";
-  status: "all" | "verified" | "unverified";
+  status: "all" | "active" | "inactive" | "banned";
   search: string;
+}
+
+// ============================================================================
+// STATS RESULT - User statistics for dashboard
+// ============================================================================
+
+export interface UserStatsResult {
+  totalUsers: number;
+  adminsCount: number;
+  regularUsersCount: number;
+  verifiedUsersNumber: number;
+  unverifiedUsersNumber: number;
+  usersWithGoogleCount: number;
 }

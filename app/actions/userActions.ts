@@ -15,6 +15,8 @@ import {
   UserListResponse,
   UserDeleteResponse,
   UserActionResult,
+  UserStatsResult,
+  UsersPaginatedResponse,
 } from "@/app/types/user";
 
 // ============================================================================
@@ -27,18 +29,41 @@ const USERS_CACHE_TAG = "users";
 // READ ACTIONS - Fetch users from backend
 // ============================================================================
 
+export interface UserFilterParams {
+  role?: "admin" | "user";
+  status?: "active" | "inactive" | "banned";
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
 /**
- * adminGetUsers - Fetches all users from the backend
- * Returns the complete user list without pagination
- * Per backend plan: GET /users returns all users
+ * adminGetUsers - Fetches paginated users from the backend with filters
+ * Returns paginated response with data, total, page, perPage, lastPage
+ * Backend response: { data: User[], total, page, perPage, lastPage }
+ * 
+ * @param filters - Optional filters: role, status, search, page, limit
  */
-export async function adminGetUsers(): Promise<User[]> {
+export async function adminGetUsers(filters?: UserFilterParams): Promise<UsersPaginatedResponse> {
   try {
-    const response = await protectedRequest<User[]>(
-      USER_ENDPOINTS.ADMIN_LIST,
+    const params = new URLSearchParams();
+    
+    if (filters?.page) params.set("page", filters.page.toString());
+    if (filters?.limit) params.set("limit", filters.limit.toString());
+    if (filters?.role) params.set("role", filters.role);
+    if (filters?.status) params.set("status", filters.status);
+    if (filters?.search) params.set("search", filters.search);
+
+    const queryString = params.toString();
+    const endpoint = queryString 
+      ? `${USER_ENDPOINTS.ADMIN_LIST}?${queryString}` 
+      : USER_ENDPOINTS.ADMIN_LIST;
+
+    const response = await protectedRequest<UsersPaginatedResponse>(
+      endpoint,
       "GET",
     );
-    return response || [];
+    return response;
   } catch (error) {
     if (error instanceof ApiError) {
       console.error("[UserActions] Failed to fetch users:", error.message);
@@ -46,6 +71,47 @@ export async function adminGetUsers(): Promise<User[]> {
     }
     console.error("[UserActions] Unknown error fetching users:", error);
     throw new Error("Failed to fetch users");
+  }
+}
+
+/**
+ * adminGetAllUsers - Fetches all users (no pagination)
+ * Use this when you need the complete user list for stats/filtering
+ */
+export async function adminGetAllUsers(): Promise<User[]> {
+  try {
+    const response = await protectedRequest<UsersPaginatedResponse>(
+      USER_ENDPOINTS.ADMIN_LIST,
+      "GET",
+    );
+    // Fetch all pages to get complete list
+    const allUsers: User[] = [...response.data];
+    
+    // If there are more pages, fetch them
+    if (response.lastPage > 1) {
+      const pagePromises = [];
+      for (let page = 2; page <= response.lastPage; page++) {
+        pagePromises.push(
+          protectedRequest<UsersPaginatedResponse>(
+            `${USER_ENDPOINTS.ADMIN_LIST}?page=${page}`,
+            "GET",
+          )
+        );
+      }
+      const results = await Promise.all(pagePromises);
+      for (const result of results) {
+        allUsers.push(...result.data);
+      }
+    }
+    
+    return allUsers;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      console.error("[UserActions] Failed to fetch all users:", error.message);
+      throw new Error(error.message);
+    }
+    console.error("[UserActions] Unknown error fetching all users:", error);
+    throw new Error("Failed to fetch all users");
   }
 }
 
@@ -70,6 +136,38 @@ export async function adminGetUser(id: string | number): Promise<User> {
     }
     console.error(`[UserActions] Unknown error fetching user ${id}:`, error);
     throw new Error("Failed to fetch user");
+  }
+}
+
+/**
+ * adminGetUsersStats - Fetches user statistics for dashboard
+ * Generates stats from the complete user list
+ *
+ * @returns UserStatsResult with counts
+ */
+export async function adminGetUsersStats(): Promise<UserStatsResult> {
+  try {
+    // Get all users for accurate stats
+    const users = await adminGetAllUsers();
+
+    return {
+      totalUsers: users.length,
+      adminsCount: users.filter((u) => u.role === "admin").length,
+      regularUsersCount: users.filter((u) => u.role === "user").length,
+      verifiedUsersNumber: users.filter((u) => u.isEmailVerified).length,
+      unverifiedUsersNumber: users.filter((u) => !u.isEmailVerified).length,
+      usersWithGoogleCount: users.filter((u) => u.googleId !== null).length,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      console.error(
+        "[UserActions] Failed to fetch users stats:",
+        error.message,
+      );
+      throw new Error(error.message);
+    }
+    console.error("[UserActions] Unknown error fetching users stats:", error);
+    throw new Error("Failed to fetch users stats");
   }
 }
 

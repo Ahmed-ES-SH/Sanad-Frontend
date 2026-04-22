@@ -34,11 +34,7 @@ const defaultTransaction: TransactionDetails = {
   currency: "SAR",
 };
 
-function SuccessContent({
-  transaction,
-}: {
-  transaction: TransactionDetails;
-}) {
+function SuccessContent({ transaction }: { transaction: TransactionDetails }) {
   const router = useRouter();
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
@@ -78,7 +74,7 @@ function SuccessContent({
   }, [router]);
 
   const handleContactSupport = useCallback(() => {
-    router.push("/support");
+    router.push("/contact");
   }, [router]);
 
   // Keyboard navigation for power users
@@ -168,9 +164,15 @@ function SuccessContent({
       >
         <div className="flex justify-between items-center h-16 px-6 md:px-12 w-full max-w-screen-2xl mx-auto">
           <motion.div
-            initial={{ opacity: prefersReducedMotion ? 1 : 0, x: prefersReducedMotion ? 0 : -20 }}
+            initial={{
+              opacity: prefersReducedMotion ? 1 : 0,
+              x: prefersReducedMotion ? 0 : -20,
+            }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: prefersReducedMotion ? 0.01 : 0.4, ease: [0.25, 1, 0.5, 1] }}
+            transition={{
+              duration: prefersReducedMotion ? 0.01 : 0.4,
+              ease: [0.25, 1, 0.5, 1],
+            }}
             className="text-xl font-bold tracking-tighter cursor-pointer"
             style={{ color: "var(--primary)" }}
             onClick={() => router.push("/")}
@@ -267,7 +269,10 @@ function SuccessContent({
                         key={i}
                         className="absolute w-1.5 h-1.5 rounded-full"
                         style={{
-                          background: i % 2 === 0 ? "var(--primary)" : "var(--accent-amber)",
+                          background:
+                            i % 2 === 0
+                              ? "var(--primary)"
+                              : "var(--accent-amber)",
                           left: "50%",
                           top: "50%",
                         }}
@@ -425,7 +430,8 @@ function SuccessContent({
                     className="body-sm font-semibold"
                     style={{ color: "var(--surface-900)" }}
                   >
-                    {transaction.paymentMethod} ending in {transaction.cardLast4}
+                    {transaction.paymentMethod} ending in{" "}
+                    {transaction.cardLast4}
                   </span>
                 </div>
               </div>
@@ -571,10 +577,33 @@ function SuccessContent({
               }}
               initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: prefersReducedMotion ? 0.01 : 0.3, delay: prefersReducedMotion ? 0 : 0.7 }}
+              transition={{
+                duration: prefersReducedMotion ? 0.01 : 0.3,
+                delay: prefersReducedMotion ? 0 : 0.7,
+              }}
             >
               <span className="hidden md:inline">
-                Press <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "var(--surface-100)", border: "1px solid var(--surface-200)" }}>D</kbd> to download receipt · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "var(--surface-100)", border: "1px solid var(--surface-200)" }}>Esc</kbd> to return to dashboard
+                Press{" "}
+                <kbd
+                  className="px-1.5 py-0.5 rounded font-mono text-[10px]"
+                  style={{
+                    background: "var(--surface-100)",
+                    border: "1px solid var(--surface-200)",
+                  }}
+                >
+                  D
+                </kbd>{" "}
+                to download receipt ·{" "}
+                <kbd
+                  className="px-1.5 py-0.5 rounded font-mono text-[10px]"
+                  style={{
+                    background: "var(--surface-100)",
+                    border: "1px solid var(--surface-200)",
+                  }}
+                >
+                  Esc
+                </kbd>{" "}
+                to return to dashboard
               </span>
             </motion.div>
           </motion.div>
@@ -585,7 +614,10 @@ function SuccessContent({
             style={{ color: "var(--surface-500)" }}
             initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: prefersReducedMotion ? 0.01 : 0.3, delay: prefersReducedMotion ? 0 : 0.8 }}
+            transition={{
+              duration: prefersReducedMotion ? 0.01 : 0.3,
+              delay: prefersReducedMotion ? 0 : 0.8,
+            }}
           >
             Need help with this transaction?{" "}
             <button
@@ -609,7 +641,10 @@ function SuccessContent({
         }}
         initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: prefersReducedMotion ? 0.01 : 0.3, delay: prefersReducedMotion ? 0 : 0.9 }}
+        transition={{
+          duration: prefersReducedMotion ? 0.01 : 0.3,
+          delay: prefersReducedMotion ? 0 : 0.9,
+        }}
       >
         <div className="flex justify-center items-center py-6 px-6">
           <span
@@ -658,10 +693,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
         >
           Payment Verification Failed
         </h1>
-        <p
-          className="text-sm mb-8"
-          style={{ color: "var(--surface-500)" }}
-        >
+        <p className="text-sm mb-8" style={{ color: "var(--surface-500)" }}>
           We couldn&apos;t verify your payment status. This could be a temporary
           connection issue. Please try again or contact support.
         </p>
@@ -676,7 +708,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
           <button
             type="button"
             className="surface-btn-secondary w-full"
-            onClick={() => window.location.href = "/support"}
+            onClick={() => (window.location.href = "/support")}
           >
             Contact Support
           </button>

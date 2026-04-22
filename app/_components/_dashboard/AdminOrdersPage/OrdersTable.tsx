@@ -1,55 +1,67 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AdminOrder, OrderStatus } from '@/app/types/order';
-import GlobalTable, { Column } from '@/app/_components/_global/GlobalTable';
-import { useVariables } from '@/app/context/VariablesContext';
-import { getTranslations } from '@/app/helpers/helpers';
-import { FiEye } from 'react-icons/fi';
+import React from "react";
+import { AdminOrder, OrderStatus } from "@/app/types/order";
+import { useVariables } from "@/app/context/VariablesContext";
+import { getTranslations } from "@/app/helpers/helpers";
+import { FiEye } from "react-icons/fi";
+
+type Column<T> = {
+  label: string;
+  accessor: keyof T;
+  render: (item: T) => React.ReactNode;
+  sortable?: boolean;
+  align?: "left" | "center" | "right";
+  mobile?: boolean;
+  desktop?: boolean;
+};
 
 // Status badge configuration
-const statusConfig: Record<OrderStatus, { bg: string; text: string; labelKey: string }> = {
+const statusConfig: Record<
+  OrderStatus,
+  { bg: string; text: string; labelKey: string }
+> = {
   pending: {
-    bg: 'bg-yellow-100',
-    text: 'text-yellow-700',
-    labelKey: 'pending',
+    bg: "bg-yellow-100",
+    text: "text-yellow-700",
+    labelKey: "pending",
   },
   paid: {
-    bg: 'bg-blue-100',
-    text: 'text-blue-700',
-    labelKey: 'paid',
+    bg: "bg-blue-100",
+    text: "text-blue-700",
+    labelKey: "paid",
   },
   in_progress: {
-    bg: 'bg-orange-100',
-    text: 'text-orange-700',
-    labelKey: 'in_progress',
+    bg: "bg-orange-100",
+    text: "text-orange-700",
+    labelKey: "in_progress",
   },
   completed: {
-    bg: 'bg-green-100',
-    text: 'text-green-700',
-    labelKey: 'completed',
+    bg: "bg-green-100",
+    text: "text-green-700",
+    labelKey: "completed",
   },
   cancelled: {
-    bg: 'bg-red-100',
-    text: 'text-red-700',
-    labelKey: 'cancelled',
+    bg: "bg-red-100",
+    text: "text-red-700",
+    labelKey: "cancelled",
   },
 };
 
 // Format currency
-function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+function formatCurrency(amount: number, currency: string = "USD"): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency: currency.toUpperCase(),
   }).format(amount);
 }
 
 // Format date
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
@@ -59,15 +71,19 @@ interface OrdersTableProps {
   userIdFilter?: number;
 }
 
-export function OrdersTable({ onViewOrder, statusFilter, userIdFilter }: OrdersTableProps) {
+export function OrdersTable({
+  onViewOrder,
+  statusFilter,
+  userIdFilter,
+}: OrdersTableProps) {
   const { local } = useVariables();
   const translations = getTranslations(local) as any;
   const t = translations.OrdersPage || {};
 
   const columns: Column<AdminOrder>[] = [
     {
-      label: t.table?.orderId || 'Order ID',
-      accessor: 'id',
+      label: t.table?.orderId || "Order ID",
+      accessor: "id",
       render: (order) => (
         <span className="text-sm font-mono font-bold text-primary">
           {order.id.slice(0, 8).toUpperCase()}
@@ -75,7 +91,7 @@ export function OrdersTable({ onViewOrder, statusFilter, userIdFilter }: OrdersT
       ),
     },
     {
-      label: t.table?.user || 'User',
+      label: t.table?.user || "User",
       render: (order) => (
         <div className="flex items-center gap-2.5">
           {order.user.avatar && (
@@ -87,48 +103,49 @@ export function OrdersTable({ onViewOrder, statusFilter, userIdFilter }: OrdersT
           )}
           <div>
             <p className="text-sm font-bold text-surface-800">
-              {order.user.name || 'Unknown'}
+              {order.user.name || "Unknown"}
             </p>
-            <p className="text-xs text-surface-500">
-              {order.user.email}
-            </p>
+            <p className="text-xs text-surface-500">{order.user.email}</p>
           </div>
         </div>
       ),
+      accessor: "currency",
     },
     {
-      label: t.table?.service || 'Service',
+      label: t.table?.service || "Service",
       render: (order) => (
         <p className="text-sm font-medium text-surface-800">
           {order.service.title}
         </p>
       ),
+      accessor: "status",
     },
     {
-      label: t.table?.amount || 'Amount',
+      label: t.table?.amount || "Amount",
       render: (order) => (
         <span className="text-sm font-bold text-surface-800 tabular-nums">
           {formatCurrency(order.amount, order.currency)}
         </span>
       ),
+      accessor: "currency",
     },
     {
-      label: t.table?.status || 'Status',
-      accessor: 'status',
+      label: t.table?.status || "Status",
+      accessor: "status",
       render: (order) => {
         const config = statusConfig[order.status] || statusConfig.pending;
         return (
           <span
             className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${config.bg} ${config.text}`}
           >
-            {t.status?.[config.labelKey] || config.labelKey.replace('_', ' ')}
+            {t.status?.[config.labelKey] || config.labelKey.replace("_", " ")}
           </span>
         );
       },
     },
     {
-      label: t.table?.date || 'Date',
-      accessor: 'createdAt',
+      label: t.table?.date || "Date",
+      accessor: "createdAt",
       render: (order) => (
         <span className="text-xs text-surface-500">
           {formatDate(order.createdAt)}
@@ -139,35 +156,10 @@ export function OrdersTable({ onViewOrder, statusFilter, userIdFilter }: OrdersT
 
   const extraParams = React.useMemo(() => {
     const params: Record<string, any> = {};
-    if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
+    if (statusFilter && statusFilter !== "all") params.status = statusFilter;
     if (userIdFilter) params.userId = userIdFilter;
     return params;
   }, [statusFilter, userIdFilter]);
 
-  return (
-    <GlobalTable<AdminOrder>
-      endpoint="/api/admin/orders"
-      queryKey="admin-orders"
-      initialData={[]}
-      columns={columns}
-      rowKey="id"
-      isPaginated={true}
-      extraParams={extraParams}
-      LIMIT={10}
-      emptyMessage={t.table?.empty || 'No orders found'}
-      onRowClick={(order) => onViewOrder?.(order.id)}
-      renderActions={(order) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onViewOrder?.(order.id);
-          }}
-          className="p-1.5 rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-800 transition-colors"
-          title={t.table?.view || 'View Details'}
-        >
-          <FiEye className="w-4 h-4" />
-        </button>
-      )}
-    />
-  );
+  return <div></div>;
 }

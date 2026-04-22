@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { FiChevronRight } from "react-icons/fi";
-import { comingSoon } from "./lib";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
+import LocaleLink from "../../_global/LocaleLink";
 
 export default function QuickStartBanner() {
   const { local } = useVariables();
@@ -23,8 +23,8 @@ export default function QuickStartBanner() {
           <h3 className="text-lg font-bold text-surface-900 mb-1">{t.title}</h3>
           <p className="text-sm text-surface-400">{t.description}</p>
         </div>
-        <button
-          onClick={() => comingSoon(t.cta)}
+        <LocaleLink
+          href={"/services"}
           className="surface-btn-primary flex items-center gap-1 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label={t.cta}
         >
@@ -33,7 +33,7 @@ export default function QuickStartBanner() {
             size={16}
             className="rtl:rotate-180 transition-transform"
           />
-        </button>
+        </LocaleLink>
       </div>
     </motion.section>
   );

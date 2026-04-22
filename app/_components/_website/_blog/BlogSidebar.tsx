@@ -16,6 +16,7 @@ export default function BlogSidebar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentCategoryId = searchParams.get("categoryId");
+  const currentTag = searchParams.get("tag");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [latestPosts, setLatestPosts] = useState<Article[]>([]);
@@ -26,7 +27,7 @@ export default function BlogSidebar() {
       try {
         const [cats, posts] = await Promise.all([
           getCategories(),
-          getArticles({ limit: 5, sortBy: "createdAt", order: "DESC" }),
+          getArticles({ limit: 5 }),
         ]);
         setCategories(cats);
         setLatestPosts(posts.data);
@@ -45,6 +46,17 @@ export default function BlogSidebar() {
       params.set("categoryId", id);
     } else {
       params.delete("categoryId");
+    }
+    params.set("page", "1");
+    router.push(`/${local}/blog?${params.toString()}`);
+  };
+
+  const handleTagClick = (tag: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tag) {
+      params.set("tag", tag.toLowerCase());
+    } else {
+      params.delete("tag");
     }
     params.set("page", "1");
     router.push(`/${local}/blog?${params.toString()}`);
@@ -170,18 +182,35 @@ export default function BlogSidebar() {
 
       {/* Popular Tags */}
       <div className="bg-surface-card border border-surface-200 rounded-2xl p-6 shadow-surface-sm">
-        <h3 className="font-display font-bold text-surface-900 mb-6">
-          {blogPage.popularTagsTitle}
-        </h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-display font-bold text-surface-900">
+            {blogPage.popularTagsTitle}
+          </h3>
+          {currentTag && (
+            <button
+              onClick={() => handleTagClick(null)}
+              className="text-xs font-bold text-primary hover:text-primary-dark flex items-center gap-1 transition-colors"
+            >
+              <FiX size={12} />
+              {local === "ar" ? "مسح" : "Clear"}
+            </button>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           {popularTags.map((tag, index) => (
             <motion.span
               key={tag}
-              className="bg-surface-50 hover:bg-primary/10 text-surface-600 hover:text-primary px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wider cursor-pointer transition-all border border-surface-200 hover:border-primary/20"
+              onClick={() => handleTagClick(tag)}
+              className={`bg-surface-50 hover:bg-primary/10 px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wider cursor-pointer transition-all border ${
+                currentTag === tag.toLowerCase()
+                  ? "bg-primary/10 text-primary border-primary/20"
+                  : "text-surface-600 hover:text-primary border-surface-200 hover:border-primary/20"
+              }`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 + index * 0.05 }}
               whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               #{tag}
             </motion.span>

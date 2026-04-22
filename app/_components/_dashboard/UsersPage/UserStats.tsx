@@ -1,27 +1,26 @@
 "use client";
 
 import { FiUsers, FiShield, FiCheck, FiClock } from "react-icons/fi";
-import { User, UserRole } from "@/app/types/user";
+import { UserStatsResult } from "@/app/types/user";
 
 // ============================================================================
 // USER STATS - Displays real-time statistics from backend user data
-// Calculates total users, admins, verified users, and pending (unverified)
+// Accepts stats object from server-side calculations
 // ============================================================================
 
 interface UserStatsProps {
-  users: User[];
+  stats: UserStatsResult;
+  total: number;
 }
 
-export default function UserStats({ users }: UserStatsProps) {
-  // ============================================================================
-  // Calculate stats from real backend data
-  // ============================================================================
-  const totalUsers = users.length;
-  const adminCount = users.filter((u) => u.role === "admin").length;
-  const verifiedCount = users.filter((u) => u.isEmailVerified).length;
-  const pendingCount = users.filter((u) => !u.isEmailVerified).length;
+export default function UserStats({ stats, total }: UserStatsProps) {
+  // Use pre-calculated stats from server
+  const totalUsers = stats.totalUsers;
+  const adminCount = stats.adminsCount;
+  const verifiedCount = stats.verifiedUsersNumber;
+  const pendingCount = stats.unverifiedUsersNumber;
 
-  const stats = [
+  const statsCards = [
     {
       label: "Total Users",
       value: totalUsers.toString(),
@@ -43,7 +42,7 @@ export default function UserStats({ users }: UserStatsProps) {
     {
       label: "Verified",
       value: verifiedCount.toString(),
-      change: `${pendingCount} pending verification`,
+      change: pendingCount > 0 ? `${pendingCount} pending verification` : "All verified",
       isPositive: pendingCount === 0,
       icon: FiCheck,
       iconBg: "bg-emerald-100",
@@ -53,7 +52,7 @@ export default function UserStats({ users }: UserStatsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {stats.map((stat, index) => {
+      {statsCards.map((stat, index) => {
         const Icon = stat.icon;
         return (
           <div

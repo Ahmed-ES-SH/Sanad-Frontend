@@ -147,18 +147,18 @@ export default function RecentActivityTable() {
                         <Icon size={16} />
                       </div>
                       <span className="text-sm font-bold text-surface-900 truncate">
-                        {row.activityKey}
+                        {t[row.activityKey as keyof typeof t] || row.activityKey}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-xs font-semibold text-surface-400 whitespace-nowrap">
-                    {row.typeKey}
+                    {t[row.typeKey as keyof typeof t] || row.typeKey}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`${row.statusBg} ${row.statusTextColor} text-[10px] font-bold px-2 py-0.5 rounded uppercase`}
                     >
-                      {row.statusKey}
+                      {t[row.statusKey as keyof typeof t] || row.statusKey}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right whitespace-nowrap">

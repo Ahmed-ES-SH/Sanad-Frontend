@@ -10,7 +10,10 @@ export default async function UserDashboardOrders({
   const page = Number(resolvedSearchParams?.page) || 1;
 
   const response = await getMyOrders({ page, limit: 10 });
-
-  const { data, meta } = response;
-  return <UserOrdersPage data={data} meta={meta} />;
+  return (
+    <UserOrdersPage
+      data={response.data?.data || []}
+      meta={response.data?.meta || {}}
+    />
+  );
 }

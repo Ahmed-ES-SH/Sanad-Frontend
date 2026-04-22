@@ -15,13 +15,14 @@ import {
 export interface BlogQueryParams {
   page?: number;
   limit?: number;
-  sortBy?: string;
-  order?: "ASC" | "DESC";
   categoryId?: string;
   tag?: string;
+  search?: string;
 }
 
 // Public: Get published articles with pagination and filtering
+// Backend supports: page, limit, categoryId, tag, search (title search)
+// Backend uses ORDER BY publishedAt DESC by default
 export async function getArticles(
   params: BlogQueryParams = {},
 ): Promise<{ data: Article[]; meta: BlogListResponse["meta"] }> {
@@ -30,10 +31,9 @@ export async function getArticles(
 
     if (params.page) searchParams.set("page", params.page.toString());
     if (params.limit) searchParams.set("limit", params.limit.toString());
-    if (params.sortBy) searchParams.set("sortBy", params.sortBy);
-    if (params.order) searchParams.set("order", params.order);
     if (params.categoryId) searchParams.set("categoryId", params.categoryId);
     if (params.tag) searchParams.set("tag", params.tag);
+    if (params.search) searchParams.set("search", params.search);
 
     const queryString = searchParams.toString();
     const endpoint = queryString
@@ -174,9 +174,7 @@ export async function updateArticle(
 }
 
 // Admin: Toggle publish status
-export async function togglePublishStatus(
-  id: string,
-): Promise<{
+export async function togglePublishStatus(id: string): Promise<{
   success: boolean;
   message: string;
   data?: PublishToggleResponse;

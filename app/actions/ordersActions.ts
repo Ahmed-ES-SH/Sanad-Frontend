@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { revalidateTag } from 'next/cache';
-import { ORDERS_ENDPOINTS } from '@/app/constants/endpoints';
-import { protectedRequest, ApiError } from '@/lib/api-client';
+import { revalidateTag } from "next/cache";
+import { ORDERS_ENDPOINTS } from "@/app/constants/endpoints";
+import { protectedRequest, ApiError } from "@/lib/api-client";
 import {
   Order,
   OrderListResponse,
@@ -14,10 +14,10 @@ import {
   OrderQueryParams,
   AdminOrderQueryParams,
   OrderActionResult,
-} from '@/app/types/order';
+} from "@/app/types/order";
 
 // Cache tags for revalidation
-const ORDER_CACHE_TAG = 'orders';
+const ORDER_CACHE_TAG = "orders";
 
 // ============================================================================
 // USER-FACING ORDER ACTIONS
@@ -29,19 +29,19 @@ const ORDER_CACHE_TAG = 'orders';
  */
 export async function createOrder(
   serviceId: string,
-  notes?: string
+  notes?: string,
 ): Promise<OrderActionResult<Order>> {
   try {
     const response = await protectedRequest<Order>(
       ORDERS_ENDPOINTS.CREATE(serviceId, notes),
-      'POST'
+      "POST",
     );
 
-    revalidateTag(ORDER_CACHE_TAG, 'default');
+    revalidateTag(ORDER_CACHE_TAG, "default");
 
     return {
       success: true,
-      message: 'Order created successfully',
+      message: "Order created successfully",
       data: response,
     };
   } catch (error) {
@@ -53,7 +53,7 @@ export async function createOrder(
     }
     return {
       success: false,
-      message: 'Failed to create order. Please try again.',
+      message: "Failed to create order. Please try again.",
     };
   }
 }
@@ -63,17 +63,22 @@ export async function createOrder(
  * GET /api/orders?page=1&limit=10
  */
 export async function getMyOrders(
-  params: OrderQueryParams = {}
+  params: OrderQueryParams = {},
 ): Promise<OrderActionResult<OrderListResponse>> {
   try {
     const response = await protectedRequest<OrderListResponse>(
-      ORDERS_ENDPOINTS.LIST(params.page, params.limit),
-      'GET'
+      ORDERS_ENDPOINTS.LIST(
+        params.page,
+        params.limit,
+        params.status,
+        params.search,
+      ),
+      "GET",
     );
 
     return {
       success: true,
-      message: 'Orders fetched successfully',
+      message: "Orders fetched successfully",
       data: response,
     };
   } catch (error) {
@@ -85,7 +90,7 @@ export async function getMyOrders(
     }
     return {
       success: false,
-      message: 'Failed to fetch orders. Please try again.',
+      message: "Failed to fetch orders. Please try again.",
     };
   }
 }
@@ -95,17 +100,17 @@ export async function getMyOrders(
  * GET /api/orders/:id
  */
 export async function getOrderById(
-  id: string
+  id: string,
 ): Promise<OrderActionResult<Order>> {
   try {
     const response = await protectedRequest<Order>(
       ORDERS_ENDPOINTS.GET(id),
-      'GET'
+      "GET",
     );
 
     return {
       success: true,
-      message: 'Order fetched successfully',
+      message: "Order fetched successfully",
       data: response,
     };
   } catch (error) {
@@ -117,7 +122,7 @@ export async function getOrderById(
     }
     return {
       success: false,
-      message: 'Failed to fetch order. Please try again.',
+      message: "Failed to fetch order. Please try again.",
     };
   }
 }
@@ -127,17 +132,17 @@ export async function getOrderById(
  * POST /api/orders/:id/pay
  */
 export async function initiatePayment(
-  orderId: string
+  orderId: string,
 ): Promise<OrderActionResult<PaymentIntentResponse>> {
   try {
     const response = await protectedRequest<PaymentIntentResponse>(
       ORDERS_ENDPOINTS.PAY(orderId),
-      'POST'
+      "POST",
     );
 
     return {
       success: true,
-      message: 'Payment initiated successfully',
+      message: "Payment initiated successfully",
       data: response,
     };
   } catch (error) {
@@ -149,7 +154,7 @@ export async function initiatePayment(
     }
     return {
       success: false,
-      message: 'Failed to initiate payment. Please try again.',
+      message: "Failed to initiate payment. Please try again.",
     };
   }
 }
@@ -163,7 +168,7 @@ export async function initiatePayment(
  * GET /api/admin/orders?page=1&limit=10&status=paid&userId=5&serviceId=abc123
  */
 export async function getAllOrders(
-  params: AdminOrderQueryParams = {}
+  params: AdminOrderQueryParams = {},
 ): Promise<OrderActionResult<AdminOrderListResponse>> {
   try {
     const response = await protectedRequest<AdminOrderListResponse>(
@@ -172,14 +177,14 @@ export async function getAllOrders(
         params.limit,
         params.status,
         params.userId,
-        params.serviceId
+        params.serviceId,
       ),
-      'GET'
+      "GET",
     );
 
     return {
       success: true,
-      message: 'Orders fetched successfully',
+      message: "Orders fetched successfully",
       data: response,
     };
   } catch (error) {
@@ -191,7 +196,7 @@ export async function getAllOrders(
     }
     return {
       success: false,
-      message: 'Failed to fetch orders. Please try again.',
+      message: "Failed to fetch orders. Please try again.",
     };
   }
 }
@@ -201,17 +206,17 @@ export async function getAllOrders(
  * GET /api/admin/orders/:id
  */
 export async function getAdminOrderById(
-  id: string
+  id: string,
 ): Promise<OrderActionResult<AdminOrder>> {
   try {
     const response = await protectedRequest<AdminOrder>(
       ORDERS_ENDPOINTS.ADMIN_GET(id),
-      'GET'
+      "GET",
     );
 
     return {
       success: true,
-      message: 'Order fetched successfully',
+      message: "Order fetched successfully",
       data: response,
     };
   } catch (error) {
@@ -223,7 +228,7 @@ export async function getAdminOrderById(
     }
     return {
       success: false,
-      message: 'Failed to fetch order. Please try again.',
+      message: "Failed to fetch order. Please try again.",
     };
   }
 }
@@ -234,20 +239,20 @@ export async function getAdminOrderById(
  */
 export async function updateOrderStatus(
   id: string,
-  status: string
+  status: string,
 ): Promise<OrderActionResult<UpdateOrderStatusResponse>> {
   try {
     const response = await protectedRequest<UpdateOrderStatusResponse>(
       ORDERS_ENDPOINTS.ADMIN_UPDATE_STATUS(id),
-      'PATCH',
-      { status } as unknown as Record<string, unknown>
+      "PATCH",
+      { status } as unknown as Record<string, unknown>,
     );
 
-    revalidateTag(ORDER_CACHE_TAG, 'default');
+    revalidateTag(ORDER_CACHE_TAG, "default");
 
     return {
       success: true,
-      message: 'Order status updated successfully',
+      message: "Order status updated successfully",
       data: response,
     };
   } catch (error) {
@@ -259,7 +264,7 @@ export async function updateOrderStatus(
     }
     return {
       success: false,
-      message: 'Failed to update order status. Please try again.',
+      message: "Failed to update order status. Please try again.",
     };
   }
 }
@@ -270,20 +275,20 @@ export async function updateOrderStatus(
  */
 export async function addOrderUpdate(
   id: string,
-  content: string
+  content: string,
 ): Promise<OrderActionResult<AddOrderUpdateResponse>> {
   try {
     const response = await protectedRequest<AddOrderUpdateResponse>(
       ORDERS_ENDPOINTS.ADMIN_ADD_UPDATE(id),
-      'POST',
-      { content } as unknown as Record<string, unknown>
+      "POST",
+      { content } as unknown as Record<string, unknown>,
     );
 
-    revalidateTag(ORDER_CACHE_TAG, 'default');
+    revalidateTag(ORDER_CACHE_TAG, "default");
 
     return {
       success: true,
-      message: 'Update added successfully',
+      message: "Update added successfully",
       data: response,
     };
   } catch (error) {
@@ -295,7 +300,7 @@ export async function addOrderUpdate(
     }
     return {
       success: false,
-      message: 'Failed to add update. Please try again.',
+      message: "Failed to add update. Please try again.",
     };
   }
 }

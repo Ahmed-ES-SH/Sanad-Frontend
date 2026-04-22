@@ -8,6 +8,8 @@ import {
   FiBarChart2,
   FiHelpCircle,
 } from "react-icons/fi";
+import { getTranslations } from "@/app/helpers/helpers";
+import { useVariables } from "@/app/context/VariablesContext";
 
 //////////////////////////////////////////////////////
 ///////  Stat cards for the User Dashboard stats row
@@ -82,6 +84,10 @@ const cardVariants = {
 };
 
 export default function StatsRow() {
+  const { local } = useVariables();
+  const { UserDashboard } = getTranslations(local);
+  const t = UserDashboard.StatsRow;
+
   return (
     <motion.section
       variants={containerVariants}
@@ -99,7 +105,7 @@ export default function StatsRow() {
           >
             <div className="flex justify-between items-start mb-4">
               <p className="text-surface-400 text-xs font-bold uppercase tracking-widest opacity-60">
-                {stat.labelKey}
+                {t[stat.labelKey as keyof typeof t]}
               </p>
               <div
                 className={`p-2 rounded-lg ${stat.iconBg} ${stat.iconColor}`}
@@ -113,13 +119,13 @@ export default function StatsRow() {
               </span>
               {"valueLabelKey" in stat && stat.valueLabelKey && (
                 <span className="text-xs font-semibold text-surface-400 whitespace-nowrap">
-                  {stat.valueLabelKey}
+                  {t[stat.valueLabelKey as keyof typeof t]}
                 </span>
               )}
               <span
                 className={`text-xs font-semibold ${stat.changeColor} truncate`}
               >
-                {stat.changeKey}
+                {t[stat.changeKey as keyof typeof t]}
               </span>
             </div>
           </motion.div>

@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: any) {
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
-    title: "Your Brief - Sanad",
-    description: "Review your project brief and proceed to approval.",
+    title: translations.cartMeta.title,
+    description: translations.cartMeta.description,
     ...sharedMetadata,
   };
 }

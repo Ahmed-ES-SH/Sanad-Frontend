@@ -14,9 +14,9 @@ export default async function Navbar() {
 
   return (
     <ClientDiv initialUser={response?.user ?? null}>
-      <div className="c-container h-full xl:grid flex justify-between lg:grid-cols-3 items-center">
+      <div className="c-container h-full xl:grid flex justify-between xl:grid-cols-2 2xl:grid-cols-3 items-center">
         {/* Left: Logo */}
-        <div className="flex justify-start">
+        <div className="flex items-center justify-between">
           <LocalLink href={"/"} className="relative block">
             <Img
               src="/sanad-logo.png"
@@ -25,10 +25,15 @@ export default async function Navbar() {
               loading="eager"
             />
           </LocalLink>
+
+          {/* Middle: Navigation Links (Perfectly Centered) */}
+          <nav className="2xl:hidden xl:flex hidden items-center justify-center h-full">
+            <NavLinks />
+          </nav>
         </div>
 
         {/* Middle: Navigation Links (Perfectly Centered) */}
-        <nav className="hidden xl:flex items-center justify-center h-full">
+        <nav className="hidden 2xl:flex  items-center justify-center h-full">
           <NavLinks />
         </nav>
 

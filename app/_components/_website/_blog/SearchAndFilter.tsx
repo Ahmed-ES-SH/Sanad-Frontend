@@ -1,18 +1,25 @@
-// Search and Filter Component
+// Search and Filter Component - Redesigned with modern editorial aesthetic
 "use client";
-interface props {
+import { useState, useEffect } from "react";
+import { FiSearch, FiChevronDown, FiX, FiFilter } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { useVariables } from "@/app/context/VariablesContext";
+import { getTranslations } from "@/app/helpers/helpers";
+import { getCategories } from "@/app/actions/blogActions";
+import { Category } from "@/app/types/blog";
+
+interface SearchAndFilterProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   sortBy: string;
   setSortBy: (sort: string) => void;
   totalResults: number;
   isLoading: boolean;
+  onCategoryChange?: (categoryId: string) => void;
+  onTagChange?: (tag: string) => void;
+  selectedCategory?: string;
+  selectedTag?: string;
 }
-
-import { FiChevronDown, FiSearch } from "react-icons/fi";
-import { motion } from "framer-motion";
-import { useVariables } from "@/app/context/VariablesContext";
-import { getTranslations } from "@/app/helpers/helpers";
 
 export default function SearchAndFilter({
   searchTerm,
@@ -21,50 +28,227 @@ export default function SearchAndFilter({
   setSortBy,
   totalResults,
   isLoading,
-}: props) {
+  onCategoryChange,
+  selectedCategory,
+}: SearchAndFilterProps) {
   const { local } = useVariables();
   const { blogPage } = getTranslations(local);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  // Fetch categories for dropdown
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const cats = await getCategories();
+        setCategories(cats);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== searchTerm) {
+        setSearchTerm(localSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, searchTerm, setSearchTerm]);
+
+  const selectedCategoryName = categories.find(
+    (c) => c.id === selectedCategory
+  )?.name;
+
+  const clearSearch = () => {
+    setLocalSearch("");
+    setSearchTerm("");
+  };
+
+  const clearCategory = () => {
+    if (onCategoryChange) {
+      onCategoryChange("");
+    }
+  };
+
   return (
     <motion.div
-      className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8"
+      className="mb-10"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-surface-600 font-medium">
-          {blogPage.showing}{" "}
-          <span className="font-bold text-surface-900">
+      {/* Top Bar - Results Count */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-1 h-8 bg-gradient-to-b from-primary to-primary-dark rounded-full" />
+          <span className="text-lg font-semibold text-surface-800">
             {totalResults} {blogPage.Results}
           </span>
-        </span>
+        </div>
+        <div className="hidden md:block text-sm text-surface-400 font-medium">
+          {local === "ar" ? "صفحة واحدة" : "Page"} 1
+        </div>
       </div>
 
-      <div className="flex items-center max-md:flex-col max-md:items-start max-md:w-full gap-4">
-        <div className="relative max-md:w-full">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-400" />
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full md:w-[320px] xl:w-[550px] pr-4 py-2 bg-surface-50 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          />
+      {/* Filter Controls - Modern Card Style */}
+      <div className="bg-surface-card border border-surface-200/60 rounded-2xl p-4 shadow-surface-sm backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search Input - Glassmorphism Style */}
+          <div className="relative flex-1 group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl blur-xl group-hover:blur-lg transition-all duration-500" />
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <FiSearch className="text-primary" />
+              </div>
+              <input
+                type="text"
+                placeholder={local === "ar" ? "البحث في المقالات..." : "Search articles..."}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                className="w-full pl-14 pr-12 py-3 bg-surface-50/80 backdrop-blur-sm border border-surface-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-surface-50 outline-none transition-all duration-300 text-surface-800 placeholder:text-surface-400 font-medium"
+              />
+              {localSearch && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 hover:bg-surface-200 rounded-lg transition-colors"
+                >
+                  <FiX className="text-surface-400" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category Dropdown - Custom Styled */}
+          <div className="relative min-w-[200px]">
+            <div
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className={`flex items-center justify-between px-4 py-3 bg-surface-50/80 backdrop-blur-sm border rounded-xl cursor-pointer transition-all duration-300 ${
+                selectedCategory
+                  ? "border-primary/30 bg-primary/5"
+                  : "border-surface-200 hover:border-surface-300"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <FiFilter className={`text-sm ${selectedCategory ? "text-primary" : "text-surface-400"}`} />
+                <span className={`font-medium ${selectedCategory ? "text-primary-dark" : "text-surface-500"}`}>
+                  {selectedCategoryName || (local === "ar" ? "التصنيف" : "Category")}
+                </span>
+              </div>
+              <motion.div
+                animate={{ rotate: isCategoryOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <FiChevronDown className="text-surface-400" />
+              </motion.div>
+            </div>
+
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {isCategoryOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute z-50 w-full mt-2 bg-surface-card border border-surface-200 rounded-xl shadow-xl overflow-hidden"
+                >
+                  <div className="max-h-60 overflow-y-auto">
+                    <button
+                      onClick={() => {
+                        clearCategory();
+                        setIsCategoryOpen(false);
+                      }}
+                      className={`w-full text-right px-4 py-3 hover:bg-surface-50 transition-colors font-medium ${
+                        !selectedCategory ? "text-primary bg-primary/5" : "text-surface-600"
+                      }`}
+                    >
+                      {local === "ar" ? "الكل" : "All Categories"}
+                    </button>
+                    {categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          if (onCategoryChange) onCategoryChange(category.id);
+                          setIsCategoryOpen(false);
+                        }}
+                        className={`w-full text-right px-4 py-3 hover:bg-surface-50 transition-colors font-medium flex items-center justify-between ${
+                          selectedCategory === category.id
+                            ? "text-primary bg-primary/5"
+                            : "text-surface-600"
+                        }`}
+                      >
+                        {category.name}
+                        {selectedCategory === category.id && (
+                          <span className="w-2 h-2 bg-primary rounded-full" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Sort Dropdown - Custom Styled */}
+          <div className="relative min-w-[160px]">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              disabled={isLoading}
+              className="w-full appearance-none px-4 py-3 bg-surface-50/80 backdrop-blur-sm border border-surface-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all duration-300 text-surface-700 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="recent">{blogPage.sortBy.recent}</option>
+              <option value="popular">{blogPage.sortBy.popular}</option>
+              <option value="oldest">{blogPage.sortBy.oldest}</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <motion.div
+                animate={{ rotate: isLoading ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FiChevronDown className="text-surface-400" />
+              </motion.div>
+            </div>
+          </div>
         </div>
 
-        <div className="relative max-md:w-full">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            disabled={isLoading}
-            className="appearance-none max-md:w-full bg-surface-50 border border-surface-200 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-surface-700"
+        {/* Active Filters Display */}
+        {(searchTerm || selectedCategory) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 mt-4 pt-4 border-t border-surface-100"
           >
-            <option value="recent">{blogPage.sortBy.recent}</option>
-            <option value="popular">{blogPage.sortBy.popular}</option>
-            <option value="oldest">{blogPage.sortBy.oldest}</option>
-          </select>
-          <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-surface-400 pointer-events-none" />
-        </div>
+            <span className="text-sm text-surface-400 font-medium">
+              {local === "ar" ? "الفلاتر النشطة:" : "Active filters:"}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {searchTerm && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium">
+                  {local === "ar" ? "بحث:" : "Search:"} {searchTerm}
+                  <button onClick={clearSearch} className="hover:text-primary-dark">
+                    <FiX size={12} />
+                  </button>
+                </span>
+              )}
+              {selectedCategory && selectedCategoryName && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium">
+                  {local === "ar" ? "تصنيف:" : "Category:"} {selectedCategoryName}
+                  <button onClick={clearCategory} className="hover:text-primary-dark">
+                    <FiX size={12} />
+                  </button>
+                </span>
+              )}
+            </div>
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );

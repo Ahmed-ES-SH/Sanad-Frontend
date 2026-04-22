@@ -1,6 +1,7 @@
 // hooks/useAppQuery.ts
 import { useQuery, UseQueryOptions, QueryKey } from "@tanstack/react-query";
-import axios, { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
+import { instance as axiosInstance } from "@/lib/axios";
 
 type FetcherParams<TData> = {
   url: string;
@@ -13,7 +14,7 @@ async function fetcher<TData>({
   config,
   transform,
 }: FetcherParams<TData>): Promise<TData> {
-  const response = await axios({
+  const response = await axiosInstance({
     url,
     ...config,
   });

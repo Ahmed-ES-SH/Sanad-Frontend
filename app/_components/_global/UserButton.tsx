@@ -12,6 +12,7 @@ import {
   FiLoader,
   FiChevronDown,
   FiBell,
+  FiList,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import Img from "./Img";
@@ -146,7 +147,7 @@ export default function UserButton() {
               </LocalLink>
 
               <LocalLink
-                href="/dashboard/payments"
+                href="/userdashboard/payments"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-surface-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-200"
               >
@@ -154,6 +155,16 @@ export default function UserButton() {
                   <FiCreditCard size={18} />
                 </div>
                 <span>{userMenu.payments}</span>
+              </LocalLink>
+              <LocalLink
+                href="/userdashboard/orders"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-surface-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-200"
+              >
+                <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center text-surface-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                  <FiList size={18} />
+                </div>
+                <span>{userMenu.orders}</span>
               </LocalLink>
 
               <LocalLink

@@ -89,8 +89,6 @@ const NotificationItem = React.memo(
             handleRead();
           }
         }}
-        aria-label={`Notification: ${notification.title}`}
-        aria-read={notification.isRead}
       >
         {/* Unread indicator */}
         {!notification.isRead && (

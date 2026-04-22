@@ -177,12 +177,19 @@ function StatusStepper({ currentStatus }: { currentStatus: string }) {
           const isCurrent = index === currentIndex;
 
           return (
-            <div key={step.id} className="relative z-10 flex flex-col items-center">
+            <div
+              key={step.id}
+              className="relative z-10 flex flex-col items-center"
+            >
               <motion.div
                 initial={false}
                 animate={{
-                  backgroundColor: isActive ? "var(--primary)" : "var(--surface-card-bg)",
-                  borderColor: isActive ? "var(--primary)" : "var(--surface-300)",
+                  backgroundColor: isActive
+                    ? "var(--primary)"
+                    : "var(--surface-card-bg)",
+                  borderColor: isActive
+                    ? "var(--primary)"
+                    : "var(--surface-300)",
                   scale: isCurrent ? 1.1 : 1,
                 }}
                 className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-shadow ${
@@ -197,7 +204,9 @@ function StatusStepper({ currentStatus }: { currentStatus: string }) {
               </motion.div>
               <span
                 className={`absolute top-12 caption font-display whitespace-nowrap ${
-                  isActive ? "text-surface-900 font-semibold" : "text-surface-400"
+                  isActive
+                    ? "text-surface-900 font-semibold"
+                    : "text-surface-400"
                 }`}
               >
                 {step.label}
@@ -244,10 +253,10 @@ function TimelineItem({ entry }: { entry: TimelineEntry }) {
       </div>
       <div className="group">
         <div className="flex justify-between items-center mb-1">
-          <span className="caption text-surface-900 font-semibold">{entry.author}</span>
-          <span className="caption-xs text-surface-400">
-            {entry.timestamp}
+          <span className="caption text-surface-900 font-semibold">
+            {entry.author}
           </span>
+          <span className="caption-xs text-surface-400">{entry.timestamp}</span>
         </div>
         <div
           className={`body-sm p-4 rounded-xl border transition-all ${
@@ -263,14 +272,24 @@ function TimelineItem({ entry }: { entry: TimelineEntry }) {
   );
 }
 
-function MetaItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function MetaItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex items-center gap-3 py-3 border-b border-surface-100 last:border-0">
       <div className="p-2 rounded-lg bg-surface-50 text-surface-500">
         {icon}
       </div>
       <div>
-        <p className="caption-xs text-surface-400 uppercase tracking-wider">{label}</p>
+        <p className="caption-xs text-surface-400 uppercase tracking-wider">
+          {label}
+        </p>
         <p className="body-sm font-semibold text-surface-900">{value}</p>
       </div>
     </div>
@@ -289,7 +308,8 @@ export default function OrderDetailsPage({
   const [updateText, setUpdateText] = useState("");
   const [fetchState, setFetchState] = useState<FetchState>("loading");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
-  const [submissionError, setSubmissionError] = useState<SubmissionError | null>(null);
+  const [submissionError, setSubmissionError] =
+    useState<SubmissionError | null>(null);
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
 
@@ -321,7 +341,9 @@ export default function OrderDetailsPage({
       setTimeout(() => setSubmitState("idle"), 3000);
     } catch {
       setSubmitState("error");
-      setSubmissionError({ message: "Failed to post update. Please try again." });
+      setSubmissionError({
+        message: "Failed to post update. Please try again.",
+      });
     }
   };
 
@@ -352,9 +374,12 @@ export default function OrderDetailsPage({
       <div className="page-bg min-h-screen flex items-center justify-center">
         <div className="surface-card p-8 max-w-md text-center">
           <FiAlertCircle className="w-12 h-12 text-accent-rose mx-auto mb-4" />
-          <h2 className="heading-lg text-surface-900 mb-2">Unable to Load Order</h2>
+          <h2 className="heading-lg text-surface-900 mb-2">
+            Unable to Load Order
+          </h2>
           <p className="body text-surface-600 mb-6">
-            We couldn't retrieve the order details. This could be due to a network issue or the order may have been removed.
+            We couldn't retrieve the order details. This could be due to a
+            network issue or the order may have been removed.
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -406,7 +431,10 @@ export default function OrderDetailsPage({
       </motion.div>
 
       {/* ─── Progress Visualizer ─── */}
-      <motion.div variants={item} className="surface-card p-6 mb-8 overflow-hidden">
+      <motion.div
+        variants={item}
+        className="surface-card p-6 mb-8 overflow-hidden"
+      >
         <h3 className="heading-sm text-surface-900 mb-2 flex items-center gap-2">
           <FiTruck className="text-primary" />
           Order Progress
@@ -444,7 +472,9 @@ export default function OrderDetailsPage({
                       <p className="heading-sm text-surface-900 leading-tight">
                         {order.user.name}
                       </p>
-                      <p className="body-sm text-surface-500">{order.user.email}</p>
+                      <p className="body-sm text-surface-500">
+                        {order.user.email}
+                      </p>
                       <button className="text-primary caption font-bold mt-1 hover:underline">
                         View Profile
                       </button>
@@ -475,21 +505,31 @@ export default function OrderDetailsPage({
               <div className="mt-10 pt-8 border-t border-surface-100">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="p-4 rounded-xl border border-surface-100 shadow-surface-sm">
-                    <p className="caption text-surface-400 mb-1">Total Payable</p>
+                    <p className="caption text-surface-400 mb-1">
+                      Total Payable
+                    </p>
                     <div className="flex items-baseline gap-1">
-                      <span className="heading-xl text-surface-900">{order.totalAmount}</span>
-                      <span className="caption text-surface-500 font-bold">{order.currency}</span>
+                      <span className="heading-xl text-surface-900">
+                        {order.totalAmount}
+                      </span>
+                      <span className="caption text-surface-500 font-bold">
+                        {order.currency}
+                      </span>
                     </div>
                   </div>
                   <div className="md:col-span-2 flex flex-col justify-center space-y-3">
                     <div className="flex justify-between items-center px-2">
-                      <span className="body-sm text-surface-500">Transaction ID</span>
+                      <span className="body-sm text-surface-500">
+                        Transaction ID
+                      </span>
                       <span className="body-sm font-mono text-surface-900 bg-surface-100 px-2 py-0.5 rounded">
                         {order.paymentId}
                       </span>
                     </div>
                     <div className="flex justify-between items-center px-2">
-                      <span className="body-sm text-surface-500">Payment Status</span>
+                      <span className="body-sm text-surface-500">
+                        Payment Status
+                      </span>
                       <span className="body-sm font-bold text-accent-emerald flex items-center gap-1.5">
                         <FiCheckCircle /> Verified
                       </span>
@@ -512,15 +552,30 @@ export default function OrderDetailsPage({
           </motion.div>
 
           {/* ─── Secondary Info: Quick Facts ─── */}
-          <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            variants={item}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <div className="surface-card p-6">
               <h3 className="heading-sm text-surface-900 mb-4 border-b border-surface-100 pb-3">
                 Account Metadata
               </h3>
               <div className="space-y-1">
-                <MetaItem icon={<FiUserCheck />} label="Account Manager" value="Mark Thompson" />
-                <MetaItem icon={<FiShield />} label="Security Level" value="Level 3 Verified" />
-                <MetaItem icon={<FiFileText />} label="Contract" value="Annual Agreement" />
+                <MetaItem
+                  icon={<FiUserCheck />}
+                  label="Account Manager"
+                  value="Mark Thompson"
+                />
+                <MetaItem
+                  icon={<FiShield />}
+                  label="Security Level"
+                  value="Level 3 Verified"
+                />
+                <MetaItem
+                  icon={<FiFileText />}
+                  label="Contract"
+                  value="Annual Agreement"
+                />
               </div>
             </div>
             <div className="surface-card p-6">
@@ -528,9 +583,21 @@ export default function OrderDetailsPage({
                 Logistics Context
               </h3>
               <div className="space-y-1">
-                <MetaItem icon={<FiTruck />} label="Fulfilment" value="Not Applicable" />
-                <MetaItem icon={<FiClock />} label="SLA Deadline" value="Oct 30, 2023" />
-                <MetaItem icon={<FiAlertCircle />} label="Priority" value="High Response" />
+                <MetaItem
+                  icon={<FiTruck />}
+                  label="Fulfilment"
+                  value="Not Applicable"
+                />
+                <MetaItem
+                  icon={<FiClock />}
+                  label="SLA Deadline"
+                  value="Oct 30, 2023"
+                />
+                <MetaItem
+                  icon={<FiAlertCircle />}
+                  label="Priority"
+                  value="High Response"
+                />
               </div>
             </div>
           </motion.div>
@@ -547,7 +614,9 @@ export default function OrderDetailsPage({
                 <FiClock className="w-5 h-5 text-surface-500" />
                 Order Audit
               </h2>
-              <span className="caption text-surface-400 font-bold">{timeline.length} Events</span>
+              <span className="caption text-surface-400 font-bold">
+                {timeline.length} Events
+              </span>
             </div>
 
             <div className="space-y-8 relative before:content-[''] before:absolute before:start-[1.25rem] before:top-2 before:bottom-0 before:w-[2px] before:bg-surface-200">
@@ -572,12 +641,14 @@ export default function OrderDetailsPage({
                   maxLength={500}
                 />
                 <div className="absolute bottom-3 right-3 flex items-center gap-3">
-                   <span className="caption-xs text-surface-400">
+                  <span className="caption-xs text-surface-400">
                     {updateText.length}/500
                   </span>
                   <button
                     onClick={handlePostUpdate}
-                    disabled={!updateText.trim() || submitState === "submitting"}
+                    disabled={
+                      !updateText.trim() || submitState === "submitting"
+                    }
                     className="p-2 bg-primary text-white rounded-lg shadow-primary-sm disabled:opacity-50 hover:scale-105 transition-transform"
                   >
                     {submitState === "submitting" ? (
@@ -606,4 +677,3 @@ export default function OrderDetailsPage({
     </motion.div>
   );
 }
-

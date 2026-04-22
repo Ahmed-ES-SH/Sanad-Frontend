@@ -117,9 +117,9 @@ export default function QuickSettings() {
         >
           <SettingButton
             icon={PrimaryIcon}
-            title={settings[0].titleKey}
-            subtitle={settings[0].subtitleKey}
-            clickAction={() => comingSoon(settings[0].titleKey)}
+            title={t[settings[0].titleKey as keyof typeof t] || settings[0].titleKey}
+            subtitle={t[settings[0].subtitleKey as keyof typeof t] || settings[0].subtitleKey}
+            clickAction={() => comingSoon(t[settings[0].titleKey as keyof typeof t] || settings[0].titleKey)}
           />
         </motion.div>
 
@@ -139,9 +139,9 @@ export default function QuickSettings() {
                   <SettingButton
                     key={setting.titleKey}
                     icon={Icon}
-                    title={setting.titleKey}
-                    subtitle={setting.subtitleKey}
-                    clickAction={() => comingSoon(setting.titleKey)}
+                    title={t[setting.titleKey as keyof typeof t] || setting.titleKey}
+                    subtitle={t[setting.subtitleKey as keyof typeof t] || setting.subtitleKey}
+                    clickAction={() => comingSoon(t[setting.titleKey as keyof typeof t] || setting.titleKey)}
                   />
                 );
               })}

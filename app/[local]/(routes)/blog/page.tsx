@@ -21,7 +21,12 @@ export async function generateMetadata({ params }: any) {
 export default async function Blog({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; categoryId?: string; tag?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    categoryId?: string;
+    tag?: string;
+    search?: string;
+  }>;
 }) {
   try {
     const params = await searchParams;
@@ -30,6 +35,7 @@ export default async function Blog({
       limit: 8,
       categoryId: params.categoryId,
       tag: params.tag,
+      search: params.search,
     });
 
     return (

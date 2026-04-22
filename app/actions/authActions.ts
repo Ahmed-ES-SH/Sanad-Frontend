@@ -252,3 +252,69 @@ export async function verifyEmailAction(token: string): Promise<AuthResponse> {
     };
   }
 }
+
+// ============================================================================
+// PROFILE UPDATE - Update current user's profile
+// ============================================================================
+
+interface ProfileUpdateData {
+  name?: string;
+  avatar?: string;
+  password?: string;
+}
+
+/**
+ * updateProfileAction - Updates the current user's profile
+ * Supports partial updates for name, avatar, and password
+ * Email cannot be changed (it's marked as verified/readonly)
+ *
+ * @param profileData - Profile data to update
+ * @returns AuthResponse with success/error status
+ */
+export async function updateProfileAction(
+  profileData: ProfileUpdateData,
+): Promise<AuthResponse> {
+  try {
+    // First get current user to retrieve their ID
+    const currentUser = await protectedRequest<User>(AUTH_ENDPOINTS.CURRENT_USER);
+
+    if (!currentUser || !currentUser.id) {
+      return {
+        success: false,
+        message: "Unable to fetch current user",
+      };
+    }
+
+    const payload: Record<string, unknown> = {};
+
+    if (profileData.name !== undefined) payload.name = profileData.name;
+    if (profileData.avatar !== undefined) payload.avatar = profileData.avatar;
+    if (profileData.password !== undefined) payload.password = profileData.password;
+
+    const updatedUser = await protectedRequest<User>(
+      USER_ENDPOINTS.UPDATE_USER(currentUser.id),
+      "PATCH",
+      payload,
+    );
+
+    return {
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        user: updatedUser,
+      },
+    };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        message: error.message,
+        statusCode: error.statusCode,
+      };
+    }
+    return {
+      success: false,
+      message: "An unexpected error occurred",
+    };
+  }
+}

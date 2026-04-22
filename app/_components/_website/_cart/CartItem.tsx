@@ -4,7 +4,15 @@ import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import { formatPrice } from "@/app/helpers/formatPrice";
 import { MdSecurity, MdDeleteOutline, MdBookmarkBorder } from "react-icons/md";
-import { CartItem as CartItemType } from "@/app/context/CartContext";
+import { CartItem as CartItemBaseType } from "@/app/context/CartContext";
+
+/**
+ * Extended CartItem type with additional UI properties for display purposes.
+ */
+export interface CartItemType extends CartItemBaseType {
+  type?: "service" | "project";
+  category?: string;
+}
 
 interface CartItemProps {
   item: CartItemType;
@@ -18,7 +26,7 @@ export function CartItem({ item, onRemove, isRemoving }: CartItemProps) {
   const isRtl = local === "ar";
 
   // Determine type (default to service for now)
-  const type = (item as any).type || "service";
+  const type = item.type || "service";
   const title = item.serviceTitle || item.title || "";
   const price = item.unitPrice || item.price || 0;
   const image = item.serviceImageUrl || item.image;
@@ -123,9 +131,9 @@ export function CartItem({ item, onRemove, isRemoving }: CartItemProps) {
 
             {/* Tags / category (derived from title/type for now) */}
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {(item as any).category && (
+              {item.category && (
                 <span className="px-2.5 py-0.5 text-[10px] md:text-xs font-medium bg-(--surface-container-highest) text-(--on-surface-variant) rounded-full border border-(--outline-variant)/20">
-                  {(item as any).category}
+                  {item.category}
                 </span>
               )}
             </div>

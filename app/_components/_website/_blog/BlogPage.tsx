@@ -35,8 +35,12 @@ const NoPostsFound: React.FC = () => {
       <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
         <FaSearch className="text-3xl text-primary" />
       </div>
-      <h3 className="text-2xl font-display font-bold text-surface-900 mb-2">{noArticles.title}</h3>
-      <p className="text-center text-surface-500 max-w-sm font-medium">{noArticles.message}</p>
+      <h3 className="text-2xl font-display font-bold text-surface-900 mb-2">
+        {noArticles.title}
+      </h3>
+      <p className="text-center text-surface-500 max-w-sm font-medium">
+        {noArticles.message}
+      </p>
     </motion.div>
   );
 };
@@ -47,7 +51,10 @@ const BlogGrid: React.FC<{
 }> = ({ posts, isLoading }) => (
   <AnimatePresence mode="wait">
     {isLoading ? (
-      <div key="loading" className="min-h-[400px] flex items-center justify-center">
+      <div
+        key="loading"
+        className="min-h-[400px] flex items-center justify-center"
+      >
         <LoadingBlogSpinner />
       </div>
     ) : posts.length === 0 ? (
@@ -69,17 +76,20 @@ const BlogGrid: React.FC<{
   </AnimatePresence>
 );
 
-export default function BlogPage({ 
-  initialArticles, 
-  totalPosts, 
-  totalPages, 
-  currentPage 
+export default function BlogPage({
+  initialArticles,
+  totalPosts,
+  totalPages,
+  currentPage,
 }: BlogPageProps) {
   const { local } = useVariables();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("tag") || "");
+
+  // Read filter params from URL
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("categoryId") || "");
+  const [selectedTag, setSelectedTag] = useState(searchParams.get("tag") || "");
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "recent");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,10 +98,17 @@ export default function BlogPage({
     setIsLoading(false);
   }, [initialArticles]);
 
+  // Sync filter state with URL params when they change externally
+  useEffect(() => {
+    setSearchTerm(searchParams.get("search") || "");
+    setSelectedCategory(searchParams.get("categoryId") || "");
+    setSelectedTag(searchParams.get("tag") || "");
+  }, [searchParams]);
+
   const updateFilters = (params: Record<string, string | number | null>) => {
     setIsLoading(true);
     const newParams = new URLSearchParams(searchParams.toString());
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value === null || value === "") {
         newParams.delete(key);
@@ -110,19 +127,38 @@ export default function BlogPage({
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    // Note: The actual API search might need a 'query' param, 
-    // but BLOG_PLAN.md mentions 'tag' and 'categoryId'.
-    // If there's no general search param in API, we might use tag or just client filter
-    // for now let's assume 'tag' can be used or we need to add 'query' if API supports it.
-    // Given BLOG_PLAN.md, I'll use 'tag' for now as a fallback if no other search param exists.
-    updateFilters({ tag: term });
+    // Backend supports search by title
+    updateFilters({ search: term });
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    // Only clear tag if we're setting a new category (not when clearing)
+    if (categoryId) {
+      updateFilters({ categoryId, tag: null });
+    } else {
+      updateFilters({ categoryId: null });
+    }
+  };
+
+  const handleTagChange = (tag: string) => {
+    setSelectedTag(tag);
+    // Only clear category if we're setting a new tag (not when clearing)
+    if (tag) {
+      updateFilters({ tag, categoryId: null });
+    } else {
+      updateFilters({ tag: null });
+    }
   };
 
   const handleSort = (sort: string) => {
     setSortBy(sort);
-    updateFilters({ 
+    // Note: Backend only supports ORDER BY publishedAt DESC
+    // The sort dropdown is UI only - backend ignores these params
+    // We just keep the param in URL for UX consistency
+    updateFilters({
       sortBy: sort === "recent" ? "createdAt" : sort === "popular" ? "viewsCount" : "createdAt",
-      order: sort === "oldest" ? "ASC" : "DESC"
+      order: sort === "oldest" ? "ASC" : "DESC",
     });
   };
 
@@ -145,6 +181,8 @@ export default function BlogPage({
               setSortBy={handleSort}
               totalResults={totalPosts}
               isLoading={isLoading}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
             />
 
             <BlogGrid posts={initialArticles} isLoading={isLoading} />

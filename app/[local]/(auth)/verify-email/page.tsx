@@ -12,9 +12,8 @@ export async function generateMetadata({ params }: any) {
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
-    // title: translations.verifyEmail?.meta?.title || "Verify Email",
-    title: "Verify Email",
-    description: "Verify your email address",
+    title: translations.verifyEmailMeta.title,
+    description: translations.verifyEmailMeta.description,
     ...sharedMetadata,
   };
 }

@@ -63,6 +63,10 @@ const sharedButtonStyles =
   "rounded-xl p-8 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
 export default function QuickActions() {
+  const { local } = useVariables();
+  const { UserDashboard } = getTranslations(local);
+  const t = UserDashboard.QuickActions;
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
@@ -75,8 +79,8 @@ export default function QuickActions() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0 }}
-        onClick={() => comingSoon(actions[0].titleKey)}
-        aria-label={actions[0].titleKey}
+        onClick={() => comingSoon(t[actions[0].titleKey as keyof typeof t])}
+        aria-label={t[actions[0].titleKey as keyof typeof t]}
         className={`md:col-span-1 group relative bg-primary text-white overflow-hidden flex flex-col justify-between ${sharedButtonStyles} hover:bg-primary-dark`}
       >
         <div className="absolute -right-4 -top-4 opacity-10 group-hover:rotate-12 transition-transform">
@@ -84,9 +88,12 @@ export default function QuickActions() {
         </div>
         <div className="relative z-10">
           <FiPlusCircle className="text-4xl mb-4" />
-          <h3 className="text-xl font-bold mb-2">{actions[0].titleKey}</h3>
+          <h3 className="text-xl font-bold mb-2">
+            {t[actions[0].titleKey as keyof typeof t] || actions[0].titleKey}
+          </h3>
           <p className="text-sm opacity-90 leading-relaxed">
-            {actions[0].descriptionKey}
+            {t[actions[0].descriptionKey as keyof typeof t] ||
+              actions[0].descriptionKey}
           </p>
         </div>
       </motion.button>
@@ -96,17 +103,18 @@ export default function QuickActions() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        onClick={() => comingSoon(actions[1].titleKey)}
-        aria-label={actions[1].titleKey}
+        onClick={() => comingSoon(t[actions[1].titleKey as keyof typeof t])}
+        aria-label={t[actions[1].titleKey as keyof typeof t]}
         className={`md:col-span-1 surface-card flex flex-col justify-between ${sharedButtonStyles} hover:bg-surface-50`}
       >
         <div>
           <FiFileText className="text-4xl text-primary mb-4" />
           <h3 className="text-xl font-bold text-surface-900 mb-2">
-            {actions[1].titleKey}
+            {t[actions[1].titleKey as keyof typeof t] || actions[1].titleKey}
           </h3>
           <p className="text-surface-400 text-sm leading-relaxed">
-            {actions[1].descriptionKey}
+            {t[actions[1].descriptionKey as keyof typeof t] ||
+              actions[1].descriptionKey}
           </p>
         </div>
       </motion.button>
@@ -117,8 +125,8 @@ export default function QuickActions() {
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          onClick={() => comingSoon(actions[2].titleKey)}
-          aria-label={actions[2].titleKey}
+          onClick={() => comingSoon(t[actions[2].titleKey as keyof typeof t])}
+          aria-label={t[actions[2].titleKey as keyof typeof t]}
           className={`surface-card-subtle rounded-xl flex items-center gap-4 cursor-pointer hover:bg-surface-100 transition-colors p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
         >
           <div className={`p-3 rounded-lg shrink-0 ${actions[2].smallIconBg}`}>
@@ -126,10 +134,11 @@ export default function QuickActions() {
           </div>
           <div className="min-w-0">
             <h4 className="font-bold text-surface-900 truncate">
-              {actions[2].titleKey}
+              {t[actions[2].titleKey as keyof typeof t] || actions[2].titleKey}
             </h4>
             <p className="text-xs text-surface-400 truncate">
-              {actions[2].descriptionKey}
+              {t[actions[2].descriptionKey as keyof typeof t] ||
+                actions[2].descriptionKey}
             </p>
           </div>
         </motion.button>
@@ -138,8 +147,8 @@ export default function QuickActions() {
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          onClick={() => comingSoon(actions[3].titleKey)}
-          aria-label={actions[3].titleKey}
+          onClick={() => comingSoon(t[actions[3].titleKey as keyof typeof t])}
+          aria-label={t[actions[3].titleKey as keyof typeof t]}
           className={`surface-card-subtle rounded-xl flex items-center gap-4 cursor-pointer hover:bg-surface-100 transition-colors p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
         >
           <div className={`p-3 rounded-lg shrink-0 ${actions[3].smallIconBg}`}>
@@ -147,10 +156,11 @@ export default function QuickActions() {
           </div>
           <div className="min-w-0">
             <h4 className="font-bold text-surface-900 truncate">
-              {actions[3].titleKey}
+              {t[actions[3].titleKey as keyof typeof t] || actions[3].titleKey}
             </h4>
             <p className="text-xs text-surface-400 truncate">
-              {actions[3].descriptionKey}
+              {t[actions[3].descriptionKey as keyof typeof t] ||
+                actions[3].descriptionKey}
             </p>
           </div>
         </motion.button>

@@ -11,9 +11,9 @@ import {
   FiDollarSign,
   FiTrendingUp,
 } from "react-icons/fi";
-import { usePayments } from "@/app/_components/_dashboard/PaymentsPage/usePayments";
+// import { usePayments } from "@/app/_components/_dashboard/PaymentsPage/usePayments";
 import TransactionTable from "@/app/_components/_dashboard/PaymentsPage/TransactionTable";
-import PaymentDetailModal from "@/app/_components/_dashboard/PaymentsPage/PaymentDetailModal";
+// import PaymentDetailModal from "@/app/_components/_dashboard/PaymentsPage/PaymentDetailModal";
 import type { PaymentStatus } from "@/lib/types/payments";
 
 const container = {
@@ -49,12 +49,12 @@ export default function PaymentsPage() {
   );
 
   // Fetch payments using the custom hook
-  const { data, meta, isLoading, error, refetch } = usePayments({
-    status: statusFilter,
-    search: searchFilter || undefined,
-    page,
-    limit,
-  });
+  // const { data, meta, isLoading, error, refetch } = usePayments({
+  //   status: statusFilter,
+  //   search: searchFilter || undefined,
+  //   page,
+  //   limit,
+  // });
 
   const handleRowClick = useCallback((paymentId: string) => {
     setSelectedPaymentId(paymentId);
@@ -64,9 +64,9 @@ export default function PaymentsPage() {
     setSelectedPaymentId(null);
   }, []);
 
-  const handleRefundSuccess = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  // const handleRefundSuccess = useCallback(() => {
+  //   refetch();
+  // }, [refetch]);
 
   const handleStatusFilterChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,6 +76,14 @@ export default function PaymentsPage() {
     },
     [],
   );
+
+  const meta = null;
+  const data = null;
+  const isLoading = false;
+  const error = null;
+
+  if (!meta) return null;
+  if (!data) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50/50">
@@ -218,22 +226,22 @@ export default function PaymentsPage() {
         </div>
 
         {/* Transactions Table */}
-        <TransactionTable
+        {/* <TransactionTable
           payments={data}
           isLoading={isLoading}
           error={error}
           onRowClick={handleRowClick}
           onRetry={refetch}
-        />
+        /> */}
       </main>
 
       {/* Payment Detail Modal */}
-      <PaymentDetailModal
+      {/* <PaymentDetailModal
         isOpen={!!selectedPaymentId}
         onClose={handleCloseModal}
         paymentId={selectedPaymentId || ""}
         onRefundSuccess={handleRefundSuccess}
-      />
+      /> */}
     </div>
   );
 }

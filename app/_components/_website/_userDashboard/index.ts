@@ -1,4 +1,5 @@
 export { default as UserProfileHeader } from "./UserProfileHeader";
+export { default as EditProfileModal } from "./EditProfileModal";
 export { default as StatsRow } from "./StatsRow";
 export { default as QuickActions } from "./QuickActions";
 export { default as ActiveDeliverables } from "./ActiveDeliverables";

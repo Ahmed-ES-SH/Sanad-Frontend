@@ -1,91 +1,63 @@
 "use client";
 
+import { useEffect } from "react";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
-import { motion } from "framer-motion";
-import { FiAlertCircle, FiRefreshCw, FiHome } from "react-icons/fi";
 
-interface ErrorProps {
+interface OrderTrackingErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function OrderTrackingError({ error, reset }: ErrorProps) {
+/**
+ * Error boundary for order tracking page
+ * Displays user-friendly error message with retry option
+ */
+const OrderTrackingError: React.FC<OrderTrackingErrorProps> = ({
+  error,
+  reset,
+}) => {
   const { local } = useVariables();
-  
-  // Determine error message based on error type
-  const getErrorMessage = () => {
-    if (error.message.includes("fetch") || error.message.includes("network")) {
-      return local === "ar" 
-        ? "تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت."
-        : "Unable to connect to the server. Please check your internet connection.";
-    }
-    if (error.message.includes("404") || error.message.includes("not found")) {
-      return local === "ar"
-        ? "الطلب غير موجود أو تم حذفه."
-        : "Order not found or has been removed.";
-    }
-    if (error.message.includes("401") || error.message.includes("unauthorized")) {
-      return local === "ar"
-        ? "يرجى تسجيل الدخول مرة أخرى للوصول إلى هذا الطلب."
-        : "Please log in again to access this order.";
-    }
-    // Default message
-    return local === "ar"
-      ? "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
-      : "An unexpected error occurred. Please try again.";
-  };
+  const t = getTranslations(local).orderTracking;
+  const isRtl = local === "ar";
+
+  useEffect(() => {
+    // Log error to monitoring service in production
+    console.error("Order tracking page error:", error);
+  }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 page-bg">
+      <div className="w-16 h-16 bg-accent-rose/10 text-accent-rose rounded-2xl flex items-center justify-center mb-5">
+        <svg
+          className="w-7 h-7"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.773-1.334-2.697-1.334-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h2 className="display-sm font-display text-surface-900 mb-2">
+        {t.errorTitle}
+      </h2>
+      <p className="body text-surface-600 max-w-md mb-8">
+        {t.errorDescription}
+      </p>
+      <button
+        onClick={reset}
+        className="surface-btn-primary"
+        aria-label={t.tryAgain}
       >
-        {/* Error Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
-            <FiAlertCircle className="w-10 h-10 text-red-500" />
-          </div>
-        </div>
-
-        {/* Error Title */}
-        <h1 className="text-2xl font-bold text-on-surface text-center mb-3">
-          {local === "ar" ? "عذراً، حدث خطأ" : "Something went wrong"}
-        </h1>
-
-        {/* Error Message */}
-        <p className="text-on-surface-variant text-center mb-8 leading-relaxed">
-          {getErrorMessage()}
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            onClick={reset}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-          >
-            <FiRefreshCw className="w-4 h-4" />
-            {local === "ar" ? "حاول مرة أخرى" : "Try again"}
-          </button>
-          
-          <a
-            href={local === "ar" ? "/ar/userdashboard/orders" : "/en/userdashboard/orders"}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-surface-container-lowest text-on-surface rounded-lg font-medium hover:bg-surface-bright transition-colors ring-1 ring-outline-variant/15"
-          >
-            <FiHome className="w-4 h-4" />
-            {local === "ar" ? "العودة للطلبات" : "Back to Orders"}
-          </a>
-        </div>
-
-        {/* Error Reference */}
-        {error.digest && (
-          <p className="text-xs text-on-surface-variant/60 text-center mt-6">
-            {local === "ar" ? `المرجع: ${error.digest}` : `Reference: ${error.digest}`}
-          </p>
-        )}
-      </motion.div>
+        {t.tryAgain}
+      </button>
     </div>
   );
-}
+};
+
+export default OrderTrackingError;

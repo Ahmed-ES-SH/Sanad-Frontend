@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
 import AuthLayout from "@/app/_components/_website/_auth/AuthLayout";
 import SignInForm from "@/app/_components/_website/_auth/SignInForm";
 import { getTranslations } from "@/app/helpers/helpers";
@@ -12,8 +10,8 @@ export async function generateMetadata({ params }: any) {
   const sharedMetadata = getSharedMetadata(local ?? "en", translations);
 
   return {
-    title: translations.signUpMeta.title,
-    description: translations.signUpMeta.description,
+    title: translations.signInMeta.title,
+    description: translations.signInMeta.description,
     ...sharedMetadata,
   };
 }

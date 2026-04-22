@@ -159,6 +159,8 @@ export interface UpdateOrderStatusResponse extends Omit<AdminOrder, "payment"> {
 export interface OrderQueryParams {
   page?: number;
   limit?: number;
+  status?: OrderStatus;
+  search?: string;
 }
 
 export interface AdminOrderQueryParams extends OrderQueryParams {

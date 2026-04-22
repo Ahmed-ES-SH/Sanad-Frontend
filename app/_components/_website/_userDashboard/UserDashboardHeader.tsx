@@ -6,11 +6,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function UserDashboardHeader() {
   const { local } = useVariables();
   const { UserDashboard } = getTranslations(local);
   const t = UserDashboard.Header;
+
+  const { user } = useAuth();
 
   const pathname = usePathname();
 
@@ -20,12 +23,12 @@ export default function UserDashboardHeader() {
         <span className="text-2xl font-bold tracking-tighter text-primary font-display">
           Sanad
         </span>
-        
+
         <nav className="hidden md:flex gap-6">
           {[
             { key: "dashboard", href: "/userdashboard" },
             { key: "orders", href: "/userdashboard/orders" },
-            { key: "support", href: "/contact" }
+            { key: "support", href: "/contact" },
           ].map((item) => {
             const isActive = pathname === `/${local}${item.href}`;
             return (

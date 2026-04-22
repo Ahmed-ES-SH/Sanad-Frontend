@@ -100,10 +100,12 @@ export const ORDERS_ENDPOINTS = {
     if (notes) params.set("notes", notes);
     return `/api/orders?${params.toString()}`;
   },
-  LIST: (page?: number, limit?: number) => {
+  LIST: (page?: number, limit?: number, status?: string, search?: string) => {
     const params = new URLSearchParams();
     if (page) params.set("page", String(page));
     if (limit) params.set("limit", String(limit));
+    if (status && status !== "all") params.set("status", status);
+    if (search) params.set("search", search);
     return `/api/orders?${params.toString()}`;
   },
   GET: (id: string) => `/api/orders/${id}`,

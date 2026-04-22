@@ -6,7 +6,7 @@ import TransactionHistory from "@/app/_components/_userdashboard/_payments/Trans
 
 export default function UserPaymentsPage() {
   return (
-    <main className="pt-24 pb-12 px-6 md:px-8 min-h-screen bg-stone-50">
+    <main className="mt-24 mb-12 c-container px-6 md:px-8 min-h-screen">
       <PaymentsHeader />
       <KPICards />
 

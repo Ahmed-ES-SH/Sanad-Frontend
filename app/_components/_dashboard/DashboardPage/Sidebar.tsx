@@ -13,6 +13,9 @@ import {
   FiCreditCard,
   FiFileText,
   FiLogOut,
+  FiShoppingCart,
+  FiBell,
+  FiPlusCircle,
 } from "react-icons/fi";
 import { useAuth } from "@/app/context/AuthContext";
 import { IoMdClose } from "react-icons/io";
@@ -27,6 +30,8 @@ const navItems = [
   { labelKey: "services", href: "/dashboard/services", icon: FiTool },
   { labelKey: "contactUs", href: "/dashboard/contactus", icon: FiMail },
   { labelKey: "payments", href: "/dashboard/payments", icon: FiCreditCard },
+  { labelKey: "orders", href: "/dashboard/orders", icon: FiShoppingCart },
+  { labelKey: "notifications", href: "/dashboard/notifications", icon: FiBell },
   { labelKey: "blog", href: "/dashboard/blog", icon: FiFileText },
 ];
 

@@ -124,17 +124,17 @@ export default function ActiveDeliverables() {
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-bold text-surface-900 truncate">
-                      {project.titleKey}
+                      {t[project.titleKey as keyof typeof t] || project.titleKey}
                     </h4>
                     <p className="text-xs text-surface-400 truncate">
-                      {project.subtitleKey}
+                      {t[project.subtitleKey as keyof typeof t] || project.subtitleKey}
                     </p>
                   </div>
                 </div>
                 <span
                   className={`${project.statusBg} ${project.statusTextColor} px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shrink-0`}
                 >
-                  {project.statusTextKey}
+                  {t[project.statusTextKey as keyof typeof t] || project.statusTextKey}
                 </span>
               </div>
               <div className="space-y-2">

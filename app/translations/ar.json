@@ -29,6 +29,11 @@
     "description": "تواصل مع سند للاستفسارات أو الاستشارات أو الدعم. نحن هنا لمساعدتك في تحقيق رؤيتك الرقمية."
   },
 
+  "notificationsMeta": {
+    "title": "الإشعارات - سند",
+    "description": "عرض وإدارة إشعاراتك"
+  },
+
   "signInMeta": {
     "title": "تسجيل الدخول - سند",
     "description": "سجّل الدخول إلى حسابك في سند لإدارة مشاريعك، ومتابعة التقدم، والتواصل مع فريق الخبراء لدينا."
@@ -37,6 +42,16 @@
   "signUpMeta": {
     "title": "إنشاء حساب - Sanad",
     "description": "انضم إلى Sanad اليوم وتمتع بالوصول إلى حلول تقنية مبتكرة. أنشئ حسابك وابدأ رحلتك الرقمية معنا."
+  },
+
+  "verifyEmailMeta": {
+    "title": "تأكيد البريد الإلكتروني - سند",
+    "description": "قم بتأكيد عنوان بريدك الإلكتروني لإكمال تسجيل حسابك."
+  },
+
+  "cartMeta": {
+    "title": "ملف طلبك - سند",
+    "description": "راجع ملف طلب مشروعك وتابع للموافقة."
   },
 
   "hero": {
@@ -351,6 +366,7 @@
     "profile": "الملف الشخصي",
     "dashboard": "لوحة التحكم",
     "payments": "المدفوعات",
+    "orders": "الطلبات",
     "notifications": "الإشعارات",
     "notificationSettings": "إعدادات الإشعارات",
     "logout": "تسجيل الخروج",
@@ -361,6 +377,10 @@
     "title": "الإشعارات",
     "empty": "لا توجد إشعارات",
     "emptyDescription": "أنت على اطلاع! سنخطرك عند وصول أي شيء جديد.",
+    "emptyUnread": "ممتاز! ليس لديك إشعارات غير مقروءة.",
+    "unread": "إشعار غير مقروء",
+    "unreadPlural": "إشعارات غير مقروءة",
+    "allCaughtUp": "أنت على اطلاع!",
     "markAllRead": "تحديد الكل كمقروء",
     "loadMore": "تحميل المزيد من الإشعارات",
     "showing": "عرض",
@@ -370,6 +390,14 @@
     "viewDetails": "عرض التفاصيل",
     "read": "مقروء",
     "delete": "حذف",
+    "filterAll": "الكل",
+    "filterUnread": "غير مقروء",
+    "typesAll": "جميع الأنواع",
+    "typesOrders": "الطلبات",
+    "typesPaymentSuccess": "دفع ناجح",
+    "typesPaymentFailed": "دفع فاشل",
+    "typesSystem": "النظام",
+    "typesBroadcast": "إعلانات",
     "preferences": {
       "title": "تفضيلات الإشعارات",
       "subtitle": "تخصيص كيفية ومتى تتلقى الإشعارات",
@@ -464,6 +492,11 @@
       "contactUs": "اتصل بنا",
       "payments": "المدفوعات",
       "blog": "المدونة",
+      "orders": "الطلبات",
+      "notifications": "الإشعارات",
+      "addArticle": "إضافة مقال",
+      "addProject": "إضافة مشروع",
+      "addService": "إضافة خدمة",
       "logout": "تسجيل الخروج",
       "help": "المساعدة",
       "loggingOut": "جاري تسجيل الخروج..."
@@ -991,6 +1024,32 @@
       "editProfile": "تعديل الملف الشخصي",
       "sharePortfolio": "مشاركة الملف التعريفي"
     },
+    "EditProfileModal": {
+      "title": "تعديل الملف الشخصي",
+      "avatarLabel": "صورة الملف الشخصي",
+      "avatarPlaceholder": "أدخل رابط الصورة",
+      "avatarPreview": "معاينة",
+      "nameLabel": "الاسم الكامل",
+      "namePlaceholder": "أدخل اسمك الكامل",
+      "emailLabel": "البريد الإلكتروني",
+      "emailReadOnly": "لا يمكنك تعديل البريد الإلكتروني الموثق",
+      "passwordLabel": "كلمة المرور الجديدة",
+      "passwordPlaceholder": "أدخل كلمة المرور الجديدة",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "validation": {
+        "nameRequired": "الاسم مطلوب",
+        "nameTooShort": "يجب أن يكون الاسم حرفان على الأقل",
+        "avatarInvalid": "يرجى إدخال رابط صالح",
+        "passwordTooShort": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+        "passwordsNotMatch": "كلمتا المرور غير متطابقتين"
+      },
+      "success": "تم تحديث الملف الشخصي بنجاح",
+      "error": "فشل في تحديث الملف الشخصي"
+    },
     "StatsRow": {
       "servicesActive": "الخدمات النشطة",
       "activeProjects": "المشاريع النشطة",
@@ -1175,7 +1234,12 @@
     "dismiss": "إغلاق",
     "scope": "النطاق",
     "deliverables": "المخرجات",
-    "investment": "الاستثمار"
+    "investment": "الاستثمار",
+    "loadingBrief": "جاري تحميل موجزك...",
+    "loginRequired": "يجب عليك تسجيل الدخول لإتمام عملية الشراء. يرجى تسجيل الدخول أو إنشاء حساب.",
+    "checkoutError": "فشل في بدء عملية الدفع. يرجى المحاولة مرة أخرى.",
+    "paymentSuccess": "تم الدفع بنجاح!",
+    "paymentFailed": "فشل الدفع"
   },
 
   "PaymentFailedPage": {
@@ -1201,10 +1265,11 @@
     "searchPlaceholder": "البحث برقم الطلب أو الخدمة...",
     "filters": {
       "all": "جميع الطلبات",
-      "inProgress": "قيد التنفيذ",
-      "completed": "مكتمل",
       "pending": "معلق",
-      "more": "المزيد"
+      "paid": "تم الدفع",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
     },
     "card": {
       "orderId": "رقم الطلب",
@@ -1223,6 +1288,109 @@
       "pending": "معلق",
       "paid": "تم الدفع",
       "cancelled": "ملغي"
+    },
+    "resultsInfo": {
+      "showingAll": "{{count}} طلب",
+      "showingFiltered": "{{filtered}} من {{total}} طلب",
+      "order": "طلب",
+      "orders": "طلبات",
+      "of": "من"
+    },
+    "emptyState": {
+      "title": "لا توجد طلبات",
+      "description": "لم تقم بتقديم أي طلبات خدمة بعد. تصفح خدماتنا لبدء طلب جديد."
+    },
+    "noResultsState": {
+      "title": "لم يتم العثور على نتائج",
+      "description": "حاول تعديل معايير البحث أو التصفية."
+    },
+    "insights": {
+      "activeOrders": "طلبات نشطة",
+      "pendingReview": "قيد المراجعة",
+      "completedThisMonth": "تم إنجازها هذا الشهر"
+    },
+    "supportHub": {
+      "needAssistance": "هل تحتاج إلى مساعدة؟",
+      "supportDescription": "فريق الدعم لدينا متاح لمساعدتك في أي استفسارات تتعلق بطلباتك أو خدماتنا.",
+      "contactSupport": "تحدث مع الدعم",
+      "exploreNew": "استكشف آفاقاً جديدة",
+      "exploreDescription": "اكتشف كيف يمكننا مساعدتك في تنمية أعمالك من خلال خدماتنا التقنية المتقدمة.",
+      "browseServices": "تصفح الخدمات"
     }
+  },
+
+  "orderTrackingMeta": {
+    "title": "تتبع الطلب - سند",
+    "description": "تتبع تقدم طلب خدمتك في الوقت الفعلي."
+  },
+
+  "orderTracking": {
+    "pageTitle": "تتبع الطلب",
+    "pageSubtitle": "تابع تقدم طلب الخدمة الخاص بك.",
+    "backToOrders": "العودة إلى الطلبات",
+    "orderDetails": "تفاصيل الطلب",
+    "activityLog": "سجل النشاط",
+    "quickActions": "إجراءات سريعة",
+    "needAssistance": "تحتاج مساعدة؟",
+    "supportDescription": "فريق الدعم الفني متاح على مدار الساعة لمساعدتك في طلبك أو أي استفسارات تقنية.",
+    "contactSupport": "تواصل مع الدعم",
+    "downloadInvoice": "تن��يل الفاتورة",
+    "serviceAgreement": "اتفاقية الخدمة",
+    "whatsNext": "ماذا يأتي بعد؟",
+    "orderId": "رقم الطلب",
+    "serviceName": "اسم الخدمة",
+    "amount": "المبلغ",
+    "datePlaced": "تاريخ الطلب",
+    "orderNotes": "ملاحظات الطلب",
+    "noNotes": "لا توجد ملاحظات",
+    "status": {
+      "pending": "معلق",
+      "paid": "تم الدفع",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "loadingTitle": "جارٍ تحميل تفاصيل الطلب",
+    "errorTitle": "عذراً، حدث خطأ ما",
+    "errorDescription": "لم نتمكن من تحميل تفاصيل طلبك. يرجى المحاولة مرة أخرى أو التواصل مع الدعم إذا استمرت المشكلة.",
+    "tryAgain": "إعادة المحاولة",
+    "notFoundTitle": "الطلب غير موجود",
+    "notFoundDescription": "الطلب الذي تبحث عنه غير موجود أو ليس لديك صلاحية لعرضه.",
+    "backToDashboard": "العودة للوحة التحكم"
+  },
+
+  "payments": {
+    "tableTitle": "سجل المعاملات",
+    "searchPlaceholder": "البحث بالوصف...",
+    "filterLabel": "تصفية حسب الحالة",
+    "dateRangeLabel": "النطاق الزمني",
+    "dateFromLabel": "من",
+    "dateToLabel": "إلى",
+    "resetBtn": "إعادة تعيين",
+    "applyBtn": "تطبيق",
+    "clearFiltersLabel": "مسح",
+    "columnDate": "التاريخ",
+    "columnDescription": "الوصف",
+    "columnAmount": "المبلغ",
+    "columnStatus": "الحالة",
+    "columnAction": "إجراء",
+    "loadingText": "جارٍ تحميل المعاملات...",
+    "loadFailed": "فشل تحميل المعاملات",
+    "tryAgainLater": "يرجى المحاولة مرة أخرى",
+    "tryAgainLabel": "إعادة المحاولة",
+    "showingText": "عرض {{count}}",
+    "ofText": "من",
+    "transactionsText": "معاملات",
+    "pageText": "صفحة {{current}} من {{total}}",
+    "previousPageLabel": "الصفحة السابقة",
+    "nextPageLabel": "الصفحة التالية",
+    "noResultsMatchFilters": "لا توجد معاملات تطابق الفلاتر",
+    "noTransactionsFound": "لم يتم العثور على معاملات",
+    "clearAllFiltersLabel": "مسح جميع الفلاتر",
+    "statusPaid": "مدفوع",
+    "statusPending": "معلق",
+    "statusFailed": "فشل",
+    "retryBtn": "إعادة المحاولة",
+    "downloadInvoice": "تنزيل الفاتورة"
   }
 }
