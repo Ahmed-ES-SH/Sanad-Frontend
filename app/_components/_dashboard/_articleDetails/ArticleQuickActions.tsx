@@ -17,12 +17,21 @@ const actionTooltips = {
   "Check Readability": "Analyze content for reading difficulty and clarity",
 };
 
+// ComingSoon badge component
+function ComingSoonBadge() {
+  return (
+    <span className="ml-1 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider bg-stone-200 text-stone-500 rounded">
+      Soon
+    </span>
+  );
+}
+
 export function ArticleQuickActions({ article }: { article: Article }) {
   const actions = [
-    { icon: FiVolume2, label: "Promote Post" },
-    { icon: FiMessageSquare, label: "Manage Comments" },
-    { icon: FiSearch, label: "Update SEO" },
-    { icon: FiCheckSquare, label: "Check Readability" },
+    { icon: FiVolume2, label: "Promote Post", disabled: true },
+    { icon: FiMessageSquare, label: "Manage Comments", disabled: true },
+    { icon: FiSearch, label: "Update SEO", disabled: true },
+    { icon: FiCheckSquare, label: "Check Readability", disabled: true },
   ];
 
   return (
@@ -38,19 +47,23 @@ export function ArticleQuickActions({ article }: { article: Article }) {
           <Tooltip
             key={index}
             content={
-              actionTooltips[action.label as keyof typeof actionTooltips]
+              action.disabled
+                ? `${action.label} - Coming soon`
+                : actionTooltips[action.label as keyof typeof actionTooltips]
             }
           >
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="surface-btn-secondary text-xs font-bold uppercase tracking-widest"
+              whileHover={action.disabled ? {} : { scale: 1.05 }}
+              whileTap={action.disabled ? {} : { scale: 0.95 }}
+              className="surface-btn-secondary text-xs font-bold uppercase tracking-widest relative"
+              disabled={action.disabled}
             >
               <Icon className="text-primary text-lg" />
               {action.label}
+              {action.disabled && <ComingSoonBadge />}
             </motion.button>
           </Tooltip>
         );

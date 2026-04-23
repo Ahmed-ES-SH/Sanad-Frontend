@@ -53,6 +53,7 @@ export const BLOG_ENDPOINTS = {
   CATEGORIES: "/api/categories",
   GET_BY_SLUG: (slug: string) => `/api/blog/${slug}`,
   ADMIN_LIST: "/api/admin/blog",
+  ADMIN_GET: (id: string) => `/api/admin/blog/${id}`,
   ADMIN_CREATE: "/api/admin/blog",
   ADMIN_UPDATE: (id: string) => `/api/admin/blog/${id}`,
   ADMIN_DELETE: (id: string) => `/api/admin/blog/${id}`,

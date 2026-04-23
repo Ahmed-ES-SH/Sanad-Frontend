@@ -1,13 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode, useRef } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode, useRef, useState } from "react";
 import { NotificationState, NotificationAction, Notification } from "@/app/types/notification";
 import { useAuth } from "./AuthContext";
 import { createNotificationSocket, disconnectNotificationSocket } from "@/app/helpers/notificationSocket";
 import * as api from "@/app/actions/notificationApi";
 import { NOTIFICATION_CONSTANTS } from "@/app/constants/notifications";
-import { Socket } from "socket.io-client";
-import { toast } from "sonner";
+import IncomingNotificationPopup from "@/app/_components/_global/IncomingNotificationPopup";
 
 interface NotificationContextType extends NotificationState {
   fetchNotifications: (page?: number, limit?: number) => Promise<void>;
@@ -31,32 +30,66 @@ const initialState: NotificationState = {
   },
 };
 
+function mergeByNotificationId(
+  current: Notification[],
+  incoming: Notification[],
+): Notification[] {
+  const map = new Map<string, Notification>();
+
+  for (const item of current) {
+    map.set(item.id, item);
+  }
+
+  for (const item of incoming) {
+    map.set(item.id, item);
+  }
+
+  return Array.from(map.values()).sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+}
+
 function notificationReducer(state: NotificationState, action: NotificationAction): NotificationState {
   switch (action.type) {
-    case "SET_NOTIFICATIONS":
+    case "SET_NOTIFICATIONS": {
+      const { response, append } = action.payload;
+      const notifications = append
+        ? mergeByNotificationId(state.notifications, response.data)
+        : response.data;
+
       return {
         ...state,
-        notifications: action.payload.data,
+        notifications,
         pagination: {
-          page: action.payload.page,
-          limit: action.payload.limit,
-          total: action.payload.total,
+          page: response.page,
+          limit: response.limit,
+          total: response.total,
         },
       };
+    }
     case "ADD_NOTIFICATION":
+      if (state.notifications.some((n) => n.id === action.payload.id)) {
+        return state;
+      }
+
       return {
         ...state,
         notifications: [action.payload, ...state.notifications],
-        unreadCount: state.unreadCount + 1,
       };
-    case "MARK_AS_READ":
+    case "MARK_AS_READ": {
+      const wasUnread =
+        state.notifications.find((n) => n.id === action.payload)?.isRead ===
+        false;
+
       return {
         ...state,
         notifications: state.notifications.map((n) =>
           n.id === action.payload ? { ...n, isRead: true } : n
         ),
-        unreadCount: Math.max(0, state.unreadCount - 1),
+        unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount,
       };
+    }
     case "MARK_ALL_AS_READ":
       return {
         ...state,
@@ -95,8 +128,13 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(notificationReducer, initialState);
+  const [popupNotifications, setPopupNotifications] = useState<Notification[]>([]);
   const { isAuthenticated } = useAuth();
-  const socketRef = useRef<Socket | null>(null);
+  const socketRef = useRef<ReturnType<typeof createNotificationSocket> | null>(null);
+
+  const dismissPopup = useCallback((id: string) => {
+    setPopupNotifications((prev) => prev.filter((item) => item.id !== id));
+  }, []);
 
   // Helper to get token
   const getClientToken = useCallback(() => {
@@ -113,7 +151,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const p = page || state.pagination.page;
       const l = limit || state.pagination.limit;
       const res = await api.fetchNotifications(p, l);
-      dispatch({ type: "SET_NOTIFICATIONS", payload: res });
+      dispatch({
+        type: "SET_NOTIFICATIONS",
+        payload: { response: res, append: p > NOTIFICATION_CONSTANTS.DEFAULT_PAGE },
+      });
     } catch (err: any) {
       dispatch({ type: "SET_ERROR", payload: err.message || "Failed to fetch notifications" });
     } finally {
@@ -170,13 +211,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isAuthenticated) {
       const token = getClientToken();
-      if (!token) return;
-
-      const socket = createNotificationSocket(token);
-      socketRef.current = socket as unknown as Socket;
+      const socket = createNotificationSocket(token || undefined);
+      socketRef.current = socket;
 
       socket.on("connect", () => {
         dispatch({ type: "SET_SOCKET_STATUS", payload: true });
+        dispatch({ type: "SET_ERROR", payload: null });
         // Fetch on reconnect or initial connect to ensure sync
         fetchNotifications(1, state.pagination.limit);
         refreshUnreadCount();
@@ -185,19 +225,19 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       socket.on("disconnect", () => {
         dispatch({ type: "SET_SOCKET_STATUS", payload: false });
       });
+      
+      socket.on("connect_error", (error: Error) => {
+        dispatch({ type: "SET_SOCKET_STATUS", payload: false });
+        dispatch({ type: "SET_ERROR", payload: error.message || "Notification socket connection failed" });
+      });
 
       socket.on("notification:new", (notification: Notification) => {
         dispatch({ type: "ADD_NOTIFICATION", payload: notification });
-        toast.info(notification.title, {
-          description: notification.message,
-          action: {
-            label: "View",
-            onClick: () => {
-              if (typeof window !== "undefined") {
-                window.location.href = "/en/notifications";
-              }
-            }
+        setPopupNotifications((prev) => {
+          if (prev.some((item) => item.id === notification.id)) {
+            return prev;
           }
+          return [notification, ...prev].slice(0, 10);
         });
       });
 
@@ -220,6 +260,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       return () => {
         socket.off("connect");
         socket.off("disconnect");
+        socket.off("connect_error");
         socket.off("notification:new");
         socket.off("notification:read");
         socket.off("notification:read_all");
@@ -231,11 +272,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } else {
       // Disconnect if user logs out
       if (socketRef.current) {
-        disconnectNotificationSocket(socketRef.current as any);
+        disconnectNotificationSocket(socketRef.current);
         socketRef.current = null;
         dispatch({ type: "SET_SOCKET_STATUS", payload: false });
         dispatch({ type: "SET_UNREAD_COUNT", payload: 0 });
       }
+      setPopupNotifications([]);
     }
   }, [isAuthenticated, getClientToken, fetchNotifications, refreshUnreadCount, state.pagination.limit]);
 
@@ -251,6 +293,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      <IncomingNotificationPopup
+        notifications={popupNotifications}
+        onDismiss={dismissPopup}
+      />
     </NotificationContext.Provider>
   );
 }

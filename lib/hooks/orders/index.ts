@@ -26,6 +26,10 @@ import {
   OrderActionResult,
 } from '@/app/types/order';
 
+// Re-export the new useAdminOrdersWithState hook
+export { useAdminOrdersWithState } from './useAdminOrders';
+export type { OrderFilters } from './useAdminOrders';
+
 // ============================================================================
 // USER ORDER HOOKS
 // ============================================================================

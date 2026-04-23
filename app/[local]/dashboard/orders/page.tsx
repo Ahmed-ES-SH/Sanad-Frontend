@@ -7,7 +7,6 @@ import React, { useState } from "react";
 import {
   FiClock,
   FiDollarSign,
-  FiPlus,
   FiShoppingBag,
   FiTrendingUp,
 } from "react-icons/fi";
@@ -102,20 +101,10 @@ export default function AdminOrdersPage() {
                     {t.title || "Orders"}
                   </h1>
                   <p className="text-surface-500 mt-0.5 text-sm">
-                    {t.description || "Track client service requests across all categories."}
+                    {t.description ||
+                      "Track client service requests across all categories."}
                   </p>
                 </div>
-
-                <button
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  style={{
-                    background: "var(--gradient-primary)",
-                    boxShadow: "0 4px 16px rgba(249,115,22,0.25)",
-                  }}
-                >
-                  <FiPlus className="w-4 h-4" />
-                  {t.newOrder || "New Order"}
-                </button>
               </div>
 
               {/* ── Stats Row ───────────────────────────────────────── */}
@@ -158,12 +147,22 @@ export default function AdminOrdersPage() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-3 py-2.5 text-sm rounded-xl border border-[var(--surface-input-border)] bg-[var(--surface-input-bg)] text-surface-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 >
-                  <option value="all">{t.filters?.all || "All Statuses"}</option>
-                  <option value="pending">{t.status?.pending || "Pending"}</option>
+                  <option value="all">
+                    {t.filters?.all || "All Statuses"}
+                  </option>
+                  <option value="pending">
+                    {t.status?.pending || "Pending"}
+                  </option>
                   <option value="paid">{t.status?.paid || "Paid"}</option>
-                  <option value="in_progress">{t.status?.in_progress || "In Progress"}</option>
-                  <option value="completed">{t.status?.completed || "Completed"}</option>
-                  <option value="cancelled">{t.status?.cancelled || "Cancelled"}</option>
+                  <option value="in_progress">
+                    {t.status?.in_progress || "In Progress"}
+                  </option>
+                  <option value="completed">
+                    {t.status?.completed || "Completed"}
+                  </option>
+                  <option value="cancelled">
+                    {t.status?.cancelled || "Cancelled"}
+                  </option>
                 </select>
               </div>
 

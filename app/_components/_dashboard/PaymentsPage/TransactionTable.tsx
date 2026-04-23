@@ -1,167 +1,238 @@
-"use client";
+import React from "react";
+import { FiEye, FiUser } from "react-icons/fi";
+import { PaymentResponseDto } from "@/lib/types/payments";
+import { motion } from "framer-motion";
 
-import {
-  FiMoreHorizontal,
-  FiCheckCircle,
-  FiClock,
-  FiAlertCircle,
-} from "react-icons/fi";
-import { Transaction } from "./payments-types";
-import { useVariables } from "@/app/context/VariablesContext";
-import { getTranslations } from "@/app/helpers/helpers";
+interface TransactionTableProps {
+  payments: PaymentResponseDto[] | null;
+  isLoading: boolean;
+  error: unknown;
+  onRowClick: (paymentId: string) => void;
+  onRetry: () => void;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  } | null;
+  onPageChange: (newPage: number) => void;
+}
 
-function TransactionTable() {
-  const { local } = useVariables();
-  const { PaymentsPage } = getTranslations(local);
-  const t = PaymentsPage.TransactionTable;
+const statusColors = {
+  succeeded: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  pending: "bg-amber-100 text-amber-700 border-amber-200",
+  failed: "bg-red-100 text-red-700 border-red-200",
+  refunded: "bg-stone-100 text-stone-700 border-stone-200",
+};
 
-  const transactions: Transaction[] = [
-    {
-      id: "1",
-      customer: {
-        name: "Johnathan Doe",
-        email: "j.doe@company.com",
-        initials: "JD",
-        color: "bg-orange-100 text-orange-700",
-      },
-      amount: "$2,450.00",
-      status: "success",
-      date: "Oct 24, 2023",
-      method: "Credit Card •••• 4242",
-    },
-    {
-      id: "2",
-      customer: {
-        name: "Sarah Kinsley",
-        email: "sarah.k@studio.io",
-        initials: "SK",
-        color: "bg-amber-100 text-amber-700",
-      },
-      amount: "$450.00",
-      status: "pending",
-      date: "Oct 24, 2023",
-      method: "Bank Transfer",
-    },
-    {
-      id: "3",
-      customer: {
-        name: "Brandon Miller",
-        email: "b.miller@web.com",
-        initials: "BM",
-        color: "bg-stone-100 text-stone-600",
-      },
-      amount: "$1,120.90",
-      status: "failed",
-      date: "Oct 23, 2023",
-      method: "Credit Card •••• 9811",
-    },
-  ];
+const formatAmount = (amount: number, currency: string = "USD") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount);
+};
 
-  const getStatusStyles = (status: Transaction["status"]) => {
-    switch (status) {
-      case "success":
-        return "bg-green-50 text-green-700";
-      case "pending":
-        return "bg-amber-50 text-amber-700";
-      case "failed":
-        return "bg-red-50 text-red-700";
-      default:
-        return "bg-stone-100 text-stone-600";
-    }
-  };
+const formatDate = (dateString: string) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(dateString));
+};
 
-  const getStatusIcon = (status: Transaction["status"]) => {
-    switch (status) {
-      case "success":
-        return <FiCheckCircle className="text-xs" />;
-      case "pending":
-        return <FiClock className="text-xs" />;
-      case "failed":
-        return <FiAlertCircle className="text-xs" />;
-      default:
-        return null;
-    }
-  };
+export default function TransactionTable({
+  payments,
+  isLoading,
+  error,
+  onRowClick,
+  onRetry,
+  meta,
+  onPageChange,
+}: TransactionTableProps) {
+  if (error) {
+    return (
+      <div className="bg-white p-8 rounded-2xl border border-red-100 text-center">
+        <p className="text-red-600 mb-4">Failed to load payments.</p>
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between">
-        <div>
-          <h3 className="text-base font-semibold text-stone-900">
-            {t.recentTransactions}
-          </h3>
-          <p className="text-xs text-stone-500">{t.liveFeed}</p>
-        </div>
-        <a
-          className="text-xs font-medium text-orange-600 hover:text-orange-700"
-          href="#"
-        >
-          {t.viewAll}
-        </a>
-      </div>
+    <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden mt-8">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="bg-stone-50 text-stone-500 text-xs">
-              <th className="px-5 py-3 font-medium">{t.customer}</th>
-              <th className="px-5 py-3 font-medium">{t.amount}</th>
-              <th className="px-5 py-3 font-medium">{t.status}</th>
-              <th className="px-5 py-3 font-medium">{t.date}</th>
-              <th className="px-5 py-3 font-medium">{t.method}</th>
-              <th className="px-5 py-3"></th>
+        <table className="w-full text-left text-sm text-stone-600">
+          <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 uppercase text-xs font-semibold">
+            <tr>
+              <th className="px-6 py-4 whitespace-nowrap">Payment ID</th>
+              <th className="px-6 py-4 whitespace-nowrap">Date</th>
+              <th className="px-6 py-4 whitespace-nowrap">Amount</th>
+              <th className="px-6 py-4 whitespace-nowrap">Status</th>
+              <th className="px-6 py-4 whitespace-nowrap">User ID</th>
+              <th className="px-6 py-4 whitespace-nowrap text-right">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-200">
-            {transactions.map((transaction) => (
-              <tr key={transaction.id} className="hover:bg-stone-50">
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${transaction.customer.color}`}
-                    >
-                      {transaction.customer.initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-stone-900">
-                        {transaction.customer.name}
-                      </p>
-                      <p className="text-xs text-stone-500">
-                        {transaction.customer.email}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3 font-semibold text-stone-900">
-                  {transaction.amount}
-                </td>
-                <td className="px-5 py-3">
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 w-fit ${getStatusStyles(
-                      transaction.status,
-                    )}`}
-                  >
-                    {getStatusIcon(transaction.status)}
-                    {transaction.status}
-                  </span>
-                </td>
-                <td className="px-5 py-3 text-xs text-stone-500">
-                  {transaction.date}
-                </td>
-                <td className="px-5 py-3 text-xs text-stone-600">
-                  {transaction.method}
-                </td>
-                <td className="px-5 py-3 text-right">
-                  <button className="text-stone-400 hover:text-stone-600">
-                    <FiMoreHorizontal size={16} />
-                  </button>
+          <tbody className="divide-y divide-stone-100">
+            {isLoading ? (
+              // Loading Skeleton
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="animate-pulse bg-white">
+                  <td className="px-6 py-4">
+                    <div className="h-4 bg-stone-200 rounded w-24"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-4 bg-stone-200 rounded w-32"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-4 bg-stone-200 rounded w-16"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-6 bg-stone-200 rounded-full w-20"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-4 bg-stone-200 rounded w-24"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-6 bg-stone-200 rounded w-8 ml-auto"></div>
+                  </td>
+                </tr>
+              ))
+            ) : !payments || payments.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-6 py-12 text-center text-stone-500"
+                >
+                  No payments found matching your criteria.
                 </td>
               </tr>
-            ))}
+            ) : (
+              payments.map((payment) => (
+                <motion.tr
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  key={payment.id}
+                  className="hover:bg-stone-50 transition-colors cursor-pointer"
+                  onClick={() => onRowClick(payment.id)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-stone-900">
+                    <span title={payment.id}>...{payment.id.slice(-8)}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {formatDate(payment.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium">
+                    {formatAmount(payment.amount, payment.currency)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full border ${
+                        statusColors[payment.status] || statusColors.pending
+                      }`}
+                    >
+                      {payment.status.charAt(0).toUpperCase() +
+                        payment.status.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
+                        <FiUser className="w-3 h-3" />
+                      </div>
+                      <span className="truncate max-w-[150px]">
+                        {payment.userId ? payment.userId : "Fake"}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <button
+                      className="p-2 text-stone-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                      aria-label="View Details"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRowClick(payment.id);
+                      }}
+                    >
+                      <FiEye className="w-4 h-4" />
+                    </button>
+                  </td>
+                </motion.tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {meta && meta.totalPages > 1 && (
+        <div className="px-6 py-4 border-t border-stone-200 flex items-center justify-between bg-stone-50">
+          <div className="text-sm text-stone-500">
+            Showing{" "}
+            <span className="font-medium text-stone-900">
+              {(meta.page - 1) * meta.limit + 1}
+            </span>{" "}
+            to{" "}
+            <span className="font-medium text-stone-900">
+              {Math.min(meta.page * meta.limit, meta.total)}
+            </span>{" "}
+            of <span className="font-medium text-stone-900">{meta.total}</span>{" "}
+            results
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onPageChange(meta.page - 1)}
+              disabled={meta.page <= 1}
+              className="px-3 py-1.5 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, meta.totalPages) }).map(
+                (_, idx) => {
+                  let pageNum = idx + 1;
+                  if (meta.totalPages > 5 && meta.page > 3) {
+                    pageNum = meta.page - 2 + idx;
+                    if (pageNum > meta.totalPages) {
+                      pageNum = meta.totalPages - (4 - idx);
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => onPageChange(pageNum)}
+                      className={`w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors ${
+                        meta.page === pageNum
+                          ? "bg-orange-600 text-white border-orange-600"
+                          : "bg-white text-stone-700 border border-stone-300 hover:bg-stone-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                },
+              )}
+            </div>
+            <button
+              onClick={() => onPageChange(meta.page + 1)}
+              disabled={meta.page >= meta.totalPages}
+              className="px-3 py-1.5 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default TransactionTable;

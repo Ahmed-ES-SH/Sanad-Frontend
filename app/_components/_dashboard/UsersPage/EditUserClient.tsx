@@ -13,9 +13,10 @@ import { toast } from "sonner";
 
 interface EditUserClientProps {
   user: User;
+  local: string;
 }
 
-export default function EditUserClient({ user }: EditUserClientProps) {
+export default function EditUserClient({ user, local }: EditUserClientProps) {
   const router = useRouter();
 
   // ============================================================================
@@ -33,6 +34,8 @@ export default function EditUserClient({ user }: EditUserClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [newAvatarUrl, setNewAvatarUrl] = useState(formData.avatar || "");
 
   // ============================================================================
   // Handle field changes
@@ -101,7 +104,7 @@ export default function EditUserClient({ user }: EditUserClientProps) {
 
       if (result.success) {
         toast.success(result.message);
-        router.refresh();
+        router.push(`/${local}/dashboard/users`);
       } else {
         toast.error(result.message);
       }
@@ -124,7 +127,7 @@ export default function EditUserClient({ user }: EditUserClientProps) {
 
       if (result.success) {
         toast.success(result.message);
-        router.push("/dashboard/users");
+        router.push(`/${local}/dashboard/users`);
       } else {
         toast.error(result.message);
       }
@@ -202,18 +205,42 @@ export default function EditUserClient({ user }: EditUserClientProps) {
                   />
                 </div>
 
-                {/* Avatar URL */}
+                {/* Avatar Preview */}
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-stone-700">
-                    Avatar URL
+                    Avatar
                   </label>
-                  <input
-                    type="url"
-                    value={formData.avatar || ""}
-                    onChange={handleChange("avatar")}
-                    className="w-full bg-stone-50 border border-stone-200 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
-                    placeholder="https://example.com/avatar.jpg"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAvatarModal(true)}
+                    className="group relative w-20 h-20 rounded-full overflow-hidden border-2 border-stone-200 hover:border-orange-400 transition-all cursor-pointer"
+                  >
+                    {formData.avatar ? (
+                      <img
+                        src={formData.avatar}
+                        alt={user.name || "User avatar"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = "none";
+                          target.nextElementSibling?.classList.remove("hidden");
+                        }}
+                      />
+                    ) : null}
+                    <div className={`${formData.avatar ? "hidden" : ""} absolute inset-0 flex items-center justify-center bg-stone-100`}>
+                      <svg className="w-8 h-8 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      </svg>
+                    </div>
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                  </button>
+                  <p className="text-xs text-stone-500">Click to change avatar</p>
                 </div>
 
                 {/* Email Verification Toggle */}
@@ -400,7 +427,78 @@ export default function EditUserClient({ user }: EditUserClientProps) {
         </div>
       </form>
 
-      {/* Delete Confirmation Modal */}
+      {/* Avatar Edit Modal */}
+      {showAvatarModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-stone-900 mb-2">Edit Avatar</h3>
+            <p className="text-sm text-stone-600 mb-4">
+              Enter the new image URL for the avatar.
+            </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-stone-700">
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  value={newAvatarUrl}
+                  onChange={(e) => setNewAvatarUrl(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
+                  placeholder="https://example.com/avatar.jpg"
+                  autoFocus
+                />
+                {!newAvatarUrl.trim() && (
+                  <p className="text-xs text-red-500">URL is required</p>
+                )}
+              </div>
+              {newAvatarUrl.trim() && (
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-stone-200">
+                    <img
+                      src={newAvatarUrl}
+                      alt="Avatar preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAvatarModal(false);
+                  setNewAvatarUrl(formData.avatar || "");
+                }}
+                className="px-4 py-2 text-stone-600 text-sm font-medium hover:text-stone-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!newAvatarUrl.trim()) {
+                    toast.error("URL is required");
+                    return;
+                  }
+                  setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
+                  setShowAvatarModal(false);
+                  toast.success("Avatar updated");
+                }}
+                disabled={!newAvatarUrl.trim()}
+                className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">

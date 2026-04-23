@@ -1,32 +1,34 @@
-import { io, Socket } from "socket.io-client";
-import { ServerToClientEvents, ClientToServerEvents } from "@/app/types/notification";
+import io from "socket.io-client";
 import { SOCKET_CONFIG } from "@/app/constants/notifications";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://localhost:5000";
 
 /**
  * Creates a Socket.IO connection for real-time notifications.
- * @param token - JWT authentication token
+ * Works with cookie-based auth and optional token fallback.
+ * @param token - Optional JWT authentication token
  * @returns Configured Socket.IO instance
  */
-export function createNotificationSocket(token: string): Socket<ServerToClientEvents, ClientToServerEvents> {
+export function createNotificationSocket(token?: string) {
   return io(BACKEND_URL, {
-    auth: {
-      token,
-    },
-    transports: SOCKET_CONFIG.TRANSPORTS,
+    withCredentials: true,
+    auth: token ? { token } : undefined,
+    query: token ? { token } : undefined,
+    transports: [...SOCKET_CONFIG.TRANSPORTS],
     reconnection: SOCKET_CONFIG.RECONNECTION,
     reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
     reconnectionDelayMax: SOCKET_CONFIG.RECONNECTION_DELAY_MAX,
     reconnectionAttempts: SOCKET_CONFIG.RECONNECTION_ATTEMPTS,
-  });
+  } as any);
 }
 
 /**
  * Disconnects and cleans up a Socket.IO connection.
  * @param socket - Socket.IO instance to disconnect
  */
-export function disconnectNotificationSocket(socket: Socket | null): void {
+export function disconnectNotificationSocket(
+  socket: ReturnType<typeof createNotificationSocket> | null,
+): void {
   if (socket) {
     socket.disconnect();
   }

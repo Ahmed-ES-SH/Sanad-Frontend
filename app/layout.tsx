@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import ClientLayout from "./_components/_global/ClientLayout";
 import { Toaster } from "sonner";
+import AccessibleToasts from "./_components/_global/AccessibleToasts";
 import { directionMap } from "./constants/constants";
 import { getTranslations } from "./helpers/helpers";
 import { getSharedMetadata } from "./helpers/getSharedMetadata";
@@ -59,9 +60,10 @@ export default async function RootLayout({ params, children }: any) {
       <body
         className={`${inter.variable} ${plusJakartaSans.variable} ${oswald.variable} ${ibmPlexSans.variable} font-sans antialiased`}
       >
-        <ClientLayout>
-          <Navbar />
-          <Toaster richColors position="top-center" />
+          <ClientLayout>
+            <Navbar />
+            <Toaster richColors position="top-center" />
+            <AccessibleToasts />
           <div className="min-h-screen">
             {children}
             <FixedButtons />

@@ -69,7 +69,7 @@ export default function ProjectsClientTable({
   }>({
     queryKey: ["admin_projects", page, selectedCategory, debouncedSearchQuery],
     endpoint,
-    config: { withCredentials: true },
+    config: { credentials: "include" },
     options: {
       ...(page === 1 && selectedCategory === "" && debouncedSearchQuery === ""
         ? {

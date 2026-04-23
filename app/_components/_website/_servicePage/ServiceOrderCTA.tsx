@@ -34,7 +34,7 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
       await addItem(service.id, 1, {
         serviceTitle: service.title,
         unitPrice: Number(service.basePrice),
-        serviceIconUrl: service.coverImage || "",
+        serviceIconUrl: service.coverImageUrl || "",
         description: service.shortDescription || ""
       });
       

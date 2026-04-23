@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FiEdit, FiPower } from "react-icons/fi";
+import PublishToggleModal from "./PublishToggleModal";
 import { Service } from "@/app/types/service";
 import { togglePublishService } from "@/app/actions/servicesActions";
 import { useRouter } from "next/navigation";
@@ -86,13 +87,14 @@ export default function ServiceHeader({
         </div>
       </section>
 
-      {/* <PublishToggleModal
+      {/* Publish Toggle Modal */}
+      <PublishToggleModal
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
         onConfirm={handleToggleStatus}
         serviceName={serviceTitle}
         isPublished={isPublished}
-      /> */}
+      />
     </>
   );
 }

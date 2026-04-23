@@ -1392,5 +1392,99 @@
     "statusFailed": "فشل",
     "retryBtn": "إعادة المحاولة",
     "downloadInvoice": "تنزيل الفاتورة"
+  },
+
+  "dashboardNotificationsMeta": {
+    "title": "مركز الإشعارات - لوحة تحكم سند",
+    "description": "إدارة البث العام وإشعارات المستخدمين المباشرة."
+  },
+
+  "dashboardNotifications": {
+    "title": "مركز الإشعارات",
+    "subtitle": "إدارة وإرسال إشعارات عامة أو مباشرة.",
+    "tabs": {
+      "broadcast": "بث عام",
+      "direct": "رسالة مباشرة",
+      "history": "سجل الإشعارات"
+    },
+    "broadcast": {
+      "title": "اختيار الجمهور",
+      "subtitle": "اختر المستخدمين لرسالة البث هذه",
+      "clear": "مسح الاختيار",
+      "next": "التالي",
+      "modalTitle": "محتوى البث",
+      "modalSubtitle": "إرسال إلى {{count}} مستخدمين مختارين",
+      "formTitle": "عنوان البث",
+      "formMessage": "نص الرسالة",
+      "formSubmit": "إرسال البث",
+      "titlePlaceholder": "مثال: صيانة مجدولة",
+      "messagePlaceholder": "تفاصيل حول البث...",
+      "success": "تم إرسال البث بنجاح!",
+      "error": "فشل إرسال البث"
+    },
+    "direct": {
+      "title": "رسالة مباشرة",
+      "subtitle": "اختر مستخدماً لبدء إرسال إشعار",
+      "modalTitle": "إرسال إشعار",
+      "modalSubtitle": "رسالة مباشرة إلى مستخدم (ID: {{id}})",
+      "formType": "نوع الإشعار",
+      "formTitle": "العنوان",
+      "formMessage": "نص الرسالة",
+      "formSubmit": "إرسال الرسالة",
+      "titlePlaceholder": "عنوان الإشعار",
+      "messagePlaceholder": "التفاصيل...",
+      "success": "تم إرسال الإشعار بنجاح!",
+      "error": "فشل إرسال الإشعار"
+    },
+    "history": {
+      "loading": "جاري تحميل السجلات...",
+      "empty": "لا توجد إشعارات في السجل.",
+      "table": {
+        "type": "النوع",
+        "recipient": "المستلم",
+        "content": "المحتوى",
+        "date": "التاريخ",
+        "actions": "الإجراءات",
+        "broadcastRecipient": "الكل (بث عام)"
+      },
+      "delete": {
+        "title": "حذف الإشعار",
+        "description": "هل أنت متأكد من حذف هذا الإشعار؟ لا يمكن التراجع عن هذا الإجراء.",
+        "confirm": "حذف",
+        "cancel": "إلغاء",
+        "success": "تم حذف الإشعار",
+        "error": "فشل حذف الإشعار"
+      },
+      "error": "فشل تحميل السجل"
+    },
+    "validation": {
+      "titleRequired": "العنوان مطلوب",
+      "messageRequired": "الرسالة مطلوبة",
+      "userRequired": "يرجى اختيار مستخدم",
+      "usersRequired": "يرجى اختيار مستخدم واحد على الأقل"
+    },
+    "types": {
+      "SYSTEM": "تنبيه نظام",
+      "BROADCAST": "بث عام",
+      "ORDER_UPDATED": "تحديث طلب",
+      "PAYMENT_SUCCESS": "دفع ناجح",
+      "PAYMENT_FAILED": "فشل الدفع"
+    },
+    "userSelection": {
+      "searchPlaceholder": "البحث بالاسم أو البريد...",
+      "noUsers": "لم يتم العثور على مستخدمين",
+      "selectedCount": "تم اختيار {{count}} مستخدم(ين)",
+      "selectedCountMax": "تم اختيار {{count}} مستخدم(ين) (الحد الأقصى: {{max}})",
+      "table": {
+        "id": "ID",
+        "name": "الاسم",
+        "email": "البريد",
+        "role": "الدور",
+        "select": "اختيار"
+      },
+      "pagination": {
+        "showing": "عرض {{start}}-{{end}} من {{total}}"
+      }
+    }
   }
 }

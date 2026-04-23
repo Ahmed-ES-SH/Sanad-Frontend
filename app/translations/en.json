@@ -1439,5 +1439,99 @@
     "statusFailed": "Failed",
     "retryBtn": "Retry",
     "downloadInvoice": "Download Invoice"
+  },
+
+  "dashboardNotificationsMeta": {
+    "title": "Notification Center - Sanad Dashboard",
+    "description": "Manage system broadcasts and direct user notifications."
+  },
+
+  "dashboardNotifications": {
+    "title": "Notification Center",
+    "subtitle": "Manage and send system-wide or direct notifications.",
+    "tabs": {
+      "broadcast": "Broadcast",
+      "direct": "Direct Message",
+      "history": "History Log"
+    },
+    "broadcast": {
+      "title": "Select Audience",
+      "subtitle": "Pick users for this broadcast message",
+      "clear": "Clear Selection",
+      "next": "Next",
+      "modalTitle": "Broadcast Content",
+      "modalSubtitle": "Sending to {{count}} selected users",
+      "formTitle": "Broadcast Title",
+      "formMessage": "Message Body",
+      "formSubmit": "Send Broadcast",
+      "titlePlaceholder": "e.g. Scheduled Maintenance",
+      "messagePlaceholder": "Details about the broadcast...",
+      "success": "Broadcast sent successfully!",
+      "error": "Failed to send broadcast"
+    },
+    "direct": {
+      "title": "Direct Message",
+      "subtitle": "Select a user to start sending a notification",
+      "modalTitle": "Send Notification",
+      "modalSubtitle": "Direct message to User ID: {{id}}",
+      "formType": "Notification Type",
+      "formTitle": "Title",
+      "formMessage": "Message Body",
+      "formSubmit": "Send Message",
+      "titlePlaceholder": "Notification Title",
+      "messagePlaceholder": "Details...",
+      "success": "Notification sent successfully!",
+      "error": "Failed to send notification"
+    },
+    "history": {
+      "loading": "Loading history records...",
+      "empty": "No notifications found in history.",
+      "table": {
+        "type": "Type",
+        "recipient": "Recipient",
+        "content": "Content",
+        "date": "Date",
+        "actions": "Actions",
+        "broadcastRecipient": "ALL (Broadcast)"
+      },
+      "delete": {
+        "title": "Delete notification",
+        "description": "Are you sure you want to delete this notification? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "success": "Notification deleted",
+        "error": "Failed to delete notification"
+      },
+      "error": "Failed to load history"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "messageRequired": "Message is required",
+      "userRequired": "Please select a user",
+      "usersRequired": "Please select at least one user"
+    },
+    "types": {
+      "SYSTEM": "System Alert",
+      "BROADCAST": "Broadcast",
+      "ORDER_UPDATED": "Order Update",
+      "PAYMENT_SUCCESS": "Payment Success",
+      "PAYMENT_FAILED": "Payment Failed"
+    },
+    "userSelection": {
+      "searchPlaceholder": "Search by name or email...",
+      "noUsers": "No users found",
+      "selectedCount": "{{count}} user(s) selected",
+      "selectedCountMax": "{{count}} user(s) selected (max: {{max}})",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "select": "Select"
+      },
+      "pagination": {
+        "showing": "Showing {{start}}-{{end}} of {{total}}"
+      }
+    }
   }
 }

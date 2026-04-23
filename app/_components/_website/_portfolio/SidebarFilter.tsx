@@ -5,6 +5,7 @@ import { FiFilter } from "react-icons/fi";
 import { LocalProject } from "./ProjectsPortfolio";
 import { FaTimes } from "react-icons/fa";
 import { useVariables } from "@/app/context/VariablesContext";
+import { Project } from "@/app/types/project";
 
 interface SidebarFilterProps {
   projects: Project[];

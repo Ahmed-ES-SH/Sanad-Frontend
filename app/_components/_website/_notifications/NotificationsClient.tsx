@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { FiLoader, FiCheck, FiFilter } from "react-icons/fi";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -19,6 +19,12 @@ const NotificationsClient: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState<NotificationType | "all">("all");
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
 
+  useEffect(() => {
+    if (notificationsList.length === 0 && !isLoading) {
+      fetchNotifications(1, pagination.limit);
+    }
+  }, [fetchNotifications, isLoading, notificationsList.length, pagination.limit]);
+
   // Handle mark all as read
   const handleMarkAllAsRead = async () => {
     try {
@@ -33,7 +39,7 @@ const NotificationsClient: React.FC = () => {
 
   // Load more notifications
   const loadMore = () => {
-    if (pagination.page * pagination.limit < pagination.total) {
+    if (!isLoading && pagination.page * pagination.limit < pagination.total) {
       fetchNotifications(pagination.page + 1, pagination.limit);
     }
   };
@@ -173,7 +179,7 @@ const NotificationsClient: React.FC = () => {
           {filteredNotifications.length > 0 && (
             <div className="p-4 border-t border-surface-200 bg-surface-50">
               <p className="text-xs text-center text-surface-500">
-                {t.showing} {filteredNotifications.length} {t.of} {pagination.total} {t.notifications}
+                {t.showing} {filteredNotifications.length} {t.of} {pagination.total} {t.title}
               </p>
             </div>
           )}

@@ -2,212 +2,269 @@
 
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
-import { FiMail, FiTrash2, FiMoreVertical, FiEye, FiMessageCircle, FiArchive } from "react-icons/fi";
+import {
+  FiTrash2,
+  FiEye,
+  FiMessageCircle,
+  FiChevronLeft,
+  FiChevronRight,
+} from "react-icons/fi";
+import { ContactMessage, PaginationMeta } from "@/app/types/contact";
 
-interface Message {
-  id: string;
-  sender: {
-    name: string;
-    email: string;
-    initials: string;
-    color: string;
-  };
-  subject: string;
-  categoryKey: string;
-  categoryColor: string;
-  received: string;
-  statusKey: string;
-  statusColor: string;
-}
-
-const messages: Message[] = [
-  {
-    id: "1",
-    sender: {
-      name: "Amir Khan",
-      email: "amir.k@techcorp.com",
-      initials: "AK",
-      color: "bg-orange-100 text-orange-700",
-    },
-    subject: "Inquiry regarding service integration timeline",
-    categoryKey: "technical",
-    categoryColor: "bg-blue-100 text-blue-700",
-    received: "12 mins ago",
-    statusKey: "unread",
-    statusColor: "bg-orange-100 text-orange-700",
-  },
-  {
-    id: "2",
-    sender: {
-      name: "Sarah Miller",
-      email: "s.miller@finance.io",
-      initials: "SM",
-      color: "bg-green-100 text-green-700",
-    },
-    subject: "Billing discrepancy on invoice #29384",
-    categoryKey: "billing",
-    categoryColor: "bg-stone-100 text-stone-700",
-    received: "2 hours ago",
-    statusKey: "replied",
-    statusColor: "bg-green-100 text-green-700",
-  },
-  {
-    id: "3",
-    sender: {
-      name: "John Doe",
-      email: "j.doe@creatives.net",
-      initials: "JD",
-      color: "bg-purple-100 text-purple-700",
-    },
-    subject: "New partnership opportunity in EMEA region",
-    categoryKey: "partner",
-    categoryColor: "bg-amber-100 text-amber-700",
-    received: "Yesterday, 4:15 PM",
-    statusKey: "urgent",
-    statusColor: "bg-red-100 text-red-700",
-  },
-  {
-    id: "4",
-    sender: {
-      name: "Emma Watson",
-      email: "emma@style.com",
-      initials: "EW",
-      color: "bg-blue-100 text-blue-700",
-    },
-    subject: "Feedback on the new UI dashboard layout",
-    categoryKey: "general",
-    categoryColor: "bg-stone-100 text-stone-700",
-    received: "May 12, 2024",
-    statusKey: "archived",
-    statusColor: "bg-stone-200 text-stone-700",
-  },
-];
-
-export function MessagesTable() {
+export function MessagesTable({
+  messages,
+  meta,
+  page,
+  onPageChange,
+  onAction,
+  isLoading,
+}: {
+  messages: ContactMessage[];
+  meta: PaginationMeta;
+  page: number;
+  onPageChange: (page: number) => void;
+  onAction: (id: string, action: "read" | "reply" | "delete") => void;
+  isLoading?: boolean;
+}) {
   const { local } = useVariables();
   const { ContactUsPage } = getTranslations(local);
   const t = ContactUsPage.MessagesTable;
 
+  const getInitials = (name: string) => {
+    if (!name) return "??";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getColorClass = (name: string) => {
+    const colors = [
+      "bg-orange-100 text-orange-700 border-orange-200",
+      "bg-amber-100 text-amber-700 border-amber-200",
+      "bg-stone-100 text-stone-700 border-stone-200",
+      "bg-blue-100 text-blue-700 border-blue-200",
+      "bg-emerald-100 text-emerald-700 border-emerald-200",
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(local === "ar" ? "ar-SA" : "en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   return (
-    <section className="bg-white rounded-3xl overflow-hidden shadow-sm border border-stone-200/50">
+    <section className={`bg-white rounded-3xl overflow-hidden shadow-sm border border-stone-200/50 transition-opacity ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-stone-100/50">
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60">
+            <tr className="bg-stone-50/50 border-b border-stone-100">
+              <th className="px-6 py-4 text-[10px] uppercase font-bold tracking-widest text-stone-400">
                 {t.sender}
               </th>
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60">
+              <th className="px-6 py-4 text-[10px] uppercase font-bold tracking-widest text-stone-400">
                 {t.subject}
               </th>
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60">
-                {t.category}
-              </th>
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60">
+              <th className="px-6 py-4 text-[10px] uppercase font-bold tracking-widest text-stone-400">
                 {t.received}
               </th>
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60">
+              <th className="px-6 py-4 text-[10px] uppercase font-bold tracking-widest text-stone-400">
                 {t.status}
               </th>
-              <th className="px-6 py-4 text-[11px] uppercase font-bold tracking-widest text-stone-500/60 text-right">
+              <th className="px-6 py-4 text-[10px] uppercase font-bold tracking-widest text-stone-400 text-right">
                 {t.actions}
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {messages.map((message) => (
-              <tr
-                key={message.id}
-                className="hover:bg-stone-50/40 transition-colors group"
-              >
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${message.sender.color}`}
-                    >
-                      {message.sender.initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-stone-900">
-                        {message.sender.name}
-                      </p>
-                      <p className="text-[10px] text-stone-500">
-                        {message.sender.email}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-5">
-                  <p className="text-sm font-medium text-stone-900 truncate max-w-xs">
-                    {message.subject}
-                  </p>
-                </td>
-                <td className="px-6 py-5">
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${message.categoryColor}`}
-                  >
-                    {t[message.categoryKey as keyof typeof t]}
-                  </span>
-                </td>
-                <td className="px-6 py-5">
-                  <p className="text-xs text-stone-500 font-medium">
-                    {message.received}
-                  </p>
-                </td>
-                <td className="px-6 py-5">
-                  <div
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg w-fit ${
-                      message.statusKey === "unread"
-                        ? "bg-orange-100"
-                        : message.statusKey === "replied"
-                        ? "bg-green-100"
-                        : message.statusKey === "urgent"
-                        ? "bg-red-100"
-                        : "bg-stone-200"
-                    }`}
-                  >
-                    {message.statusKey === "unread" && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />
-                    )}
-                    <span className="text-[10px] font-bold uppercase tracking-tight text-stone-700">
-                      {t[message.statusKey as keyof typeof t]}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-5 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-1.5 hover:bg-white rounded-lg text-stone-500 hover:text-stone-700 transition-colors">
-                      <FiMessageCircle size={18} />
-                    </button>
-                    <button className="p-1.5 hover:bg-white rounded-lg text-stone-500 hover:text-stone-700 transition-colors">
-                      <FiEye size={18} />
-                    </button>
-                    <button className="p-1.5 hover:bg-white rounded-lg text-stone-500 hover:text-stone-700 transition-colors">
-                      <FiArchive size={18} />
-                    </button>
-                    <button className="p-1.5 hover:bg-white rounded-lg text-stone-500 hover:text-red-600 transition-colors">
-                      <FiTrash2 size={18} />
-                    </button>
-                  </div>
+            {messages.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-10 text-center text-stone-400 text-sm">
+                  {local === "ar" ? "لا توجد رسائل للعرض" : "No messages to display"}
                 </td>
               </tr>
-            ))}
+            ) : (
+              messages.map((message) => {
+                const initials = getInitials(message.fullName);
+                const colorClass = getColorClass(message.fullName);
+                const isReplied = !!message.repliedAt;
+                const isUnread = !message.isRead;
+
+                return (
+                  <tr
+                    key={message.id}
+                    className="hover:bg-stone-50/40 transition-colors group"
+                  >
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs border ${colorClass}`}
+                        >
+                          {initials}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-stone-900 leading-none mb-1">
+                            {message.fullName}
+                          </p>
+                          <p className="text-[11px] text-stone-500 font-medium">
+                            {message.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="max-w-xs">
+                        <p className="text-sm font-semibold text-stone-800 truncate">
+                          {message.subject}
+                        </p>
+                        <p className="text-[11px] text-stone-500 truncate mt-0.5">
+                          {message.message}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <p className="text-xs text-stone-500 font-semibold">
+                        {formatDate(message.createdAt)}
+                      </p>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full w-fit ${
+                          isUnread
+                            ? "bg-orange-100 text-orange-700"
+                            : isReplied
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-stone-100 text-stone-600"
+                        }`}
+                      >
+                        {isUnread && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                        )}
+                        <span className="text-[10px] font-bold uppercase tracking-tight">
+                          {isUnread ? t.unread : isReplied ? t.replied : t.archived}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => onAction(message.id, "reply")}
+                          className="p-2 hover:bg-white rounded-xl text-stone-400 hover:text-emerald-600 border border-transparent hover:border-emerald-100 hover:shadow-sm transition-all"
+                          title={t.replied}
+                        >
+                          <FiMessageCircle size={16} />
+                        </button>
+                        <button
+                          onClick={() => onAction(message.id, "read")}
+                          className={`p-2 hover:bg-white rounded-xl border border-transparent hover:shadow-sm transition-all ${
+                            isUnread
+                              ? "text-orange-500 hover:text-orange-600 hover:border-orange-100"
+                              : "text-stone-400 hover:text-stone-900 hover:border-stone-200"
+                          }`}
+                          title={t.unread}
+                        >
+                          <FiEye size={16} />
+                        </button>
+                        <button
+                          onClick={() => onAction(message.id, "delete")}
+                          className="p-2 hover:bg-white rounded-xl text-stone-400 hover:text-red-600 border border-transparent hover:border-red-100 hover:shadow-sm transition-all"
+                          title={local === "ar" ? "حذف" : "Delete"}
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
-      <div className="px-6 py-4 bg-stone-50/30 flex justify-between items-center">
-        <p className="text-xs text-stone-500 font-medium">
-          {t.showingText}
-        </p>
-        <div className="flex gap-2">
+      <div className="px-6 py-4 bg-stone-50/30 flex justify-between items-center border-t border-stone-100">
+        <div className="text-[11px] text-stone-400 font-bold tracking-tight">
+          {meta.total > 0 ? (
+            <>
+              {local === "ar" ? "عرض" : "SHOWING"} <span className="text-stone-600">{messages.length}</span> {local === "ar" ? "من" : "OF"} <span className="text-stone-600">{meta.total}</span> {local === "ar" ? "رسائل" : "MESSAGES"}
+            </>
+          ) : (
+            t.showingText
+          )}
+        </div>
+        <div className="flex items-center gap-1">
           <button
-            className="p-1 px-3 bg-white border border-stone-200/30 rounded-lg text-xs font-bold text-stone-500 hover:bg-stone-100 transition-colors disabled:opacity-50"
-            disabled
+            className="p-2 px-3 bg-white border border-stone-200 rounded-xl text-[11px] font-bold text-stone-600 hover:bg-stone-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+            disabled={page <= 1 || isLoading}
+            onClick={() => onPageChange(page - 1)}
           >
+            {local === "ar" ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
             {t.previous}
           </button>
-          <button className="p-1 px-3 bg-orange-500 text-white rounded-lg text-xs font-bold hover:shadow-md transition-all">
+
+          <div className="flex items-center gap-1 mx-1">
+            {(() => {
+              const totalPages = meta.totalPages;
+              const pages = [];
+              const range = 1; // Number of pages to show before/after current page
+
+              for (let i = 1; i <= totalPages; i++) {
+                if (
+                  i === 1 || // Always show first
+                  i === totalPages || // Always show last
+                  (i >= page - range && i <= page + range) // Show around current
+                ) {
+                  pages.push(i);
+                } else if (i === page - range - 1 || i === page + range + 1) {
+                  pages.push("...");
+                }
+              }
+
+              // Filter out duplicate ellipses
+              const uniquePages = pages.filter((v, i, a) => v !== "..." || a[i - 1] !== "...");
+
+              return uniquePages.map((p, idx) => (
+                p === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-stone-400 text-xs font-bold">...</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => onPageChange(p as number)}
+                    disabled={isLoading}
+                    className={`w-8 h-8 rounded-xl text-[11px] font-bold transition-all ${
+                      page === p
+                        ? "bg-orange-500 text-white shadow-sm border border-orange-600"
+                        : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              ));
+            })()}
+          </div>
+
+          <button
+            className="p-2 px-3 bg-white border border-stone-200 rounded-xl text-[11px] font-bold text-stone-600 hover:bg-stone-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+            disabled={page >= meta.totalPages || isLoading}
+            onClick={() => onPageChange(page + 1)}
+          >
             {t.next}
+            {local === "ar" ? <FiChevronLeft size={16} /> : <FiChevronRight size={16} />}
           </button>
         </div>
       </div>

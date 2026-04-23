@@ -18,6 +18,8 @@ export interface BlogQueryParams {
   categoryId?: string;
   tag?: string;
   search?: string;
+  sortBy?: string;
+  order?: "ASC" | "DESC";
 }
 
 // Public: Get published articles with pagination and filtering
@@ -105,6 +107,25 @@ export async function getAdminArticles(
       throw new Error(error.message);
     }
     throw new Error("Failed to fetch admin articles");
+  }
+}
+
+// Admin: Get a single article by ID
+export async function getAdminArticleById(id: string): Promise<Article | null> {
+  try {
+    const response = await protectedRequest<Article>(
+      BLOG_ENDPOINTS.ADMIN_GET(id),
+      "GET",
+    );
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.statusCode === 404) {
+        return null;
+      }
+      throw new Error(error.message);
+    }
+    throw new Error("Failed to fetch article");
   }
 }
 

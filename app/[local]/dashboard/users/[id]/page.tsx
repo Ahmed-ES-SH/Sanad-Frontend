@@ -10,11 +10,11 @@ import { BsArrowLeft } from "react-icons/bs";
 // ============================================================================
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; local: string }>;
 }
 
 export default async function UserProfilePage({ params }: PageProps) {
-  const { id } = await params;
+  const { id, local } = await params;
 
   // ============================================================================
   // Fetch user data server-side
@@ -38,7 +38,7 @@ export default async function UserProfilePage({ params }: PageProps) {
           {/* Back link */}
           <div className="mb-6">
             <Link
-              href="/dashboard/users"
+              href={`/${local}/dashboard/users`}
               className="text-sm font-medium text-stone-500 hover:text-orange-600 transition-colors flex items-center gap-1"
             >
               <BsArrowLeft className="w-4 h-4" />
@@ -46,7 +46,7 @@ export default async function UserProfilePage({ params }: PageProps) {
             </Link>
           </div>
 
-          <EditUserClient user={user} />
+          <EditUserClient user={user} local={local} />
         </div>
       </main>
     </>

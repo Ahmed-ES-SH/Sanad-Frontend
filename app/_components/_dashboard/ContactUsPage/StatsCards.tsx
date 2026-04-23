@@ -13,57 +13,59 @@ interface ContactStatItem {
   changeType: "positive" | "warning" | "negative";
 }
 
-const statsCards: ContactStatItem[] = [
-  {
-    labelKey: "totalMessages",
-    value: "1,284",
-    changeKey: "totalMessages",
-    changeType: "positive",
-  },
-  {
-    labelKey: "unread",
-    value: "42",
-    changeKey: "needsAttention",
-    changeType: "warning",
-  },
-  {
-    labelKey: "avgResponseTime",
-    value: "2.4h",
-    changeKey: "avgResponseTime",
-    changeType: "positive",
-  },
-  {
-    labelKey: "satisfactionRate",
-    value: "98%",
-    changeKey: "excellent",
-    changeType: "positive",
-  },
-];
-
-export function StatsCards() {
+export function StatsCards({
+  total,
+  unread,
+  replied,
+  currentPageCount
+}: {
+  total: number;
+  unread: number;
+  replied: number;
+  currentPageCount: number;
+}) {
   const { local } = useVariables();
   const { ContactUsPage } = getTranslations(local);
   const t = ContactUsPage.StatsCards;
 
+  const stats = [
+    {
+      label: t.totalMessages,
+      value: total.toString(),
+      sub: local === "ar" ? "إجمالي الرسائل" : "Total Messages",
+      color: "text-stone-900",
+    },
+    {
+      label: t.unread,
+      value: unread.toString(),
+      sub: local === "ar" ? "بحاجة لرد" : "Needs Attention",
+      color: "text-orange-600",
+    },
+    {
+      label: t.replied,
+      value: replied.toString(),
+      sub: local === "ar" ? "تم الرد" : "Replied",
+      color: "text-emerald-600",
+    },
+    {
+      label: local === "ar" ? "في هذه الصفحة" : "On Page",
+      value: currentPageCount.toString(),
+      sub: local === "ar" ? "عرض حالي" : "Currently Showing",
+      color: "text-blue-600",
+    },
+  ];
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {statsCards.map((stat) => (
-        <div key={stat.labelKey} className="bg-white p-6 rounded-3xl space-y-2 border border-stone-200/50">
+      {stats.map((stat, idx) => (
+        <div key={idx} className="bg-white p-6 rounded-3xl space-y-2 border border-stone-200/50">
           <span className="text-[10px] uppercase font-bold tracking-widest text-stone-500/70">
-            {t[stat.labelKey as keyof typeof t]}
+            {stat.label}
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-extrabold text-stone-900">{stat.value}</span>
-            <span
-              className={`text-xs font-bold ${
-                stat.changeType === "positive"
-                  ? "text-green-600"
-                  : stat.changeType === "warning"
-                  ? "text-orange-500"
-                  : "text-red-600"
-              }`}
-            >
-              {t[stat.changeKey as keyof typeof t]}
+            <span className={`text-4xl font-extrabold ${stat.color}`}>{stat.value}</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">
+              {stat.sub}
             </span>
           </div>
         </div>

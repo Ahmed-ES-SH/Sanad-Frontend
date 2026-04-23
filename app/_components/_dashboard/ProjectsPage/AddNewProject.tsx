@@ -220,7 +220,7 @@ export default function AddNewProject({
         title: title.trim(),
         shortDescription: shortDesc.trim(),
         longDescription: longDesc.trim() || undefined,
-        coverImage: coverImage || undefined,
+        coverImageUrl: coverImage || undefined,
         images:
           galleryImages.filter((img) => img.trim()).length > 0
             ? galleryImages.filter((img) => img.trim())

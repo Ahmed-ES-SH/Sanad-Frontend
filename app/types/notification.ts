@@ -173,7 +173,10 @@ export interface NotificationState {
 // ============================================================================
 
 export type NotificationAction =
-  | { type: "SET_NOTIFICATIONS"; payload: NotificationListResponse }
+  | {
+      type: "SET_NOTIFICATIONS";
+      payload: { response: NotificationListResponse; append: boolean };
+    }
   | { type: "ADD_NOTIFICATION"; payload: Notification }
   | { type: "MARK_AS_READ"; payload: string }
   | { type: "MARK_ALL_AS_READ" }

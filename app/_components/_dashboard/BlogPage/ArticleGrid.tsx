@@ -274,8 +274,7 @@ export function ArticleGrid({
     });
   };
 
-  const cardDirection = (article: Article) =>
-    `/dashboard/blog/${formatTitle(article.title)}?articleId=${article.id}`;
+  const cardDirection = (article: Article) => `/dashboard/blog/${article.id}`;
 
   return (
     <>

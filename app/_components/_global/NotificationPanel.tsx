@@ -5,12 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiX, FiLoader, FiBell } from "react-icons/fi";
 import NotificationItem from "./NotificationItem";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useVariables } from "@/app/context/VariablesContext";
+import { getTranslations } from "@/app/helpers/helpers";
 
 interface NotificationPanelProps {
   onClose: () => void;
 }
 
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
+  const { local } = useVariables();
+  const { notifications: t } = getTranslations(local ?? "en");
+
   const {
     notifications,
     unreadCount,
@@ -18,10 +23,15 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     pagination,
     fetchNotifications,
     markAllAsRead,
-    isSocketConnected,
   } = useNotification();
 
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
+
+  useEffect(() => {
+    if (notifications.length === 0 && !isLoading) {
+      fetchNotifications(1, pagination.limit);
+    }
+  }, [fetchNotifications, isLoading, notifications.length, pagination.limit]);
 
   // Handle mark all as read
   const handleMarkAllAsRead = async () => {
@@ -37,7 +47,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
 
   // Load more notifications
   const loadMore = () => {
-    if (pagination.page < Math.ceil(pagination.total / pagination.limit)) {
+    if (
+      !isLoading &&
+      pagination.page < Math.ceil(pagination.total / pagination.limit)
+    ) {
       fetchNotifications(pagination.page + 1, pagination.limit);
     }
   };
@@ -47,17 +60,17 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-surface-200">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-bold text-surface-900">Notifications</h3>
+          <h3 className="text-lg font-bold text-surface-900">{t.title}</h3>
           {unreadCount > 0 && (
             <span className="px-2 py-0.5 text-xs font-semibold bg-primary/10 text-primary rounded-full">
-              {unreadCount} new
+              {unreadCount} {t.new}
             </span>
           )}
         </div>
         <button
           onClick={onClose}
           className="p-1.5 text-surface-400 hover:text-surface-600 hover:bg-surface-100 rounded-lg transition-colors"
-          aria-label="Close notifications"
+          aria-label={t.title}
         >
           <FiX className="w-5 h-5" />
         </button>
@@ -76,7 +89,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             ) : (
               <FiCheck className="w-4 h-4" />
             )}
-            <span>Mark all as read</span>
+            <span>{t.markAllRead}</span>
           </button>
         </div>
       )}
@@ -93,11 +106,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               <FiBell className="w-8 h-8 text-surface-400" />
             </div>
             <h4 className="text-sm font-semibold text-surface-900">
-              No notifications
+              {t.empty}
             </h4>
             <p className="text-sm text-surface-500 mt-1">
-              You&apos;re all caught up! We&apos;ll notify you when something
-              arrives.
+              {t.emptyDescription}
             </p>
           </div>
         ) : (
@@ -120,13 +132,14 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           {pagination.page < Math.ceil(pagination.total / pagination.limit) ? (
             <button
               onClick={loadMore}
+              disabled={isLoading}
               className="w-full py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
-              Load more notifications
+              {t.loadMore}
             </button>
           ) : (
             <p className="text-xs text-center text-surface-500">
-              Showing all {pagination.total} notifications
+              {t.showing} {pagination.total} {t.of} {pagination.total} {t.title}
             </p>
           )}
         </div>

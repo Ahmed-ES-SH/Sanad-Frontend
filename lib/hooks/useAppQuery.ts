@@ -1,26 +1,5 @@
 // hooks/useAppQuery.ts
 import { useQuery, UseQueryOptions, QueryKey } from "@tanstack/react-query";
-import { AxiosRequestConfig } from "axios";
-import { instance as axiosInstance } from "@/lib/axios";
-
-type FetcherParams<TData> = {
-  url: string;
-  config?: AxiosRequestConfig;
-  transform?: (data: any) => TData;
-};
-
-async function fetcher<TData>({
-  url,
-  config,
-  transform,
-}: FetcherParams<TData>): Promise<TData> {
-  const response = await axiosInstance({
-    url,
-    ...config,
-  });
-
-  return transform ? transform(response.data) : response.data;
-}
 
 type UseAppQueryOptions<TData, TError> = Omit<
   UseQueryOptions<TData, TError>,
@@ -29,28 +8,48 @@ type UseAppQueryOptions<TData, TError> = Omit<
   enabled?: boolean;
 };
 
+async function fetcher<TData>({
+  endpoint,
+  config,
+}: {
+  endpoint: string;
+  config?: RequestInit;
+}): Promise<TData> {
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+  const fullURL = `${baseURL}${endpoint}`;
+
+  const response = await fetch(fullURL, {
+    ...config,
+    credentials: "include", // This sends cookies with the request
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export function useAppQuery<TData = unknown, TError = unknown>({
   queryKey,
   endpoint,
   config,
   enabled = true,
-  transform,
   options,
 }: {
   queryKey: QueryKey;
   endpoint: string;
-  config?: AxiosRequestConfig;
-  transform?: (data: any) => TData;
+  config?: RequestInit;
   enabled?: boolean;
   options?: UseAppQueryOptions<TData, TError>;
 }) {
-  const fullURL = `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`;
   return useQuery<TData, TError>({
     queryKey,
-    queryFn: () => fetcher<TData>({ url: fullURL, config, transform }),
+    queryFn: () => fetcher<TData>({ endpoint, config }),
     enabled,
-    staleTime: 1000 * 60 * 5, // 5 min
-    retry: 1,
+    staleTime: 1000 * 60 * 2, // 2 min - shorter for admin data that changes
+    refetchOnWindowFocus: false,
     ...options,
   });
 }

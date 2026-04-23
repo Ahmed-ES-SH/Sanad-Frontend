@@ -52,7 +52,13 @@ const colorClasses = {
   },
 };
 
-export function QuickActions() {
+export function QuickActions({
+  isUnreadOnly,
+  order
+}: {
+  isUnreadOnly?: boolean;
+  order?: string;
+}) {
   const { local } = useVariables();
   const { ContactUsPage } = getTranslations(local);
   const t = ContactUsPage.QuickActions;

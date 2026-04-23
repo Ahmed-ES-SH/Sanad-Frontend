@@ -1,3 +1,5 @@
+import { getAdminArticleById } from "@/app/actions/blogActions";
+import { notFound } from "next/navigation";
 import { ArticleHeader } from "../../../../_components/_dashboard/_articleDetails/ArticleHeader";
 import { ArticleStats } from "../../../../_components/_dashboard/_articleDetails/ArticleStats";
 import { ArticleQuickActions } from "../../../../_components/_dashboard/_articleDetails/ArticleQuickActions";
@@ -5,17 +7,15 @@ import { ArticleContent } from "../../../../_components/_dashboard/_articleDetai
 import { SEOMetadata } from "../../../../_components/_dashboard/_articleDetails/SEOMetadata";
 import { CategoriesTags } from "../../../../_components/_dashboard/_articleDetails/CategoriesTags";
 import { SocialSharing } from "../../../../_components/_dashboard/_articleDetails/SocialSharing";
-import { getAdminArticleById } from "@/app/actions/blogActions";
-import { notFound } from "next/navigation";
 
 interface ArticleDetailsPageProps {
-  searchParams: Promise<{ articleId: string }>;
+  params: Promise<{ articleId: string; local: string }>;
 }
 
 export default async function ArticleDetailsPage({
-  searchParams,
+  params,
 }: ArticleDetailsPageProps) {
-  const { articleId } = await searchParams;
+  const { articleId } = await params;
 
   try {
     const article = await getAdminArticleById(articleId);
@@ -25,28 +25,54 @@ export default async function ArticleDetailsPage({
     }
 
     return (
-      <main className="pt-24 pb-12 px-8 min-h-screen bg-stone-50 text-stone-900">
-        {/* Row 1: Article Header */}
-        <ArticleHeader article={article} />
+      <main className="min-h-screen page-bg pt-28 pb-20">
+        <div className="c-container relative z-10">
+          <div className="flex flex-col gap-12">
+            {/* Row 1: Hero Section with Header & Actions */}
+            <div className="space-y-10">
+              <ArticleHeader article={article} />
 
-        {/* Row 2: Article Stats */}
-        <ArticleStats article={article} />
+              {/* Article Insights Strip */}
+              <ArticleStats article={article} />
 
-        {/* Row 3: Quick Actions */}
-        <ArticleQuickActions article={article} />
+              {/* Intelligent Toolbar */}
+              <div className="surface-card p-2 bg-stone-50/50 backdrop-blur-sm border-dashed">
+                <ArticleQuickActions article={article} />
+              </div>
+            </div>
 
-        {/* Row 4: Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Article Content */}
-          <div className="lg:col-span-8 space-y-6">
-            <ArticleContent article={article} />
-          </div>
+            {/* Row 2: Content & Configuration Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+              {/* Main Column: Rich Text Content */}
+              <div className="lg:col-span-8">
+                <div className="space-y-8">
+                  <ArticleContent article={article} />
+                </div>
+              </div>
 
-          {/* Right Column: Metadata & Settings */}
-          <div className="lg:col-span-4 space-y-6">
-            <SEOMetadata article={article} />
-            <CategoriesTags article={article} />
-            <SocialSharing article={article} />
+              {/* Sidebar: Metadata, SEO & Social */}
+              <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-28 transition-all duration-300">
+                <div className="space-y-6">
+                  <SEOMetadata article={article} />
+                  <CategoriesTags article={article} />
+                  <SocialSharing article={article} />
+                </div>
+
+                {/* Proactive Tip / Status */}
+                <div className="surface-card p-6 bg-gradient-surface border-primary/10">
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-2">
+                    Proactive Insights
+                  </h4>
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    This article is currently in{" "}
+                    {article.isPublished ? "Public" : "Private"} mode.
+                    {article.isPublished
+                      ? " It's performing 15% better than last week's average."
+                      : " Complete the SEO metadata to improve its potential reach."}
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       </main>

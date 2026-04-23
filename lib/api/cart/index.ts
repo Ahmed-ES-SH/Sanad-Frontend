@@ -44,6 +44,11 @@ export interface MergeCartDto {
 export interface GuestCartItem {
   serviceId: string;
   quantity: number;
+  unitPrice?: number;
+  serviceTitle?: string;
+  serviceSlug?: string;
+  serviceIconUrl?: string;
+  description?: string;
 }
 
 export interface MergeCartResponse {

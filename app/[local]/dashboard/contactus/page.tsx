@@ -1,9 +1,5 @@
 import { fetchContactMessages } from "@/app/actions/contactActions";
-import { QuickActions } from "@/app/_components/_dashboard/ContactUsPage/QuickActions";
-import { StatsCards } from "@/app/_components/_dashboard/ContactUsPage/StatsCards";
-import { Filters } from "@/app/_components/_dashboard/ContactUsPage/Filters";
-import { MessagesTable } from "@/app/_components/_dashboard/ContactUsPage/MessagesTable";
-import { getContactStats } from "@/app/_components/_dashboard/ContactUsPage/contactUtils";
+import { ContactMessagesContent } from "@/app/_components/_dashboard/ContactUsPage/ContactMessagesContent";
 
 interface ContactUsPageProps {
   searchParams: Promise<{
@@ -32,50 +28,40 @@ export default async function ContactUsPage({
         ? false
         : undefined;
 
-  const response = await fetchContactMessages({
+  const initialParams = {
     page,
     limit,
     order,
     isRead,
     sortBy: "createdAt",
-  });
-
-  const messages = response.data ?? [];
-  const meta = response.meta ?? {
-    page,
-    limit,
-    total: messages.length,
-    totalPages: 1,
   };
-  const stats = getContactStats(messages, meta.total);
+
+  const response = await fetchContactMessages(initialParams);
+
+  const initialData = response.success && response.data ? {
+    data: response.data,
+    meta: response.meta || {
+      page,
+      limit,
+      total: response.data.length,
+      totalPages: 1,
+    }
+  } : {
+    data: [],
+    meta: {
+      page,
+      limit,
+      total: 0,
+      totalPages: 0,
+    }
+  };
 
   return (
     <main className="pt-12 pb-12 px-8 min-h-screen bg-stone-50 text-stone-900">
-      <QuickActions isUnreadOnly={isRead === false} order={order} />
-
-      <StatsCards
-        total={stats.total}
-        unread={stats.unread}
-        replied={stats.replied}
-        currentPageCount={stats.currentPageCount}
+      <ContactMessagesContent 
+        initialData={initialData} 
+        initialParams={initialParams} 
       />
-
-      <Filters isRead={isRead} order={order} />
-
-      {response.success ? (
-        <MessagesTable
-          messages={messages}
-          meta={meta}
-          page={meta.page}
-          limit={meta.limit}
-          order={order}
-          isRead={isRead}
-        />
-      ) : (
-        <section className="rounded-3xl border border-accent-rose/20 bg-white px-6 py-8 text-sm text-accent-rose shadow-sm">
-          {response.message || "Failed to load contact messages."}
-        </section>
-      )}
     </main>
   );
 }

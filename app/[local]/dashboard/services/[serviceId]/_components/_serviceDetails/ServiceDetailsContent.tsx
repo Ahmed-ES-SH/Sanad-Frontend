@@ -9,6 +9,7 @@ import CustomerAdoptionChart from "./CustomerAdoptionChart";
 import ServiceConfiguration from "./ServiceConfiguration";
 import TopCustomers from "./TopCustomers";
 import RelatedServices from "./RelatedServices";
+import EditServiceModal from "./EditServiceModal";
 import { Service } from "@/app/types/service";
 import { Category } from "@/app/types/blog";
 
@@ -62,12 +63,12 @@ export default function ServiceDetailsContent({
       </button>
 
       {/* Edit Modal */}
-      {/* <EditServiceModal
+      <EditServiceModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         service={service}
         categories={categories}
-      /> */}
+      />
     </>
   );
 }

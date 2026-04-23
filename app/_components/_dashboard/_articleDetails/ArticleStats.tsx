@@ -3,44 +3,77 @@
 import { Tooltip } from "@/app/_components/_dashboard/DashboardPage/Tooltip";
 import { Article } from "@/app/types/blog";
 import { motion } from "framer-motion";
-import { FiTrendingUp } from "react-icons/fi";
+import { FiTrendingUp, FiClock, FiShare2, FiMessageSquare } from "react-icons/fi";
+
+interface ArticleStatsProps {
+  article: Article;
+}
 
 const statTooltips = {
   "Page Views": "Total number of times visitors viewed this article",
   "Avg. Read Time": "Average time visitors spend reading this article",
   "Total Shares": "Number of times this article was shared on social media",
-  Comments: "Total comments on this article (3 new since last visit)",
+  Comments: "Total comments on this article",
 };
 
-export function ArticleStats({ article }: { article: Article }) {
+export function ArticleStats({ article }: ArticleStatsProps) {
+  // Calculate read time display
+  const formatReadTime = (minutes: number) => {
+    if (!minutes || minutes < 1) return "< 1m";
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
+  // Format views count with thousand separators
+  const formatViews = (count: number) => {
+    if (!count) return "0";
+    return new Intl.NumberFormat("en-US", {
+      notation: count > 1000 ? "compact" : "standard",
+      maximumFractionDigits: 1,
+    }).format(count);
+  };
+
+  // Calculate trend based on views (simulated - in real app would compare to previous period)
+  const getViewsTrend = () => {
+    const views = article.viewsCount || 0;
+    if (views > 1000) return { change: "+12%", trend: "up" as const };
+    if (views > 500) return { change: "+5%", trend: "up" as const };
+    if (views > 100) return { change: "+2%", trend: "up" as const };
+    return { change: "New", trend: "new" as const };
+  };
+
+  const viewsTrend = getViewsTrend();
+
   const stats = [
     {
       label: "Page Views",
-      value: "12,482",
-      change: "+14%",
-      trend: "up",
-      color: "emerald",
+      value: formatViews(article.viewsCount),
+      change: viewsTrend.change,
+      trend: viewsTrend.trend,
+      color: article.viewsCount > 500 ? "emerald" : "stone",
     },
     {
       label: "Avg. Read Time",
-      value: "4m 32s",
-      change: "Stable",
-      trend: "stable",
+      value: formatReadTime(article.readTimeMinutes),
+      change: article.readTimeMinutes ? "Good" : "N/A",
+      trend: article.readTimeMinutes > 3 ? "stable" : ("stable" as const),
       color: "stone",
     },
     {
       label: "Total Shares",
-      value: "856",
-      change: "+5%",
-      trend: "up",
-      color: "emerald",
+      value: "0",
+      change: "N/A",
+      trend: "stable" as const,
+      color: "stone",
     },
     {
       label: "Comments",
-      value: "42",
-      change: "3 New",
-      trend: "new",
-      color: "orange",
+      value: "0",
+      change: "N/A",
+      trend: "stable" as const,
+      color: "stone",
     },
   ];
 
@@ -79,8 +112,8 @@ export function ArticleStats({ article }: { article: Article }) {
                   stat.color === "emerald"
                     ? "text-emerald-600"
                     : stat.color === "orange"
-                      ? "text-primary"
-                      : "text-stone-400"
+                    ? "text-primary"
+                    : "text-stone-400"
                 }`}
               >
                 {stat.trend === "up" && (

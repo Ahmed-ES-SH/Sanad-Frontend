@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { FiShare2, FiChevronRight } from "react-icons/fi";
 
 export function SocialSharing({ article }: { article: Article }) {
+  // TODO: Fetch actual platform connection status from API when social integration is implemented
+  // Current data is placeholder - hardcoded for UI demonstration
   const platforms = [
     { name: "Twitter / X", color: "bg-blue-600", connected: true },
     { name: "LinkedIn", color: "bg-blue-800", connected: true },

@@ -2,58 +2,72 @@
 
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
-import { FiFilter } from "react-icons/fi";
+import { FiFilter, FiChevronDown } from "react-icons/fi";
 
-export function Filters() {
+export function Filters({
+  isRead,
+  order,
+  onFilterChange,
+}: {
+  isRead?: boolean;
+  order?: string;
+  onFilterChange: (filters: Partial<ContactQueryParams>) => void;
+}) {
   const { local } = useVariables();
   const { ContactUsPage } = getTranslations(local);
   const t = ContactUsPage.Filters;
 
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === "all") {
+      onFilterChange({ isRead: undefined });
+    } else if (value === "unread") {
+      onFilterChange({ isRead: false });
+    } else if (value === "read") {
+      onFilterChange({ isRead: true });
+    }
+  };
+
+  const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onFilterChange({ order: e.target.value as "ASC" | "DESC" });
+  };
+
   return (
-    <section className="bg-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 mb-8 shadow-sm border border-stone-200/50">
-      <div className="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-xl border border-stone-200/30 min-w-[240px]">
-        <FiFilter className="text-stone-500" size={18} />
-        <input
-          className="bg-transparent border-0 focus:ring-0 text-sm w-full p-0 text-stone-700 placeholder-stone-400"
-          placeholder={t.searchPlaceholder}
-          type="text"
-        />
-      </div>
+    <section className="bg-white p-4 rounded-2xl flex flex-wrap items-center justify-end gap-4 mb-8 shadow-sm border border-stone-200/50">
       <div className="flex items-center gap-3">
         <div className="relative">
-          <select className="appearance-none bg-stone-50 border-0 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-stone-600 focus:ring-2 focus:ring-orange-500/20 cursor-pointer">
-            <option>{t.statusAll}</option>
-            <option>{t.unread}</option>
-            <option>{t.replied}</option>
-            <option>{t.archived}</option>
+          <select
+            value={isRead === undefined ? "all" : isRead ? "read" : "unread"}
+            onChange={handleStatusChange}
+            className="appearance-none bg-stone-50 border-0 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-stone-600 focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
+          >
+            <option value="all">{t.statusAll}</option>
+            <option value="unread">{t.unread}</option>
+            <option value="read">{local === "ar" ? "مقروءة" : "Read"}</option>
           </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">
-            expand_more
-          </span>
+          <FiChevronDown
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400"
+            size={16}
+          />
         </div>
+
         <div className="relative">
-          <select className="appearance-none bg-stone-50 border-0 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-stone-600 focus:ring-2 focus:ring-orange-500/20 cursor-pointer">
-            <option>{t.categoryGeneral}</option>
-            <option>{t.technicalSupport}</option>
-            <option>{t.billing}</option>
-            <option>{t.partnership}</option>
+          <select
+            value={order || "DESC"}
+            onChange={handleOrderChange}
+            className="appearance-none bg-stone-50 border-0 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-stone-600 focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
+          >
+            <option value="DESC">{local === "ar" ? "الأحدث" : "Newest"}</option>
+            <option value="ASC">{local === "ar" ? "الأقدم" : "Oldest"}</option>
           </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">
-            expand_more
-          </span>
-        </div>
-        <div className="relative">
-          <select className="appearance-none bg-stone-50 border-0 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-stone-600 focus:ring-2 focus:ring-orange-500/20 cursor-pointer">
-            <option>{t.priorityAll}</option>
-            <option>{t.critical}</option>
-            <option>{t.high}</option>
-            <option>{t.medium}</option>
-          </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">
-            expand_more
-          </span>
+          <FiChevronDown
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400"
+            size={16}
+          />
         </div>
       </div>
     </section>
   );
 }
+
+import { ContactQueryParams } from "@/app/types/contact";
