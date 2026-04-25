@@ -5,6 +5,9 @@ import Img from "../../_global/Img";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
 import LocalLink from "../../_global/LocalLink";
+import { useEffect } from "react";
+import { instance } from "@/lib/axios";
+import { HOME_ENDPOINTS } from "@/app/constants/endpoints";
 
 export default function Hero_section() {
   const { local } = useVariables();
@@ -31,6 +34,20 @@ export default function Hero_section() {
     },
     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
   };
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const res = await instance.get(HOME_ENDPOINTS.LIST_PUBLISHED);
+
+        console.log(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetch();
+  }, []);
 
   return (
     <div
