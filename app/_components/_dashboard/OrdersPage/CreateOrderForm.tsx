@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { useCreateOrder } from '@/lib/hooks/orders';
-import { Service } from '@/app/types/service';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { useCreateOrder } from "@/lib/hooks/orders";
+import { Service } from "@/app/types/service";
 
 // Get published services - this would come from a hook or server action
 async function getPublishedServices(): Promise<Service[]> {
   try {
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/services`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}/api/services`,
+    );
     const data = await response.json();
     return data.data || [];
   } catch {
@@ -19,10 +21,10 @@ async function getPublishedServices(): Promise<Service[]> {
 
 // Format currency
 function formatCurrency(amount: string | number): string {
-  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   }).format(numAmount);
 }
 
@@ -33,7 +35,7 @@ export function CreateOrderForm() {
   const [services, setServices] = useState<Service[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export function CreateOrderForm() {
         const data = await getPublishedServices();
         setServices(data);
       } catch (error) {
-        console.error('Failed to load services:', error);
+        console.error("Failed to load services:", error);
       } finally {
         setIsLoadingServices(false);
       }
@@ -59,7 +61,7 @@ export function CreateOrderForm() {
 
     const result = await createOrderHook.createOrder(
       selectedService.id,
-      notes || undefined
+      notes || undefined,
     );
 
     setIsSubmitting(false);
@@ -67,7 +69,7 @@ export function CreateOrderForm() {
     if (result.success) {
       router.push(`/dashboard/orders/${result.data?.id}`);
     } else {
-      alert(result.message || 'Failed to create order');
+      alert(result.message || "Failed to create order");
     }
   };
 
@@ -103,7 +105,8 @@ export function CreateOrderForm() {
           No services available
         </h3>
         <p className="text-gray-500">
-          There are no services available at the moment. Please check back later.
+          There are no services available at the moment. Please check back
+          later.
         </p>
       </motion.div>
     );
@@ -124,8 +127,8 @@ export function CreateOrderForm() {
               onClick={() => setSelectedService(service)}
               className={`p-4 text-left rounded-xl border-2 transition-all ${
                 selectedService?.id === service.id
-                  ? 'border-indigo-600 bg-indigo-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -155,7 +158,10 @@ export function CreateOrderForm() {
 
       {/* Notes */}
       <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="notes"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Notes (optional)
         </label>
         <textarea
@@ -175,7 +181,9 @@ export function CreateOrderForm() {
       {/* Order Summary */}
       {selectedService && (
         <div className="p-4 bg-gray-50 rounded-xl">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Order Summary</h3>
+          <h3 className="text-sm font-medium text-gray-500 mb-2">
+            Order Summary
+          </h3>
           <div className="flex items-center justify-between">
             <span className="text-gray-900">{selectedService.title}</span>
             <span className="text-lg font-semibold text-gray-900">
@@ -191,7 +199,7 @@ export function CreateOrderForm() {
         disabled={!selectedService || isSubmitting}
         className="w-full px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isSubmitting ? 'Creating Order...' : 'Create Order'}
+        {isSubmitting ? "Creating Order..." : "Create Order"}
       </button>
 
       {createOrderHook.error && (

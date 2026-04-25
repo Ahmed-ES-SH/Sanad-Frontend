@@ -5,7 +5,7 @@ import {
   ResetPasswordCredentials,
 } from "@/lib/types/auth";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = process.env.BACKEND_URL;
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
