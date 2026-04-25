@@ -1,14 +1,16 @@
-import { cookies } from "next/headers";
-import { cache } from "react";
-
 const AUTH_COOKIE_NAME = "sanad_auth_token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-// Server-side cached function for App Router
-export const getAuthCookie = cache(async (): Promise<string | undefined> => {
-  const cookieStore = await cookies();
+async function getServerCookieStore() {
+  const { cookies } = await import("next/headers");
+  return cookies();
+}
+
+// Server-side function for App Router
+export async function getAuthCookie(): Promise<string | undefined> {
+  const cookieStore = await getServerCookieStore();
   return cookieStore.get(AUTH_COOKIE_NAME)?.value;
-});
+}
 
 // Client-safe function for browser/CSR - returns null on server
 export function getClientAuthToken(): string | null {
@@ -18,7 +20,7 @@ export function getClientAuthToken(): string | null {
 }
 
 export async function setAuthCookie(token: string) {
-  const cookieStore = await cookies();
+  const cookieStore = await getServerCookieStore();
   cookieStore.set(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -29,6 +31,6 @@ export async function setAuthCookie(token: string) {
 }
 
 export async function deleteAuthCookie() {
-  const cookieStore = await cookies();
+  const cookieStore = await getServerCookieStore();
   cookieStore.delete(AUTH_COOKIE_NAME);
 }

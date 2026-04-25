@@ -61,6 +61,20 @@ export async function getPaymentById(
 }
 
 /**
+ * Get current user's payment status by ID
+ * @param id - Payment UUID
+ * @returns Payment details for the current authenticated user
+ */
+export async function getMyPaymentById(
+  id: string
+): Promise<PaymentResponseDto> {
+  return protectedRequest<PaymentResponseDto>(
+    PAYMENTS_ENDPOINTS.GET_BY_ID(id),
+    "GET"
+  );
+}
+
+/**
  * Refund a payment (admin endpoint)
  * @param id - Payment UUID
  * @returns Refund response

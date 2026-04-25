@@ -51,7 +51,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => (
       </div>
       <div className="flex items-center gap-2">
         <FaCalendar className="text-gray-400" />
-        <span>{article.date}</span>
+        <span>{article.date.split("T")[0]}</span>
       </div>
       <div className="flex items-center gap-2">
         <FaClock className="text-gray-400" />

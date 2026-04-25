@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { AdminOrder, OrderStatus, PaginationMeta } from "@/app/types/order";
+import { AdminOrder, OrderStatus } from "@/app/types/order";
 import { useVariables } from "@/app/context/VariablesContext";
 import { getTranslations } from "@/app/helpers/helpers";
-import { FiEye, FiPackage, FiSearch, FiFilter } from "react-icons/fi";
-import { useAdminOrdersWithState, OrderFilters } from "@/lib/hooks/orders/useAdminOrders";
-import { Pagination, PaginationLoading } from "@/app/_components/_ui/Pagination";
+import { FiEye, FiPackage } from "react-icons/fi";
+import { useAdminOrdersWithState } from "@/lib/hooks/orders/useAdminOrders";
+import { Pagination } from "@/app/_components/_ui/Pagination";
 
 // Status badge configuration
 const statusConfig: Record<
@@ -96,7 +96,7 @@ export function OrdersTable({
 
   // Sync external statusFilter changes
   React.useEffect(() => {
-    setStatus(statusFilter !== "all" ? statusFilter : "");
+    setStatus((statusFilter !== "all" ? statusFilter : "") as OrderStatus);
   }, [statusFilter, setStatus]);
 
   // Table columns definition
@@ -198,7 +198,7 @@ export function OrdersTable({
         ),
       },
     ],
-    [t, onViewOrder]
+    [t, onViewOrder],
   );
 
   // Loading state
@@ -340,7 +340,7 @@ export function OrdersTable({
           <div className="text-xs text-surface-500 mt-2 text-center">
             {t.pagination?.showing || "Showing"}{" "}
             <span className="font-medium text-surface-700">
-              {((meta.page - 1) * meta.limit) + 1}
+              {(meta.page - 1) * meta.limit + 1}
             </span>{" "}
             -{" "}
             <span className="font-medium text-surface-700">

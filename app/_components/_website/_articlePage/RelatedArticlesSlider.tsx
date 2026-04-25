@@ -1,21 +1,24 @@
 "use client";
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
-import "swiper/css";
-import "swiper/css/navigation";
-import { blogPosts } from "@/app/constants/blogposts";
 import ArticleCard from "../_blog/ArticleCard";
 import { useVariables } from "@/app/context/VariablesContext";
-import { Article } from "./types";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import { Article } from "@/app/types/blog";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-export default function RelatedArticlesSlider() {
+export default function RelatedArticlesSlider({
+  articles,
+}: {
+  articles: Article[];
+}) {
   const { local } = useVariables();
   return (
     <motion.section
@@ -46,11 +49,12 @@ export default function RelatedArticlesSlider() {
         }}
         a11y={{ enabled: true }}
       >
-        {blogPosts.map((article, index) => (
-          <SwiperSlide key={article.id}>
-            <ArticleCard article={article as any} index={index} />
-          </SwiperSlide>
-        ))}
+        {articles &&
+          articles.map((article, index) => (
+            <SwiperSlide key={article.id}>
+              <ArticleCard article={article as any} index={index} />
+            </SwiperSlide>
+          ))}
       </Swiper>
     </motion.section>
   );

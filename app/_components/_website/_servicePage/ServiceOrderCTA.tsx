@@ -8,10 +8,10 @@ import { Service } from "@/app/types/service";
 
 // Format currency
 function formatCurrency(amount: string | number): string {
-  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   }).format(numAmount);
 }
 
@@ -21,7 +21,11 @@ interface ServiceOrderCTAProps {
   translations: Record<string, string>;
 }
 
-export default function ServiceOrderCTA({ service, local, translations }: ServiceOrderCTAProps) {
+export default function ServiceOrderCTA({
+  service,
+  local,
+  translations,
+}: ServiceOrderCTAProps) {
   const router = useRouter();
   const { addItem } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,13 +35,8 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
 
     setIsSubmitting(true);
     try {
-      await addItem(service.id, 1, {
-        serviceTitle: service.title,
-        unitPrice: Number(service.basePrice),
-        serviceIconUrl: service.coverImageUrl || "",
-        description: service.shortDescription || ""
-      });
-      
+      await addItem(service.id, 1);
+
       // Navigate to cart page
       router.push(`/${local}/cart`);
     } catch (error) {
@@ -55,7 +54,7 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
     <section id="order-section" className="relative py-16 md:py-24">
       <div className="absolute inset-0 bg-surface-900" />
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent-amber/10" />
-      
+
       <div className="relative c-container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -66,7 +65,8 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-12 bg-gradient-to-r from-primary to-accent-amber" />
             <span className="caption-xs font-semibold text-primary uppercase tracking-wider">
-              {translations.orderService || (local === "en" ? "Order Service" : "طلب الخدمة")}
+              {translations.orderService ||
+                (local === "en" ? "Order Service" : "طلب الخدمة")}
             </span>
             <div className="h-px w-12 bg-gradient-to-l from-primary to-accent-amber" />
           </div>
@@ -74,7 +74,7 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
             {local === "en" ? "Ready to Get Started?" : "هل أنت مستعد للبدء؟"}
           </h2>
           <p className="body-lg text-surface-400 max-w-2xl mx-auto">
-            {local === "en" 
+            {local === "en"
               ? "Add this service to your brief and take your business to the next level."
               : "أضف هذه الخدمة إلى موجزك وارتقِ بعملك إلى المستوى التالي."}
           </p>
@@ -98,9 +98,13 @@ export default function ServiceOrderCTA({ service, local, translations }: Servic
               <FiShoppingCart className="text-xl" />
             )}
             <span className="text-lg">
-              {isSubmitting 
-                ? (local === "en" ? "Adding..." : "جاري الإضافة...") 
-                : (local === "en" ? "Order Now" : "اطلب الآن")}
+              {isSubmitting
+                ? local === "en"
+                  ? "Adding..."
+                  : "جاري الإضافة..."
+                : local === "en"
+                  ? "Order Now"
+                  : "اطلب الآن"}
             </span>
             <span className="ml-2 px-3 py-1 bg-primary/10 rounded-lg text-sm">
               {formatCurrency(Number(service.basePrice))}

@@ -9,7 +9,7 @@ import { TrustIndicators } from "./TrustIndicators";
 import { CheckoutSection } from "./CheckoutSection";
 import { EmptyCartState } from "./EmptyCartState";
 import { MdClose } from "react-icons/md";
-import { useCart, CartItem as CartItemType } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/CartContext";
 import { FiLoader } from "react-icons/fi";
 import { PaymentModal } from "../../_payment/PaymentModal";
 import { toast } from "sonner";
@@ -24,23 +24,21 @@ export function CartPage() {
   const { cart: t } = getTranslations(local);
   const isRtl = local === "ar";
 
-  const { items, isLoading, removeItem, addItem } = useCart();
+  const { items, isLoading, removeItem, addItem, clearCart } = useCart();
 
   // Checkout states
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState("");
+  const [paymentId, setPaymentId] = useState("");
 
   // Undo toast state management
   const {
     undoToast,
-    setUndoToast,
     isRemoving,
     handleRemove,
     handleUndo,
     handleDismissToast,
-    handleSaveForLater,
   } = useCartToast(removeItem, addItem);
 
   // Calculate totals
@@ -61,14 +59,24 @@ export function CartPage() {
         items,
       );
       setClientSecret(clientSecret);
-      setOrderId(paymentId);
+      setPaymentId(paymentId);
       setIsPaymentModalOpen(true);
-    } catch {
-      toast.error(t.checkoutError);
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error(t.checkoutError);
+      }
     } finally {
       setIsProcessingCheckout(false);
     }
   }, [items, totals.total, isAuthenticated, t.checkoutError]);
+
+  const onSuccess = useCallback(() => {
+    toast.success(t.paymentSuccess);
+    setIsPaymentModalOpen(false);
+    clearCart();
+  }, [clearCart, t.paymentSuccess]);
 
   // Check if cart is empty
   const isEmpty = items.length === 0;
@@ -186,11 +194,8 @@ export function CartPage() {
         onClose={() => setIsPaymentModalOpen(false)}
         clientSecret={clientSecret}
         amount={totals.total}
-        orderId={orderId}
-        onSuccess={() => {
-          toast.success(t.paymentSuccess);
-          setIsPaymentModalOpen(false);
-        }}
+        paymentId={paymentId}
+        onSuccess={onSuccess}
         onError={(error) => {
           toast.error(error || t.paymentFailed);
         }}

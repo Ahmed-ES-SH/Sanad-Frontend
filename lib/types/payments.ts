@@ -2,7 +2,12 @@
  * Payment Types based on the Payments Integration Plan
  */
 
-export type PaymentStatus = 'pending' | 'succeeded' | 'failed' | 'refunded';
+export type PaymentStatus =
+  | "pending"
+  | "succeeded"
+  | "failed"
+  | "refunded"
+  | "partially_refunded";
 
 export interface PaymentResponseDto {
   id: string;
@@ -32,7 +37,7 @@ export interface PaymentFilterDto {
   page?: number;
   limit?: number;
   sortBy?: string;
-  order?: 'ASC' | 'DESC';
+  order?: "ASC" | "DESC";
   status?: PaymentStatus;
   userId?: string;
   startDate?: string;

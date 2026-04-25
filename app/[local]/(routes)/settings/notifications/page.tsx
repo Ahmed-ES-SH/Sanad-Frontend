@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { FiLoader, FiCheck, FiBell, FiMail, FiGlobe } from 'react-icons/fi';
-import { useNotification } from '@/app/context/NotificationContext';
-import { toast } from 'sonner';
+import { useEffect, useState } from "react";
+import { FiLoader, FiCheck, FiBell, FiMail, FiGlobe } from "react-icons/fi";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function NotificationPreferencesPage() {
-  const { preferences, fetchPreferences, updatePreferences, isLoading, error } =
-    useNotification();
+  const { preferences, isLoading, error } = useNotification();
 
   const [localPrefs, setLocalPrefs] = useState({
     orderNotifications: true,
@@ -19,11 +17,6 @@ export default function NotificationPreferencesPage() {
 
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-
-  // Fetch preferences on mount
-  useEffect(() => {
-    fetchPreferences();
-  }, [fetchPreferences]);
 
   // Update local state when preferences are loaded
   useEffect(() => {
@@ -47,60 +40,47 @@ export default function NotificationPreferencesPage() {
     setHasChanges(true);
   };
 
-  // Save preferences
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      await updatePreferences(localPrefs);
-      setHasChanges(false);
-      toast.success('Preferences saved successfully');
-    } catch (error) {
-      console.error('Failed to save preferences:', error);
-      toast.error('Failed to save preferences. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const prefSections = [
     {
-      title: 'Notification Types',
-      description: 'Choose which types of notifications you want to receive',
+      title: "Notification Types",
+      description: "Choose which types of notifications you want to receive",
       items: [
         {
-          key: 'orderNotifications' as const,
-          label: 'Order Updates',
-          description: 'Notifications about your order status changes and updates',
+          key: "orderNotifications" as const,
+          label: "Order Updates",
+          description:
+            "Notifications about your order status changes and updates",
           icon: <FiGlobe className="w-5 h-5" />,
         },
         {
-          key: 'paymentNotifications' as const,
-          label: 'Payment Notifications',
-          description: 'Notifications about successful or failed payments',
+          key: "paymentNotifications" as const,
+          label: "Payment Notifications",
+          description: "Notifications about successful or failed payments",
           icon: <FiCheck className="w-5 h-5" />,
         },
         {
-          key: 'systemNotifications' as const,
-          label: 'System Notifications',
-          description: 'Important system updates, maintenance notices, and announcements',
+          key: "systemNotifications" as const,
+          label: "System Notifications",
+          description:
+            "Important system updates, maintenance notices, and announcements",
           icon: <FiBell className="w-5 h-5" />,
         },
       ],
     },
     {
-      title: 'Delivery Methods',
-      description: 'Choose how you want to receive notifications',
+      title: "Delivery Methods",
+      description: "Choose how you want to receive notifications",
       items: [
         {
-          key: 'pushEnabled' as const,
-          label: 'Push Notifications',
-          description: 'Receive real-time push notifications in your browser',
+          key: "pushEnabled" as const,
+          label: "Push Notifications",
+          description: "Receive real-time push notifications in your browser",
           icon: <FiBell className="w-5 h-5" />,
         },
         {
-          key: 'emailEnabled' as const,
-          label: 'Email Notifications',
-          description: 'Receive notification summaries via email',
+          key: "emailEnabled" as const,
+          label: "Email Notifications",
+          description: "Receive notification summaries via email",
           icon: <FiMail className="w-5 h-5" />,
         },
       ],
@@ -145,8 +125,12 @@ export default function NotificationPreferencesPage() {
               className="bg-white rounded-2xl shadow-sm border border-surface-200 overflow-hidden"
             >
               <div className="p-6 border-b border-surface-200">
-                <h2 className="text-lg font-bold text-surface-900">{section.title}</h2>
-                <p className="text-sm text-surface-600 mt-1">{section.description}</p>
+                <h2 className="text-lg font-bold text-surface-900">
+                  {section.title}
+                </h2>
+                <p className="text-sm text-surface-600 mt-1">
+                  {section.description}
+                </p>
               </div>
 
               <div className="divide-y divide-surface-100">
@@ -173,7 +157,7 @@ export default function NotificationPreferencesPage() {
                     <button
                       onClick={() => togglePref(item.key)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                        localPrefs[item.key] ? 'bg-primary' : 'bg-surface-300'
+                        localPrefs[item.key] ? "bg-primary" : "bg-surface-300"
                       }`}
                       role="switch"
                       aria-checked={localPrefs[item.key]}
@@ -181,7 +165,9 @@ export default function NotificationPreferencesPage() {
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          localPrefs[item.key] ? 'translate-x-6' : 'translate-x-1'
+                          localPrefs[item.key]
+                            ? "translate-x-6"
+                            : "translate-x-1"
                         }`}
                       />
                     </button>
@@ -196,20 +182,8 @@ export default function NotificationPreferencesPage() {
         <div className="sticky bottom-0 mt-6 bg-white rounded-2xl shadow-sm border border-surface-200 p-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-surface-600">
-              {hasChanges ? 'You have unsaved changes' : 'All changes saved'}
+              {hasChanges ? "You have unsaved changes" : "All changes saved"}
             </div>
-            <button
-              onClick={handleSave}
-              disabled={!hasChanges || isSaving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSaving ? (
-                <FiLoader className="w-4 h-4 animate-spin" />
-              ) : (
-                <FiCheck className="w-4 h-4" />
-              )}
-              <span>Save Changes</span>
-            </button>
           </div>
         </div>
       </div>

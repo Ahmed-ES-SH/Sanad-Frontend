@@ -1,5 +1,6 @@
 import { fetchContactMessages } from "@/app/actions/contactActions";
 import { ContactMessagesContent } from "@/app/_components/_dashboard/ContactUsPage/ContactMessagesContent";
+import { ContactQueryParams } from "@/app/types/contact";
 
 interface ContactUsPageProps {
   searchParams: Promise<{
@@ -34,33 +35,36 @@ export default async function ContactUsPage({
     order,
     isRead,
     sortBy: "createdAt",
-  };
+  } as ContactQueryParams;
 
   const response = await fetchContactMessages(initialParams);
 
-  const initialData = response.success && response.data ? {
-    data: response.data,
-    meta: response.meta || {
-      page,
-      limit,
-      total: response.data.length,
-      totalPages: 1,
-    }
-  } : {
-    data: [],
-    meta: {
-      page,
-      limit,
-      total: 0,
-      totalPages: 0,
-    }
-  };
+  const initialData =
+    response.success && response.data
+      ? {
+          data: response.data,
+          meta: response.meta || {
+            page,
+            limit,
+            total: response.data.length,
+            totalPages: 1,
+          },
+        }
+      : {
+          data: [],
+          meta: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+          },
+        };
 
   return (
     <main className="pt-12 pb-12 px-8 min-h-screen bg-stone-50 text-stone-900">
-      <ContactMessagesContent 
-        initialData={initialData} 
-        initialParams={initialParams} 
+      <ContactMessagesContent
+        initialData={initialData}
+        initialParams={initialParams}
       />
     </main>
   );

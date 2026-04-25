@@ -23,6 +23,7 @@ const statusColors = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
   failed: "bg-red-100 text-red-700 border-red-200",
   refunded: "bg-stone-100 text-stone-700 border-stone-200",
+  partially_refunded: "bg-stone-100 text-stone-700 border-stone-200",
 };
 
 const formatAmount = (amount: number, currency: string = "USD") => {

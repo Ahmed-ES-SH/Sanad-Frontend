@@ -185,7 +185,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         setCart({
           id: "guest",
-          userId: "guest",
+          userId: 0,
           totalItems: guestTotalItems,
           totalAmount: guestTotalAmount,
           items: guestCart.map((item) => ({

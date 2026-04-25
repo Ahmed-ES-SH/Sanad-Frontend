@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { PaymentForm } from "./PaymentForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
+import { pollPaymentStatus } from "@/lib/api/payments/poll-payment-status";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey
+  ? loadStripe(stripePublishableKey)
+  : null;
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -18,10 +20,18 @@ interface PaymentModalProps {
   clientSecret: string | null;
   amount: number;
   currency?: string;
-  orderId: string;
+  paymentId: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
+
+type CheckoutUiState =
+  | "collecting"
+  | "pending"
+  | "verification_delayed"
+  | "auth_required"
+  | "succeeded"
+  | "failed";
 
 export function PaymentModal({
   isOpen,
@@ -29,27 +39,101 @@ export function PaymentModal({
   clientSecret,
   amount,
   currency = "USD",
-  orderId,
+  paymentId,
   onSuccess,
   onError,
 }: PaymentModalProps) {
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-
-  const handleSuccess = () => {
-    setPaymentSuccess(true);
-    onSuccess?.();
-  };
+  const [checkoutState, setCheckoutState] = useState<CheckoutUiState>("collecting");
+  const pollCleanupRef = useRef<(() => void) | null>(null);
 
   const handleError = (error: string) => {
+    setCheckoutState("failed");
     onError?.(error);
+  };
+
+  const stopPolling = useCallback(() => {
+    if (pollCleanupRef.current) {
+      pollCleanupRef.current();
+      pollCleanupRef.current = null;
+    }
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    stopPolling();
+    onClose();
+  }, [onClose, stopPolling]);
+
+  const startWebhookStatusPolling = useCallback(() => {
+    stopPolling();
+    setCheckoutState("pending");
+
+    pollCleanupRef.current = pollPaymentStatus({
+      paymentId,
+      onStatusChange: (status) => {
+        if (status === "succeeded") {
+          setCheckoutState("succeeded");
+          stopPolling();
+          onSuccess?.();
+          return;
+        }
+
+        if (status === "failed") {
+          setCheckoutState("failed");
+          stopPolling();
+          onError?.("Payment failed. Please try again.");
+        }
+      },
+      onError: (error) => {
+        const statusCode =
+          (
+            error as Error & {
+              statusCode?: number;
+              response?: { status?: number };
+            }
+          ).statusCode ??
+          (
+            error as Error & {
+              statusCode?: number;
+              response?: { status?: number };
+            }
+          ).response?.status;
+        if (statusCode === 401) {
+          setCheckoutState("auth_required");
+          stopPolling();
+          onError?.("Session expired while verifying payment. Please sign in again.");
+          return;
+        }
+        onError?.("Unable to verify payment status. Retrying...");
+      },
+      onTimeout: () => {
+        setCheckoutState("verification_delayed");
+        onError?.("Payment verification is delayed. You can keep waiting or retry.");
+      },
+    });
+  }, [paymentId, stopPolling, onSuccess, onError]);
+
+  const handleConfirmed = (paymentIntentStatus: string | null) => {
+    if (paymentIntentStatus === "requires_payment_method") {
+      setCheckoutState("failed");
+      onError?.("Payment was not completed. Please check your method and retry.");
+      return;
+    }
+    startWebhookStatusPolling();
   };
 
   // Close modal when opened externally
   useEffect(() => {
     if (!isOpen) {
-      setPaymentSuccess(false);
+      stopPolling();
+      setCheckoutState("collecting");
     }
-  }, [isOpen]);
+  }, [isOpen, stopPolling]);
+
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling]);
 
   // Format amount for display (amount is in dollars, not cents as per API spec)
   const formattedAmount = new Intl.NumberFormat("en-US", {
@@ -66,7 +150,7 @@ export function PaymentModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleModalClose}
             className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm"
           />
 
@@ -85,11 +169,11 @@ export function PaymentModal({
                   Secure Checkout
                 </h2>
                 <p className="text-sm font-medium text-stone-500 mt-1 flex items-center gap-1.5">
-                  <FaLock className="text-xs" /> Order #{orderId.slice(0, 8)}
+                  <FaLock className="text-xs" /> Payment #{paymentId.slice(0, 8)}
                 </p>
               </div>
               <button
-                onClick={onClose}
+                onClick={handleModalClose}
                 className="p-2 rounded-full hover:bg-stone-200 text-stone-500 hover:text-stone-900 transition-colors"
               >
                 <MdClose className="text-xl" />
@@ -98,7 +182,7 @@ export function PaymentModal({
 
             {/* Content */}
             <div className="px-6 py-6 max-h-[70vh] overflow-y-auto md:px-8">
-              {paymentSuccess ? (
+              {checkoutState === "succeeded" ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -124,15 +208,70 @@ export function PaymentModal({
                     Payment Successful
                   </h3>
                   <p className="text-stone-500 font-medium">
-                    Your payment of {formattedAmount} has been processed.
+                    Your payment of {formattedAmount} has been confirmed.
                   </p>
                   <button
-                    onClick={onClose}
+                    onClick={handleModalClose}
                     className="mt-8 w-full py-3.5 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors shadow-surface-sm"
                   >
                     Done
                   </button>
                 </motion.div>
+              ) : checkoutState === "failed" ? (
+                <div className="text-center py-10 space-y-4">
+                  <h3 className="text-2xl font-bold text-stone-900 font-display">
+                    Payment Failed
+                  </h3>
+                  <p className="text-stone-500 font-medium">
+                    We couldn&apos;t confirm your payment. You can retry now.
+                  </p>
+                  <button
+                    onClick={() => setCheckoutState("collecting")}
+                    className="mt-2 w-full py-3.5 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors shadow-surface-sm"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : checkoutState === "auth_required" ? (
+                <div className="text-center py-10 space-y-4">
+                  <h3 className="text-2xl font-bold text-stone-900 font-display">
+                    Sign In Required
+                  </h3>
+                  <p className="text-stone-500 font-medium">
+                    Your session expired while verifying payment status.
+                  </p>
+                  <button
+                    onClick={handleModalClose}
+                    className="mt-2 w-full py-3.5 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors shadow-surface-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : checkoutState === "verification_delayed" ? (
+                <div className="text-center py-10 space-y-4">
+                  <h3 className="text-2xl font-bold text-stone-900 font-display">
+                    Payment Still Processing
+                  </h3>
+                  <p className="text-stone-500 font-medium">
+                    Verification is delayed. You can continue waiting safely.
+                  </p>
+                  <button
+                    onClick={startWebhookStatusPolling}
+                    className="mt-2 w-full py-3.5 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors shadow-surface-sm"
+                  >
+                    Check Again
+                  </button>
+                </div>
+              ) : checkoutState === "pending" ? (
+                <div className="text-center py-16">
+                  <div className="w-10 h-10 border-4 border-stone-200 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-stone-900 mb-2 font-display">
+                    Payment Processing
+                  </h3>
+                  <p className="text-stone-500 font-medium">
+                    Waiting for secure confirmation from our payment system...
+                  </p>
+                </div>
               ) : clientSecret ? (
                 <div className="space-y-6">
                   {/* Amount Summary */}
@@ -147,44 +286,52 @@ export function PaymentModal({
 
                   {/* Stripe Form */}
                   <div className="min-h-[250px]">
-                    <Elements
-                      stripe={stripePromise}
-                      options={{
-                        clientSecret,
-                        appearance: {
-                          theme: "stripe",
-                          variables: {
-                            colorPrimary: "#f97316", // Sanad primary orange
-                            colorBackground: "#ffffff",
-                            colorText: "#1c1917", // stone-900
-                            colorDanger: "#ef4444",
-                            fontFamily: "Inter, system-ui, sans-serif",
-                            spacingUnit: "4px",
-                            borderRadius: "8px",
+                    {stripePromise ? (
+                      <Elements
+                        stripe={stripePromise}
+                        options={{
+                          clientSecret,
+                          appearance: {
+                            theme: "stripe",
+                            variables: {
+                              colorPrimary: "#f97316", // Sanad primary orange
+                              colorBackground: "#ffffff",
+                              colorText: "#1c1917", // stone-900
+                              colorDanger: "#ef4444",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              spacingUnit: "4px",
+                              borderRadius: "8px",
+                            },
+                            rules: {
+                              ".Input": {
+                                border: "1px solid #e7e5e4", // stone-200
+                                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                              },
+                              ".Input:focus": {
+                                border: "1px solid #f97316",
+                                boxShadow: "0 0 0 1px #f97316",
+                              },
+                              ".Label": {
+                                color: "#57534e", // stone-500
+                                fontWeight: "500",
+                              },
+                            },
                           },
-                          rules: {
-                            ".Input": {
-                              border: "1px solid #e7e5e4", // stone-200
-                              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                            },
-                            ".Input:focus": {
-                              border: "1px solid #f97316",
-                              boxShadow: "0 0 0 1px #f97316",
-                            },
-                            ".Label": {
-                              color: "#57534e", // stone-500
-                              fontWeight: "500",
-                            },
-                          },
-                        },
-                      }}
-                    >
-                      <PaymentForm
-                        clientSecret={clientSecret}
-                        onSuccess={handleSuccess}
-                        onError={handleError}
-                      />
-                    </Elements>
+                        }}
+                      >
+                        <PaymentForm
+                          clientSecret={clientSecret}
+                          onConfirmed={handleConfirmed}
+                          onError={handleError}
+                        />
+                      </Elements>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-stone-500 font-medium">
+                          Stripe configuration is missing. Please contact support.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

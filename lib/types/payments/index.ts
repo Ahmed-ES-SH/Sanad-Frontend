@@ -1,7 +1,12 @@
 /**
  * Payment Status Enum
  */
-export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
+export type PaymentStatus =
+  | "pending"
+  | "succeeded"
+  | "failed"
+  | "partially_refunded"
+  | "refunded";
 
 /**
  * Request DTO for creating a payment intent

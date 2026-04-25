@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVariables } from "@/app/context/VariablesContext";
-import { formatTitle, getTranslations } from "@/app/helpers/helpers";
+import { getTranslations } from "@/app/helpers/helpers";
 import { deleteArticle } from "@/app/actions/blogActions";
 import { Article } from "@/app/types/blog";
 import LocalLink from "../../_global/LocalLink";
@@ -18,6 +18,7 @@ import {
   HiOutlineDocumentText,
 } from "react-icons/hi";
 import Link from "next/link";
+import BlogPagination from "../../_website/_blog/BlogPagination";
 
 interface ArticleGridProps {
   initialArticles: Article[];
@@ -205,6 +206,8 @@ export function ArticleGrid({
   const { BlogPage } = getTranslations(local);
   const t = BlogPage.ArticleGrid;
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [isLoading, setIsLoading] = useState(false);
@@ -275,6 +278,12 @@ export function ArticleGrid({
   };
 
   const cardDirection = (article: Article) => `/dashboard/blog/${article.id}`;
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <>
@@ -400,6 +409,14 @@ export function ArticleGrid({
           />
         )}
       </AnimatePresence>
+
+      {/* Pagination */}
+      <BlogPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        isLoading={isLoading}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 }

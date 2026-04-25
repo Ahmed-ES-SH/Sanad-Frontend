@@ -759,7 +759,8 @@
       "totalPosts": "Total Posts",
       "totalViews": "Total Views",
       "avgReadingTime": "Avg. Reading Time",
-      "newComments": "New Comments"
+      "newComments": "New Comments",
+      "replied": "Replied"
     },
     "QuickActions": {
       "createNewPost": "Create New Post",
@@ -935,7 +936,8 @@
       "exportCSV": "Export CSV",
       "exportCSVDesc": "Download monthly report",
       "setupAutoReply": "Setup Auto-reply",
-      "setupAutoReplyDesc": "Configure AI assistant"
+      "setupAutoReplyDesc": "Configure AI assistant",
+      "replied": "Replied"
     },
     "StatsCards": {
       "totalMessages": "Total Messages",
@@ -943,7 +945,8 @@
       "needsAttention": "Needs attention",
       "avgResponseTime": "Avg. Response Time",
       "satisfactionRate": "Satisfaction Rate",
-      "excellent": "Excellent"
+      "excellent": "Excellent",
+      "replied": "Replied"
     },
     "Filters": {
       "searchPlaceholder": "Filter by keyword...",

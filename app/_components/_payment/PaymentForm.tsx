@@ -11,13 +11,13 @@ import { MdErrorOutline } from "react-icons/md";
 
 interface PaymentFormProps {
   clientSecret: string;
-  onSuccess?: () => void;
+  onConfirmed?: (paymentIntentStatus: string | null) => void;
   onError?: (error: string) => void;
 }
 
 export function PaymentForm({
   clientSecret,
-  onSuccess,
+  onConfirmed,
   onError,
 }: PaymentFormProps) {
   const stripe = useStripe();
@@ -28,6 +28,13 @@ export function PaymentForm({
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
+    if (!clientSecret) {
+      const message = "Missing payment session. Please restart checkout.";
+      setErrorMessage(message);
+      onError?.(message);
+      return;
+    }
+
     if (!stripe || !elements) {
       return;
     }
@@ -35,7 +42,7 @@ export function PaymentForm({
     setIsProcessing(true);
     setErrorMessage(null);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/payment/success`,
@@ -49,7 +56,8 @@ export function PaymentForm({
       setIsProcessing(false);
       onError?.(message);
     } else {
-      onSuccess?.();
+      setIsProcessing(false);
+      onConfirmed?.(paymentIntent?.status ?? null);
     }
   };
 

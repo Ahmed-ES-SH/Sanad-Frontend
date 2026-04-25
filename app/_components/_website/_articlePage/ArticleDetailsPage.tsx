@@ -16,6 +16,7 @@ import { Article } from "@/app/types/blog";
 // Types
 export interface ArticleProps {
   article: Article;
+  relatedArticles: Article[];
 }
 
 // Animation variants
@@ -34,7 +35,10 @@ const staggerContainer = {
 };
 
 // Article Image Component
-const ArticleImage: React.FC<{ src: string | null; alt: string }> = ({ src, alt }) => (
+const ArticleImage: React.FC<{ src: string | null; alt: string }> = ({
+  src,
+  alt,
+}) => (
   <motion.div
     className="mb-8"
     variants={fadeInUp}
@@ -77,7 +81,10 @@ const ArticleTags: React.FC<{ tags: string[] }> = ({ tags }) => (
 );
 
 // Main Article Detail Page Component
-export default function ArticleDetailsPage({ article }: ArticleProps) {
+export default function ArticleDetailsPage({
+  article,
+  relatedArticles,
+}: ArticleProps) {
   const { local } = useVariables();
 
   // Map backend article to the format expected by existing components
@@ -102,10 +109,13 @@ export default function ArticleDetailsPage({ article }: ArticleProps) {
           initial="initial"
           animate="animate"
         >
-          <div className="flex items-start gap-2 w-full h-full">
+          <div className="flex items-start gap-8 w-full h-full">
             <div className="flex-1/2">
               <ArticleHeader article={mappedArticle} />
-              <ArticleImage src={mappedArticle.image} alt={mappedArticle.title} />
+              <ArticleImage
+                src={mappedArticle.image}
+                alt={mappedArticle.title}
+              />
               <ArticleContent content={article.content} />
               <ArticleTags tags={mappedArticle.tags} />
               <InteractionSection />
@@ -114,8 +124,7 @@ export default function ArticleDetailsPage({ article }: ArticleProps) {
               <BlogSidebar />
             </div>
           </div>
-          <CommentsSection />
-          <RelatedArticlesSlider />
+          <RelatedArticlesSlider articles={relatedArticles} />
         </motion.div>
       </div>
     </div>

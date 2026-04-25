@@ -2,10 +2,10 @@
 import React, { useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiFilter } from "react-icons/fi";
-import { LocalProject } from "./ProjectsPortfolio";
 import { FaTimes } from "react-icons/fa";
 import { useVariables } from "@/app/context/VariablesContext";
 import { Project } from "@/app/types/project";
+import { Category } from "@/app/types/blog";
 
 interface SidebarFilterProps {
   projects: Project[];
@@ -28,14 +28,33 @@ export default function SidebarFilter({
 }: SidebarFilterProps) {
   const { width, local } = useVariables();
   const categories = useMemo(() => {
-    const uniqueCategories = Array.from(
-      new Set(projects.map((project) => project.category[local]))
-    );
-    return [allLabel, ...uniqueCategories];
-  }, [projects, local, allLabel]);
+    const uniqueCategoryNames = new Set<string>();
+    const projectCategories: Category[] = [];
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
+    projects.forEach((p) => {
+      if (p.category && !uniqueCategoryNames.has(p.category.name)) {
+        uniqueCategoryNames.add(p.category.name);
+        projectCategories.push(p.category);
+      }
+    });
+
+    const allCategory: Category = {
+      id: "all",
+      name: allLabel,
+      slug: "all",
+      description: "",
+      color: "",
+      icon: "",
+      order: -1,
+      createdAt: "",
+      updatedAt: "",
+    };
+
+    return [allCategory, ...projectCategories];
+  }, [projects, allLabel]);
+
+  const handleCategoryChange = (categoryName: string) => {
+    setSelectedCategory(categoryName);
     setCurrentPage(1);
     if (width < 1024) setIsSidebarOpen(false);
   };
@@ -77,10 +96,22 @@ export default function SidebarFilter({
               exit={{ x: -400 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <div className="max-lg:h-full max-lg:w-full lg:rounded-xl lg:shadow-sm lg:border p-6 lg:sticky top-24" style={{ backgroundColor: "var(--surface-50)", borderColor: "var(--surface-200)" }}>
+              <div
+                className="max-lg:h-full max-lg:w-full lg:rounded-xl lg:shadow-sm lg:border p-6 lg:sticky top-24"
+                style={{
+                  backgroundColor: "var(--surface-50)",
+                  borderColor: "var(--surface-200)",
+                }}
+              >
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: "var(--surface-900)" }}>
-                    <FiFilter className="w-4 h-4" style={{ color: "var(--primary)" }} />
+                  <h3
+                    className="text-lg font-semibold flex items-center gap-2"
+                    style={{ color: "var(--surface-900)" }}
+                  >
+                    <FiFilter
+                      className="w-4 h-4"
+                      style={{ color: "var(--primary)" }}
+                    />
                     Filters
                   </h3>
                   <button
@@ -93,33 +124,44 @@ export default function SidebarFilter({
                   </button>
                 </div>
                 <div className="space-y-1">
-                  {categories.map((category) => {
-                    const projectCount = category === allLabel
-                      ? projects.length
-                      : projects.filter((p) => p.category[local] === category).length;
+                  {categories.map((category: Category) => {
+                    const projectCount =
+                      category.name === allLabel
+                        ? projects.length
+                        : projects.filter(
+                            (p) => p.category?.name === category?.name,
+                          ).length;
 
                     return (
                       <button
-                        key={category}
-                        onClick={() => handleCategoryChange(category)}
+                        key={category?.id}
+                        onClick={() => handleCategoryChange(category.name)}
                         className="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center justify-between"
                         style={
-                          selectedCategory === category
-                            ? { backgroundColor: "var(--primary)", color: "white" }
-                            : { backgroundColor: "transparent", color: "var(--surface-600)" }
+                          selectedCategory === category.name
+                            ? {
+                                backgroundColor: "var(--primary)",
+                                color: "white",
+                              }
+                            : {
+                                backgroundColor: "transparent",
+                                color: "var(--surface-600)",
+                              }
                         }
                         onMouseEnter={(e) => {
-                          if (selectedCategory !== category) {
-                            (e.target as HTMLElement).style.backgroundColor = "var(--surface-100)";
+                          if (selectedCategory !== category.name) {
+                            (e.currentTarget as HTMLElement).style.backgroundColor =
+                              "var(--surface-100)";
                           }
                         }}
                         onMouseLeave={(e) => {
-                          if (selectedCategory !== category) {
-                            (e.target as HTMLElement).style.backgroundColor = "transparent";
+                          if (selectedCategory !== category.name) {
+                            (e.currentTarget as HTMLElement).style.backgroundColor =
+                              "transparent";
                           }
                         }}
                       >
-                        <span>{category}</span>
+                        <span>{category.name}</span>
                         <span className="text-xs opacity-60">
                           {projectCount}
                         </span>

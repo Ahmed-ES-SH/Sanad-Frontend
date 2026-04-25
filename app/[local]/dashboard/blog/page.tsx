@@ -9,7 +9,6 @@ import {
   getAdminArticles,
   getCategories,
 } from "@/app/actions/blogActions";
-import BlogPagination from "@/app/_components/_website/_blog/BlogPagination";
 
 interface BlogDashboardPageProps {
   searchParams: Promise<{
@@ -33,8 +32,6 @@ export default async function BlogDashboardPage({
 
   const currentPage = meta?.page || 1;
   const totalPages = meta?.totalPages || 0;
-  const total = meta?.total || 0;
-  const perPage = meta?.limit || 10;
 
   return (
     <main className="pt-24 pb-12 px-8 min-h-screen bg-stone-50 text-stone-900">
@@ -55,13 +52,6 @@ export default async function BlogDashboardPage({
         initialArticles={articles || []}
         totalPages={totalPages}
         currentPage={currentPage}
-      />
-
-      {/* Pagination */}
-      <BlogPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        isLoading={false}
       />
 
       {/* Keyboard Shortcuts Help (hidden by default, shown on ?) */}

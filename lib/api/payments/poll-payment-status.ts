@@ -1,5 +1,5 @@
-import type { PaymentStatus, PaymentResponseDto } from "@/lib/types/payments";
-import { getPaymentById } from "@/lib/api/payments";
+import type { PaymentStatus } from "@/lib/types/payments";
+import { getMyPaymentById } from "@/lib/api/payments";
 
 export type PaymentStatusCallback = (status: PaymentStatus) => void;
 
@@ -16,6 +16,8 @@ export interface PollPaymentStatusOptions {
   onError?: (error: Error) => void;
   /** Callback when polling times out */
   onTimeout?: () => void;
+  /** Continue as pending on timeout instead of forcing failed (default: true) */
+  keepPendingOnTimeout?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ export function pollPaymentStatus({
   intervalMs = 2000,
   onError,
   onTimeout,
+  keepPendingOnTimeout = true,
 }: PollPaymentStatusOptions): () => void {
   let attempts = 0;
   let isCancelled = false;
@@ -44,13 +47,13 @@ export function pollPaymentStatus({
     attempts++;
 
     try {
-      const payment = await getPaymentById(paymentId);
+      const payment = await getMyPaymentById(paymentId);
       const { status } = payment;
 
       onStatusChange(status);
 
-      // Stop polling if status is no longer pending
-      if (status !== "pending") {
+      // Checkout flow only finalizes on succeeded/failed.
+      if (status === "succeeded" || status === "failed") {
         clearInterval(interval);
       }
     } catch (error) {
@@ -66,8 +69,9 @@ export function pollPaymentStatus({
       if (onTimeout) {
         onTimeout();
       }
-      // Consider timeout as failure
-      onStatusChange("failed");
+      if (!keepPendingOnTimeout) {
+        onStatusChange("failed");
+      }
     }
   }, intervalMs);
 
@@ -82,7 +86,7 @@ export function pollPaymentStatus({
  * Check if payment status terminal (not pending)
  */
 export function isPaymentStatusTerminal(status: PaymentStatus): boolean {
-  return status === "succeeded" || status === "failed" || status === "refunded";
+  return status === "succeeded" || status === "failed";
 }
 
 /**
@@ -96,6 +100,8 @@ export function getPaymentStatusMessage(status: PaymentStatus): string {
       return "Payment completed successfully!";
     case "failed":
       return "Payment failed. Please try again.";
+    case "partially_refunded":
+      return "Payment is partially refunded.";
     case "refunded":
       return "Payment has been refunded.";
     default:
