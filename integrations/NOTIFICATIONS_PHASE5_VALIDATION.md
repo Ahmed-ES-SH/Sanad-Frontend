@@ -7,35 +7,42 @@ Workspace: `C:\projects\Sanad\frontend`
 
 - Frontend integration wiring is complete for all required socket events and endpoints.
 - Runtime end-to-end validation is partially blocked by missing authenticated test sessions.
-- The currently running backend instance on `http://localhost:5000` accepted socket connections even with an invalid token, which conflicts with the integration contract.
+- The currently running backend instance on `https://sanad-backend.vercel.app` accepted socket connections even with an invalid token, which conflicts with the integration contract.
 
 ## Checklist Results
 
 1. Open two browser sessions for same user and connect WebSocket with valid token.
+
 - Status: `BLOCKED`
 - Reason: No authenticated test user/session available in this environment.
 
 2. Create notification and verify both sessions receive `notification:new` + `notification:count`.
+
 - Status: `BLOCKED`
 - Reason: Requires authenticated user sessions and admin mutation access.
 
 3. Mark one as read and verify peer session receives `notification:read` + updated count.
+
 - Status: `BLOCKED`
 - Reason: Requires two active authenticated sessions.
 
 4. Call `PATCH /notifications/read-all` and verify `notification:read_all` + count update.
+
 - Status: `BLOCKED`
 - Reason: Endpoint requires authentication; unauthenticated probe returned `401`.
 
 5. Soft delete and verify `notification:delete` + count update.
+
 - Status: `BLOCKED`
 - Reason: Endpoint requires authentication; no test session available.
 
 6. Admin broadcast without `targetUserIds` emits `notification:new` with `type: BROADCAST`.
+
 - Status: `BLOCKED`
 - Reason: Admin endpoint requires authentication; unauthenticated probe returned `401`.
 
 7. `PATCH /notifications/preferences` with JSON body updates persisted values.
+
 - Status: `BLOCKED`
 - Reason: Requires authenticated user session.
 

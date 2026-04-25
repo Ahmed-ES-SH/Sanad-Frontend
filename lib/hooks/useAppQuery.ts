@@ -15,7 +15,8 @@ async function fetcher<TData>({
   endpoint: string;
   config?: RequestInit;
 }): Promise<TData> {
-  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+  const baseURL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "https://sanad-backend.vercel.app";
   const fullURL = `${baseURL}${endpoint}`;
 
   const response = await fetch(fullURL, {
@@ -25,7 +26,9 @@ async function fetcher<TData>({
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Request failed with status ${response.status}`);
+    throw new Error(
+      errorData.message || `Request failed with status ${response.status}`,
+    );
   }
 
   return response.json();

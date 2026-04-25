@@ -7,7 +7,7 @@
 import type { OrderDetails } from "@/app/_components/_orderTracking/OrderTrackingTable.types";
 import { protectedRequest } from "@/lib/api-client";
 
-const BASE_URL = process.env.BACKEND_URL || "http://localhost:5000";
+const BASE_URL = process.env.BACKEND_URL || "https://sanad-backend.vercel.app";
 
 /**
  * Fetches order details for the authenticated user

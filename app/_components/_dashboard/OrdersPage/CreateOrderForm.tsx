@@ -10,7 +10,7 @@ import { Service } from "@/app/types/service";
 async function getPublishedServices(): Promise<Service[]> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}/api/services`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL || "https://sanad-backend.vercel.app"}/api/services`,
     );
     const data = await response.json();
     return data.data || [];

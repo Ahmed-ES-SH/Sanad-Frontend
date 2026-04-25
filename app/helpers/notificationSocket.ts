@@ -1,7 +1,10 @@
 import io from "socket.io-client";
 import { SOCKET_CONFIG } from "@/app/constants/notifications";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.BACKEND_URL ||
+  "https://sanad-backend.vercel.app";
 
 /**
  * Creates a Socket.IO connection for real-time notifications.

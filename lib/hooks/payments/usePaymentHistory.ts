@@ -2,18 +2,24 @@
 // PAYMENT HISTORY HOOK - Fetch and manage user payment history with filters
 // ============================================================================
 
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { PaymentResponseDto, PaginatedPaymentsResponse, PaymentFilterDto, PaymentStatus } from '@/lib/types/payments';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import {
+  PaymentResponseDto,
+  PaginatedPaymentsResponse,
+  PaymentFilterDto,
+  PaymentStatus,
+} from "@/lib/types/payments";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "https://sanad-backend.vercel.app";
 
 export interface UsePaymentHistoryOptions {
   page?: number;
   limit?: number;
-  status?: PaymentStatus | 'all';
+  status?: PaymentStatus | "all";
   startDate?: string;
   endDate?: string;
   userId?: string;
@@ -32,20 +38,23 @@ export interface PaymentHistoryState {
   } | null;
 }
 
-async function fetchPayments(filters: PaymentFilterDto): Promise<PaginatedPaymentsResponse> {
+async function fetchPayments(
+  filters: PaymentFilterDto,
+): Promise<PaginatedPaymentsResponse> {
   const params = new URLSearchParams();
-  
-  if (filters.page && filters.page > 1) params.set('page', String(filters.page));
-  if (filters.limit) params.set('limit', String(filters.limit));
-  if (filters.sortBy) params.set('sortBy', filters.sortBy);
-  if (filters.order) params.set('order', filters.order);
-  if (filters.status) params.set('status', filters.status);
-  if (filters.userId) params.set('userId', filters.userId);
-  if (filters.startDate) params.set('startDate', filters.startDate);
-  if (filters.endDate) params.set('endDate', filters.endDate);
+
+  if (filters.page && filters.page > 1)
+    params.set("page", String(filters.page));
+  if (filters.limit) params.set("limit", String(filters.limit));
+  if (filters.sortBy) params.set("sortBy", filters.sortBy);
+  if (filters.order) params.set("order", filters.order);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.userId) params.set("userId", filters.userId);
+  if (filters.startDate) params.set("startDate", filters.startDate);
+  if (filters.endDate) params.set("endDate", filters.endDate);
 
   const queryString = params.toString();
-  const url = `${BACKEND_URL}/api/admin/payments${queryString ? `?${queryString}` : ''}`;
+  const url = `${BACKEND_URL}/api/admin/payments${queryString ? `?${queryString}` : ""}`;
 
   const response = await axios.get<PaginatedPaymentsResponse>(url, {
     withCredentials: true,
@@ -55,21 +64,29 @@ async function fetchPayments(filters: PaymentFilterDto): Promise<PaginatedPaymen
 }
 
 export function usePaymentHistory(options: UsePaymentHistoryOptions = {}) {
-  const { page = 1, limit = 10, status = 'all', startDate, endDate, userId, enabled = true } = options;
+  const {
+    page = 1,
+    limit = 10,
+    status = "all",
+    startDate,
+    endDate,
+    userId,
+    enabled = true,
+  } = options;
 
   const filters: PaymentFilterDto = {
     page,
     limit,
-    status: status === 'all' ? undefined : status,
+    status: status === "all" ? undefined : status,
     startDate: startDate || undefined,
     endDate: endDate || undefined,
     userId: userId || undefined,
-    sortBy: 'createdAt',
-    order: 'DESC',
+    sortBy: "createdAt",
+    order: "DESC",
   };
 
   const queryResult = useQuery<PaginatedPaymentsResponse, Error>({
-    queryKey: ['payments', filters],
+    queryKey: ["payments", filters],
     queryFn: () => fetchPayments(filters),
     enabled,
     staleTime: 1000 * 60 * 2, // 2 minutes
@@ -81,7 +98,7 @@ export function usePaymentHistory(options: UsePaymentHistoryOptions = {}) {
   const isLoading = queryResult.isLoading;
   const isFetching = queryResult.isFetching;
   const error = queryResult.error;
-  
+
   const meta = queryResult.data?.meta ?? null;
   const currentPage = meta?.page ?? 1;
   const totalPages = meta?.totalPages ?? 1;
@@ -101,11 +118,11 @@ export function usePaymentHistory(options: UsePaymentHistoryOptions = {}) {
   const hasPrevPage = currentPage > 1;
 
   // Filter helpers
-  const hasActiveFilters = status !== 'all' || !!startDate || !!endDate;
+  const hasActiveFilters = status !== "all" || !!startDate || !!endDate;
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (status !== 'all') count++;
+    if (status !== "all") count++;
     if (startDate) count++;
     if (endDate) count++;
     return count;
@@ -115,12 +132,12 @@ export function usePaymentHistory(options: UsePaymentHistoryOptions = {}) {
     // Data
     payments,
     meta,
-    
+
     // State
     isLoading,
     isFetching,
     error,
-    
+
     // Pagination
     currentPage,
     totalPages,
@@ -128,11 +145,11 @@ export function usePaymentHistory(options: UsePaymentHistoryOptions = {}) {
     hasNextPage,
     hasPrevPage,
     goToPage,
-    
+
     // Filters
     hasActiveFilters,
     getActiveFilterCount,
-    
+
     // Refetch
     refetch: queryResult.refetch,
   };
